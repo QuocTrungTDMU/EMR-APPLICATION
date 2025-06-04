@@ -1,0 +1,23 @@
+.homepage-banner {
+    background: linear-gradient(90deg, #076cec, #35c7df);
+    color: #fff;
+    padding: 40px 0;
+    text-align: center;
+}
+.homepage-content {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 40px;
+}
+.feature-box {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(7,108,236,0.1);
+    padding: 30px 40px;
+    width: 320px;
+    text-align: left;
+}
+.feature-box h2 {
+    color: #076cec;
+}
