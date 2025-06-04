@@ -10,3 +10,4 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/email/verification-notification', [AuthController::class, 'resendVerificationEmail'])->middleware('auth:sanctum');
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 
+    
