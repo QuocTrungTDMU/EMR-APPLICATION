@@ -11,7 +11,7 @@
     <script>
         document.documentElement.className = document.documentElement.className + ' yes-js js_active js'
     </script>
-    <title>Medik &#8211; Just another WordPress site</title>
+    <title>@yield('title', 'Medik &#8211; Just another WordPress site')</title>
     <link href='https://medik.wpenginepowered.com/wp-content/themes/medik/images/favicon.ico' rel='shortcut icon' type='image/x-icon' />
     <meta name='robots' content='max-image-preview:large' />
     <style>
@@ -30,7 +30,10 @@
 
 <body>
     @include('partials.header')
+
+    @if (!request()->is('contact'))
     @include('partials.hero-slider')
+    @endif
 
 
     <main>
