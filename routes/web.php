@@ -3,13 +3,24 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+require __DIR__ . '/auth.php';
+
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/contact', function () {
+    return view('contact');
+});
+
+Route::get('/login', function () {
+    return view('auth.login');
+})->middleware('guest')->name('login');
+
+Route::get('/homepage', function () {
+    return view('homepage');
+})->middleware(['auth', 'verified'])->name('homepage');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

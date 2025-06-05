@@ -132,37 +132,74 @@
                             <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Cart</a>
                             <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Checkout</a>
                             <a href="#" class="block px-4 py-2 text-blue-600 font-semibold hover:bg-blue-50 transition-colors">Wishlist</a>
-                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">My account</a>
                         </div>
                     </li>
                     <!-- Contact Us with submenu -->
                     <li class="relative group">
-                        <button class="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors py-2">
+                        <a href="" class="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors py-2">
                             <span>Contact Us</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 top-full mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Store Locator</a>
-                        </div>
+                        </a>
                     </li>
                 </ul>
             </nav>
 
             <!-- Desktop Icons -->
             <div class="flex items-center space-x-4">
+                <!-- Wishlist Icon -->
                 <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Wishlist">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1.01 4.5 2.09C13.09 4.01 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                     </svg>
                 </a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
-                    </svg>
-                </a>
+
+                <!-- Account Icon with Dropdown -->
+                <div class="group relative">
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                        </svg>
+                    </a>
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out">
+                        @auth
+                        <div class="px-4 py-2 border-b border-gray-100">
+                            <div class="text-sm font-medium text-gray-500">Signed in as</div>
+                            <div class="font-semibold text-gray-900 truncate">{{ auth()->user()->name }}</div>
+                        </div>
+                        <div class="px-4 py-2">
+                            <a href="#" class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span>My Account</span>
+                            </a>
+                        </div>
+                        <div class="px-4 py-2 border-t border-gray-100">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    <span>Logout</span>
+                                </button>
+                            </form>
+                        </div>
+                        @else
+                        <div class="px-4 py-2">
+                            <a href="{{ route('login') }}" class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                </svg>
+                                <span>Login</span>
+                            </a>
+                        </div>
+                        @endauth
+                    </div>
+                </div>
+
+                <!-- Cart Icon -->
                 <a href="#" class="relative text-gray-600 hover:text-blue-600 transition-colors" title="Cart">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <circle cx="9" cy="21" r="1" />
@@ -174,31 +211,29 @@
             </div>
         </div>
 
-        <!-- Mobile Header - Centered Layout -->
+        <!-- Mobile Header -->
         <div class="lg:hidden flex flex-col items-center space-y-4">
             <!-- Logo Centered -->
-            <div class="flex items-center space-x-3">
-                <img src="https://medik.wpenginepowered.com/wp-content/themes/medik/images/logo.png" alt="Medik Logo" class="h-10 w-auto">
-                <span class="text-2xl font-bold text-gray-900 tracking-tight">Medik</span>
-            </div>
-
-            <!-- Mobile Menu Button and Icons Row -->
-            <div class="flex items-center justify-center space-x-6 w-full">
+            <div class="flex items-center justify-between w-full">
+                <div class="flex items-center space-x-3">
+                    <img src="https://medik.wpenginepowered.com/wp-content/themes/medik/images/logo.png" alt="Medik Logo" class="h-10 w-auto">
+                </div>
                 <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors">
+                <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-600 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
-                    <span class="font-medium">Menu</span>
                 </button>
+            </div>
 
-                <!-- Mobile Icons -->
+            <!-- Mobile Icons Row -->
+            <div class="flex items-center justify-center space-x-6 w-full">
                 <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Wishlist">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1.01 4.5 2.09C13.09 4.01 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                     </svg>
                 </a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
+                <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <circle cx="12" cy="8" r="4" />
                         <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
@@ -218,10 +253,10 @@
 </header>
 
 <!-- Mobile Menu Overlay -->
-<div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
+<div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
 
-<!-- Mobile Menu -->
-<div id="mobile-menu" class="fixed top-0 right-0 h-full w-80 bg-white shadow-xl z-50 transform translate-x-full transition-transform duration-300 lg:hidden">
+<!-- Mobile Menu Sidebar -->
+<div id="mobile-menu" class="fixed top-0 right-0 h-full w-80 bg-white shadow-xl z-50 transform translate-x-full transition-transform duration-300 hidden">
     <!-- Header với nút đóng -->
     <div class="flex items-center justify-between p-4 border-b border-gray-200">
         <span class="text-lg font-semibold text-gray-900">Menu</span>
@@ -263,15 +298,8 @@
             </button>
         </div>
 
-        <!-- Contact Us Menu Item với submenu -->
-        <div class="border-b border-gray-100">
-            <button class="w-full flex items-center justify-between p-4 text-left text-gray-700 hover:bg-blue-50 font-medium mobile-menu-item" data-submenu="contact">
-                <span>Contact Us</span>
-                <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M9 5l7 7-7 7" />
-                </svg>
-            </button>
-        </div>
+        <!-- Contact Us -->
+        <a href="" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Contact Us</a>
     </div>
 
     <!-- Home Submenu -->
@@ -300,21 +328,10 @@
         <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Cart</a>
         <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Checkout</a>
         <a href="#" class="block p-4 text-blue-600 font-semibold hover:bg-blue-50 transition-colors border-b border-gray-100">Wishlist</a>
-        <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">My account</a>
-    </div>
-
-    <!-- Contact Us Submenu -->
-    <div id="submenu-contact" class="hidden overflow-y-auto h-full pb-20">
-        <button class="w-full flex items-center p-4 text-gray-600 hover:text-blue-600 transition-colors border-b border-gray-200 submenu-back" data-parent="contact">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M15 19l-7-7 7-7" />
-            </svg>
-            <span>Contact Us</span>
-        </button>
-        <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Store Locator</a>
     </div>
 </div>
 
+<!-- JavaScript -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -325,41 +342,90 @@
         const submenuBacks = document.querySelectorAll('.submenu-back');
         const mainMenu = document.getElementById('main-menu');
 
-        // Mở mobile menu
-        mobileMenuBtn.addEventListener('click', function() {
-            mobileMenu.classList.remove('translate-x-full');
-            mobileMenuOverlay.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        });
-
-        // Đóng mobile menu
-        function closeMobileMenu() {
+        // Đảm bảo menu ẩn ban đầu
+        if (mobileMenu) {
+            mobileMenu.classList.add('hidden');
             mobileMenu.classList.add('translate-x-full');
+        }
+        if (mobileMenuOverlay) {
             mobileMenuOverlay.classList.add('hidden');
-            document.body.style.overflow = '';
-            // Reset về main menu
-            mainMenu.classList.remove('hidden');
-            document.querySelectorAll('[id^="submenu-"]').forEach(submenu => {
-                submenu.classList.add('hidden');
-            });
-            // Reset tất cả arrows
-            document.querySelectorAll('.mobile-menu-item svg').forEach(arrow => {
-                arrow.style.transform = 'rotate(0deg)';
+        }
+
+        // Mở mobile menu
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Menu button clicked');
+                if (mobileMenu) {
+                    mobileMenu.classList.remove('hidden');
+                    setTimeout(() => {
+                        mobileMenu.classList.remove('translate-x-full');
+                    }, 10);
+                }
+                if (mobileMenuOverlay) {
+                    mobileMenuOverlay.classList.remove('hidden');
+                }
+                document.body.style.overflow = 'hidden';
             });
         }
 
-        mobileMenuClose.addEventListener('click', closeMobileMenu);
-        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+        // Đóng mobile menu
+        function closeMobileMenu() {
+            if (mobileMenu) {
+                mobileMenu.classList.add('translate-x-full');
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            }
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.classList.add('hidden');
+            }
+            document.body.style.overflow = '';
+
+            // Reset về main menu
+            setTimeout(() => {
+                if (mainMenu) {
+                    mainMenu.classList.remove('hidden');
+                }
+                document.querySelectorAll('[id^="submenu-"]').forEach(submenu => {
+                    submenu.classList.add('hidden');
+                });
+                // Reset tất cả arrows
+                document.querySelectorAll('.mobile-menu-item svg').forEach(arrow => {
+                    arrow.style.transform = 'rotate(0deg)';
+                });
+            }, 300);
+        }
+
+        if (mobileMenuClose) {
+            mobileMenuClose.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeMobileMenu();
+            });
+        }
+
+        if (mobileMenuOverlay) {
+            mobileMenuOverlay.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeMobileMenu();
+            });
+        }
 
         // Xử lý submenu navigation
         mobileMenuItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const submenuId = 'submenu-' + this.dataset.submenu;
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const submenuName = this.dataset.submenu;
+                if (!submenuName) return;
+
+                const submenuId = 'submenu-' + submenuName;
                 const submenu = document.getElementById(submenuId);
 
                 if (submenu) {
                     // Ẩn main menu và hiện submenu
-                    mainMenu.classList.add('hidden');
+                    if (mainMenu) {
+                        mainMenu.classList.add('hidden');
+                    }
                     submenu.classList.remove('hidden');
                 }
             });
@@ -367,19 +433,34 @@
 
         // Xử lý nút back trong submenu
         submenuBacks.forEach(back => {
-            back.addEventListener('click', function() {
-                const submenuId = 'submenu-' + this.dataset.parent;
+            back.addEventListener('click', function(e) {
+                e.preventDefault();
+                const parentName = this.dataset.parent;
+                if (!parentName) return;
+
+                const submenuId = 'submenu-' + parentName;
                 const submenu = document.getElementById(submenuId);
 
-                // Ẩn submenu và hiện main menu
-                submenu.classList.add('hidden');
-                mainMenu.classList.remove('hidden');
+                if (submenu) {
+                    // Ẩn submenu và hiện main menu
+                    submenu.classList.add('hidden');
+                    if (mainMenu) {
+                        mainMenu.classList.remove('hidden');
+                    }
+                }
             });
         });
 
         // Đóng mobile menu khi resize về desktop
         window.addEventListener('resize', function() {
             if (window.innerWidth >= 1024) {
+                closeMobileMenu();
+            }
+        });
+
+        // Đóng menu khi nhấn ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && mobileMenu && !mobileMenu.classList.contains('translate-x-full')) {
                 closeMobileMenu();
             }
         });
