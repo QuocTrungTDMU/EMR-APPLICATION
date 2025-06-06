@@ -8,7 +8,7 @@
     <div class="absolute left-1/4 bottom-10 w-14 h-14 bg-blue-100/20 rounded-full blur-lg"></div>
     <div class="absolute right-1/3 bottom-8 w-10 h-10 bg-blue-200/25 rounded-full blur-md"></div>
   </div>
-  <div class="relative z-10 w-full flex flex-col lg:flex-row items-center justify-between max-w-none px-0">
+  <div class="relative z-10 w-full flex flex-col lg:flex-row items-center justify-between max-w-none px-0" data-aos="fade-in">
     <!-- Cột trái: Nội dung -->
     <div class="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left px-2 lg:pl-24 py-16">
       <h2 class="font-bold text-[40px] md:text-[50px] leading-tight text-black mb-4" style="font-family:'Titillium Web',sans-serif;">
@@ -51,6 +51,12 @@
     </div>
   </div>
 </section>
+
+<style>
+  .section-container {
+    overflow: hidden;
+  }
+</style>
 
 <script>
   function startCountdown() {

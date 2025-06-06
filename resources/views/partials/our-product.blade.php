@@ -4,17 +4,17 @@
         <div class="flex flex-col items-center mb-10">
             <div class="relative flex items-center mb-2">
                 <span class="block w-6 h-1 bg-cyan-200 rounded mr-2"></span>
-                <h2 class="text-3xl md:text-4xl font-bold text-[#153B4B] text-center" style="font-family:'Titillium Web',sans-serif;">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#153B4B] text-center" style="font-family:'Titillium Web',sans-serif;" data-aos="fade-in">
                     Our Special Products
                 </h2>
                 <span class="block w-6 h-1 bg-cyan-200 rounded ml-2"></span>
             </div>
-            <p class="text-gray-500 text-center max-w-xl mx-auto">
+            <p class="text-gray-500 text-center max-w-xl mx-auto" data-aos="fade-in">
                 Lorem Ipsum is simply dummy text of the printing and typesetting industry
             </p>
         </div>
         <!-- Product Grid -->
-        <div class="w-full">
+        <div class="w-full" data-aos="fade-in">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
 
                 <!-- Product Card -->
@@ -52,7 +52,7 @@
 
                     <!-- Content Container  -->
                     <div class="flex flex-col items-center px-6 pb-8 flex-grow">
-                        <div class="uppercase text-sm text-gray-400 mb-3 font-semibold tracking-wider">CAPSULES, MEDICINE, PILLS</div>
+                        <div class="uppercase text-sm text-gray-400 mb-3 font-semibold tracking-wider">CAPSULES, MEDICINE, DRUGS</div>
                         <div class="font-bold text-lg mb-4 text-center text-gray-800">Vitamin C Tablet</div>
 
                         <!-- Stars -->

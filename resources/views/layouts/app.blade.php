@@ -28,6 +28,8 @@
         <link rel='dns-prefetch' href='//fonts.googleapis.com' />
         <link rel="alternate" type="application/rss+xml" title="Medik &raquo; Feed" href="https://medik.wpengine.com/feed/" />
         <link rel="alternate" type="application/rss+xml" title="Medik &raquo; Comments Feed" href="https://medik.wpengine.com/comments/feed/" />
+        <!-- AOS CSS -->
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
         @vite(['resources/js/app.js'])
         @stack('styles')
         @yield('head')
@@ -37,9 +39,12 @@
 <body>
     @include('partials.header')
 
-    @if (!request()->is('contact'))
+    @if (!request()->is('contact') && !request()->is('profile*'))
     @include('partials.hero-slider')
     @endif
+
+
+
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -50,7 +55,7 @@
     </head>
 
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div class="min-h-screen">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
@@ -64,9 +69,23 @@
 
             <!-- Page Content -->
             <main>
-
+                @yield('content')
             </main>
         </div>
+        @include('partials.product-quick-view-modal')
+        @include('partials.footer')
+        <!-- AOS JavaScript -->
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <script>
+            AOS.init({
+                duration: 1000,
+                easing: 'ease-in-out',
+                once: true,
+                offset: 300,
+
+            });
+        </script>
+        @stack('scripts')
     </body>
 
 </html>

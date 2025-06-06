@@ -95,7 +95,11 @@
         <div class="hidden lg:flex items-center justify-between">
             <!-- Logo -->
             <div class="flex items-center space-x-3">
-                <img src="https://medik.wpenginepowered.com/wp-content/themes/medik/images/logo.png" alt="Medik Logo" class="h-10 w-auto">
+                <a href="{{ url('/') }}" class="flex items-center">
+                    <img src="https://medik.wpenginepowered.com/wp-content/themes/medik/images/logo.png"
+                        alt="Medik Logo"
+                        class="h-10 w-auto hover:scale-105 transition-transform duration-200">
+                </a>
             </div>
 
             <!-- Desktop Menu -->
@@ -136,7 +140,7 @@
                     </li>
                     <!-- Contact Us with submenu -->
                     <li class="relative group">
-                        <a href="" class="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors py-2">
+                        <a href="{{ route('contact') }}" class="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors py-2">
                             <span>Contact Us</span>
                         </a>
                     </li>
@@ -211,45 +215,110 @@
             </div>
         </div>
 
+
         <!-- Mobile Header -->
-        <div class="lg:hidden flex flex-col items-center space-y-4">
-            <!-- Logo Centered -->
-            <div class="flex items-center justify-between w-full">
+        <div class="lg:hidden">
+            <!-- Tablet Layout: Logo trái, Menu giữa, Icons phải -->
+            <div class="hidden sm:flex md:flex items-center justify-between w-full p-4">
+                <!-- Logo bên trái -->
                 <div class="flex items-center space-x-3">
-                    <img src="https://medik.wpenginepowered.com/wp-content/themes/medik/images/logo.png" alt="Medik Logo" class="h-10 w-auto">
+                    <a href="{{ url('/') }}" class="flex items-center">
+                        <img src="https://medik.wpenginepowered.com/wp-content/themes/medik/images/logo.png"
+                            alt="Medik Logo"
+                            class="h-10 w-auto hover:scale-105 transition-transform duration-200">
+                    </a>
+
                 </div>
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-600 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+
+                <!-- Menu Button ở giữa -->
+                <div class="flex-1 flex justify-center">
+                    <button id="mobile-menu-btn" class="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <span class="text-sm font-medium">Menu</span>
+                    </button>
+                </div>
+
+                <!-- Icons bên phải -->
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Wishlist">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1.01 4.5 2.09C13.09 4.01 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                    </a>
+
+                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                        </svg>
+                    </a>
+
+                    <a href="#" class="relative text-gray-600 hover:text-blue-600 transition-colors" title="Cart">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                        </svg>
+                        <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">1</span>
+                    </a>
+                </div>
             </div>
 
-            <!-- Mobile Icons Row -->
-            <div class="flex items-center justify-center space-x-6 w-full">
-                <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Wishlist">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1.01 4.5 2.09C13.09 4.01 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                    </svg>
-                </a>
-                <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
-                    </svg>
-                </a>
-                <a href="#" class="relative text-gray-600 hover:text-blue-600 transition-colors" title="Cart">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="9" cy="21" r="1" />
-                        <circle cx="20" cy="21" r="1" />
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                    </svg>
-                    <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">1</span>
-                </a>
+            <!-- Mobile Layout: Logo trên, Menu giữa, Icons dưới -->
+            <div class="sm:hidden flex flex-col items-center space-y-3 p-4">
+                <!-- Logo Centered - Dòng 1 -->
+                <div class="flex items-center space-x-3">
+                    <a href="{{ url('/') }}" class="flex items-center">
+                        <img src="https://medik.wpenginepowered.com/wp-content/themes/medik/images/logo.png"
+                            alt="Medik Logo"
+                            class="h-10 w-auto hover:scale-105 transition-transform duration-200">
+                    </a>
+
+                </div>
+
+                <!-- Menu Button Centered - Dòng 2 -->
+                <div class="flex items-center justify-center w-full">
+                    <button id="mobile-menu-btn-small" class="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <span class="text-sm font-medium">Menu</span>
+                    </button>
+                </div>
+
+                <!-- Icons Row Centered - Dòng 3 -->
+                <div class="flex items-center justify-center space-x-8 w-full">
+                    <!-- Wishlist Icon -->
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Wishlist">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1.01 4.5 2.09C13.09 4.01 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                    </a>
+
+                    <!-- Account Icon -->
+                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                        </svg>
+                    </a>
+
+                    <!-- Cart Icon -->
+                    <a href="#" class="relative text-gray-600 hover:text-blue-600 transition-colors" title="Cart">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                        </svg>
+                        <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">1</span>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+
+
 </header>
 
 <!-- Mobile Menu Overlay -->
@@ -331,10 +400,14 @@
     </div>
 </div>
 
-<!-- JavaScript -->
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing mobile menu...');
+
+        // Lấy tất cả elements cần thiết
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenuBtnSmall = document.getElementById('mobile-menu-btn-small');
         const mobileMenu = document.getElementById('mobile-menu');
         const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
         const mobileMenuClose = document.getElementById('mobile-menu-close');
@@ -342,35 +415,41 @@
         const submenuBacks = document.querySelectorAll('.submenu-back');
         const mainMenu = document.getElementById('main-menu');
 
+        // Debug: Kiểm tra xem elements có tồn tại không
+        console.log('Mobile menu button:', mobileMenuBtn);
+        console.log('Mobile menu button small:', mobileMenuBtnSmall);
+        console.log('Mobile menu:', mobileMenu);
+        console.log('Mobile menu overlay:', mobileMenuOverlay);
+        console.log('Mobile menu close:', mobileMenuClose);
+
         // Đảm bảo menu ẩn ban đầu
         if (mobileMenu) {
             mobileMenu.classList.add('hidden');
             mobileMenu.classList.add('translate-x-full');
+            console.log('Menu initialized as hidden');
         }
         if (mobileMenuOverlay) {
             mobileMenuOverlay.classList.add('hidden');
         }
 
-        // Mở mobile menu
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Menu button clicked');
-                if (mobileMenu) {
-                    mobileMenu.classList.remove('hidden');
-                    setTimeout(() => {
-                        mobileMenu.classList.remove('translate-x-full');
-                    }, 10);
-                }
-                if (mobileMenuOverlay) {
-                    mobileMenuOverlay.classList.remove('hidden');
-                }
-                document.body.style.overflow = 'hidden';
-            });
+        // Function mở menu
+        function openMobileMenu() {
+            console.log('Opening mobile menu...');
+            if (mobileMenu) {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileMenu.classList.remove('translate-x-full');
+                }, 10);
+            }
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.classList.remove('hidden');
+            }
+            document.body.style.overflow = 'hidden';
         }
 
-        // Đóng mobile menu
+        // Function đóng menu
         function closeMobileMenu() {
+            console.log('Closing mobile menu...');
             if (mobileMenu) {
                 mobileMenu.classList.add('translate-x-full');
                 setTimeout(() => {
@@ -390,16 +469,35 @@
                 document.querySelectorAll('[id^="submenu-"]').forEach(submenu => {
                     submenu.classList.add('hidden');
                 });
-                // Reset tất cả arrows
-                document.querySelectorAll('.mobile-menu-item svg').forEach(arrow => {
-                    arrow.style.transform = 'rotate(0deg)';
-                });
             }, 300);
         }
 
+        // Event listeners cho nút mở menu
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Desktop menu button clicked');
+                openMobileMenu();
+            });
+        } else {
+            console.warn('Mobile menu button not found');
+        }
+
+        if (mobileMenuBtnSmall) {
+            mobileMenuBtnSmall.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Mobile menu button clicked');
+                openMobileMenu();
+            });
+        } else {
+            console.warn('Mobile menu button small not found');
+        }
+
+        // Event listeners cho đóng menu
         if (mobileMenuClose) {
             mobileMenuClose.addEventListener('click', function(e) {
                 e.preventDefault();
+                console.log('Close button clicked');
                 closeMobileMenu();
             });
         }
@@ -407,41 +505,52 @@
         if (mobileMenuOverlay) {
             mobileMenuOverlay.addEventListener('click', function(e) {
                 e.preventDefault();
+                console.log('Overlay clicked');
                 closeMobileMenu();
             });
         }
 
         // Xử lý submenu navigation
-        mobileMenuItems.forEach(item => {
+        mobileMenuItems.forEach((item, index) => {
+            console.log(`Adding click listener to menu item ${index}:`, item);
             item.addEventListener('click', function(e) {
                 e.preventDefault();
                 const submenuName = this.dataset.submenu;
+                console.log('Menu item clicked, submenu:', submenuName);
+
                 if (!submenuName) return;
 
                 const submenuId = 'submenu-' + submenuName;
                 const submenu = document.getElementById(submenuId);
 
                 if (submenu) {
+                    console.log('Showing submenu:', submenuId);
                     // Ẩn main menu và hiện submenu
                     if (mainMenu) {
                         mainMenu.classList.add('hidden');
                     }
                     submenu.classList.remove('hidden');
+                } else {
+                    console.warn('Submenu not found:', submenuId);
                 }
             });
         });
 
         // Xử lý nút back trong submenu
-        submenuBacks.forEach(back => {
+        submenuBacks.forEach((back, index) => {
+            console.log(`Adding click listener to back button ${index}:`, back);
             back.addEventListener('click', function(e) {
                 e.preventDefault();
                 const parentName = this.dataset.parent;
+                console.log('Back button clicked, parent:', parentName);
+
                 if (!parentName) return;
 
                 const submenuId = 'submenu-' + parentName;
                 const submenu = document.getElementById(submenuId);
 
                 if (submenu) {
+                    console.log('Hiding submenu:', submenuId);
                     // Ẩn submenu và hiện main menu
                     submenu.classList.add('hidden');
                     if (mainMenu) {
@@ -451,9 +560,10 @@
             });
         });
 
-        // Đóng mobile menu khi resize về desktop
+        // Đóng menu khi resize về desktop
         window.addEventListener('resize', function() {
             if (window.innerWidth >= 1024) {
+                console.log('Resized to desktop, closing menu');
                 closeMobileMenu();
             }
         });
@@ -461,8 +571,15 @@
         // Đóng menu khi nhấn ESC
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && mobileMenu && !mobileMenu.classList.contains('translate-x-full')) {
+                console.log('ESC pressed, closing menu');
                 closeMobileMenu();
             }
         });
+
+        // Test function để kiểm tra
+        window.testMobileMenu = function() {
+            console.log('Testing mobile menu...');
+            openMobileMenu();
+        };
     });
 </script>
