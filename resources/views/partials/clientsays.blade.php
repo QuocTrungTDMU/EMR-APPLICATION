@@ -11,7 +11,7 @@
         </svg>
     </span>
     <!-- Tiêu đề và mô tả -->
-    <div class="relative z-10 mb-2">
+    <div class="relative z-10 mb-2" data-aos="fade-in">
         <h2 class="text-3xl md:text-4xl font-bold text-[#153B4B] text-center mb-2" style="font-family:'Titillium Web',sans-serif;">
             Our Client Say!
         </h2>
@@ -20,7 +20,7 @@
         </p>
     </div>
     <!-- Swiper Slider -->
-    <div class="relative w-full flex justify-center mt-12">
+    <div class="relative w-full flex justify-center mt-12" data-aos="fade-in">
         <div class="w-full max-w-3xl px-2">
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
@@ -97,6 +97,7 @@
         </div>
     </div>
 </section>
+
 
 <script>
     const swiper = new Swiper('.mySwiper', {

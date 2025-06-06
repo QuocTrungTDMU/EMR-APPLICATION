@@ -92,100 +92,23 @@
             @csrf
             @method('put')
 
-            <!-- Mật khẩu hiện tại -->
-            <div>
-                <x-input-label for="current_password" value="Mật khẩu hiện tại" />
-                <div class="relative">
-                    <input
-                        :type="showPasswordCurrent ? 'text' : 'password'"
-                        name="current_password"
-                        id="current_password"
-                        class="mt-1 block w-full pr-10 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                        autocomplete="current-password" />
-                    <button type="button"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                        @click="showPasswordCurrent = !showPasswordCurrent">
-                        <svg x-show="!showPasswordCurrent" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                            viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zM10 15a5 5 0 110-10 5 5 0 010 10z"/>
-                            <path d="M10 7a3 3 0 100 6 3 3 0 000-6z"/>
-                        </svg>
-                        <svg x-show="showPasswordCurrent" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                            viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M4.03 3.97a.75.75 0 00-1.06 1.06l1.3 1.3C2.78 7.01 1.6 8.76 1 10c.73 2.89 4 7 9 7a8.96 8.96 0 004.13-1.01l1.83 1.83a.75.75 0 001.06-1.06L4.03 3.97zM14.78 12.6l-2.23-2.23a3 3 0 00-3.92-3.92L7.59 5.39a5 5 0 016.62 6.62l-.43-.4z"/>
-                        </svg>
-                    </button>
-                </div>
-                <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
-            </div>
+        <div>
+            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
+            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
+            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+        </div>
 
-            <!-- Mật khẩu mới -->
-            <div>
-                <div class="flex justify-between items-center">
-                    <x-input-label for="password" value="Mật khẩu mới" />
-                    <button type="button" class="text-sm text-blue-600 hover:underline" @click="generatePassword()">Tạo mật khẩu ngẫu nhiên</button>
-                </div>
-                <div class="relative">
-                    <input
-                        :type="showPassword1 ? 'text' : 'password'"
-                        x-model="password"
-                        @input="validatePassword()"
-                        name="password"
-                        id="password"
-                        class="mt-1 block w-full pr-10 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                        autocomplete="new-password" />
-                    <button type="button"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                        @click="showPassword1 = !showPassword1">
-                        <svg x-show="!showPassword1" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                            viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zM10 15a5 5 0 110-10 5 5 0 010 10z"/>
-                            <path d="M10 7a3 3 0 100 6 3 3 0 000-6z"/>
-                        </svg>
-                        <svg x-show="showPassword1" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                            viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M4.03 3.97a.75.75 0 00-1.06 1.06l1.3 1.3C2.78 7.01 1.6 8.76 1 10c.73 2.89 4 7 9 7a8.96 8.96 0 004.13-1.01l1.83 1.83a.75.75 0 001.06-1.06L4.03 3.97zM14.78 12.6l-2.23-2.23a3 3 0 00-3.92-3.92L7.59 5.39a5 5 0 016.62 6.62l-.43-.4z"/>
-                        </svg>
-                    </button>
-                </div>
-                <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+        <div>
+            <x-input-label for="update_password_password" :value="__('New Password')" />
+            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
+            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+        </div>
 
-                <ul class="mt-2 text-sm space-y-1">
-                    <li :class="{'text-green-600': passwordRules.length, 'text-red-600': !passwordRules.length}">• Tối thiểu 8 ký tự</li>
-                    <li :class="{'text-green-600': passwordRules.lowercase, 'text-red-600': !passwordRules.lowercase}">• Có chữ thường (a-z)</li>
-                    <li :class="{'text-green-600': passwordRules.uppercase, 'text-red-600': !passwordRules.uppercase}">• Có chữ hoa (A-Z)</li>
-                    <li :class="{'text-green-600': passwordRules.number, 'text-red-600': !passwordRules.number}">• Có số (0-9)</li>
-                    <li :class="{'text-green-600': passwordRules.special, 'text-red-600': !passwordRules.special}">• Có ký tự đặc biệt (!@#$...)</li>
-                </ul>
-            </div>
-
-            <!-- Xác nhận mật khẩu mới -->
-            <div>
-                <x-input-label for="password_confirmation" value="Xác nhận mật khẩu" />
-                <div class="relative">
-                    <input
-                        :type="showPassword2 ? 'text' : 'password'"
-                        x-model="password_confirmation"
-                        name="password_confirmation"
-                        id="password_confirmation"
-                        class="mt-1 block w-full pr-10 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                        autocomplete="new-password" />
-                    <button type="button"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                        @click="showPassword2 = !showPassword2">
-                        <svg x-show="!showPassword2" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                            viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zM10 15a5 5 0 110-10 5 5 0 010 10z"/>
-                            <path d="M10 7a3 3 0 100 6 3 3 0 000-6z"/>
-                        </svg>
-                        <svg x-show="showPassword2" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                            viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M4.03 3.97a.75.75 0 00-1.06 1.06l1.3 1.3C2.78 7.01 1.6 8.76 1 10c.73 2.89 4 7 9 7a8.96 8.96 0 004.13-1.01l1.83 1.83a.75.75 0 001.06-1.06L4.03 3.97zM14.78 12.6l-2.23-2.23a3 3 0 00-3.92-3.92L7.59 5.39a5 5 0 016.62 6.62l-.43-.4z"/>
-                        </svg>
-                    </button>
-                </div>
-                <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
-            </div>
+        <div>
+            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
+            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
+            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+        </div>
 
             <!-- Checkbox xác nhận -->
             <div class="flex items-start gap-2 mt-4">
