@@ -89,7 +89,7 @@
 </div>
 
 <!-- Main Header -->
-<header class="bg-white shadow-sm border-b border-gray-100">
+<header class=" sticky top-0 z-40 bg-white shadow-sm border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-6 py-3">
         <!-- Desktop Header -->
         <div class="hidden lg:flex items-center justify-between">
@@ -172,7 +172,7 @@
                             <div class="font-semibold text-gray-900 truncate">{{ auth()->user()->name }}</div>
                         </div>
                         <div class="px-4 py-2">
-                            <a href="#" class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
@@ -248,12 +248,21 @@
                         </svg>
                     </a>
 
+                    @auth
+                    <a href="{{ route('profile.edit') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                        </svg>
+                    </a>
+                    @else
                     <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <circle cx="12" cy="8" r="4" />
                             <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
                         </svg>
                     </a>
+                    @endauth
 
                     <a href="#" class="relative text-gray-600 hover:text-blue-600 transition-colors" title="Cart">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -298,12 +307,21 @@
                     </a>
 
                     <!-- Account Icon -->
-                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
+                    @auth
+                    <a href="{{ route('profile.edit') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Tài khoản của tôi">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <circle cx="12" cy="8" r="4" />
                             <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
                         </svg>
                     </a>
+                    @else
+                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Đăng nhập">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                        </svg>
+                    </a>
+                    @endauth
 
                     <!-- Cart Icon -->
                     <a href="#" class="relative text-gray-600 hover:text-blue-600 transition-colors" title="Cart">
