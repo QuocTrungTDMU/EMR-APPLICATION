@@ -28,55 +28,40 @@
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
             <!-- Sidebar -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
-                    <!-- Avatar Section -->
-                    <div class="text-center mb-6">
-                        <div class="relative inline-block">
-                            <div class="w-24 h-24 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span class="text-white font-bold text-2xl">{{ substr(auth()->user()->name, 0, 1) }}</span>
-                            </div>
-                            <button class="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg border-2 border-gray-100 hover:border-blue-300 transition-colors">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                        <h3 class="text-lg font-semibold text-gray-900">{{ auth()->user()->name }}</h3>
-                        <p class="text-sm text-gray-500">Thành viên từ {{ auth()->user()->created_at->format('M Y') }}</p>
-                    </div>
+                 <div class="w-64 bg-white p-6 rounded-xl shadow-lg">
+                    <div class="mb-6">
+                        @include('profile.partials.upload-image-user')
 
-                    <!-- Navigation Menu -->
-                    <nav class="space-y-2">
-                        <a href="#profile-info" class="nav-link active flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
-                            Thông tin cá nhân
-                        </a>
-                        <a href="#password" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
-                            Bảo mật
-                        </a>
-                        <a href="#notifications" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
-                            </svg>
-                            Thông báo
-                        </a>
-                        <a href="#danger-zone" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                            </svg>
-                            Vùng nguy hiểm
-                        </a>
-                    </nav>
+                        <!-- Navigation Menu -->
+                        <nav class="space-y-2">
+                            <a href="#profile-info" class="nav-link active flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                Thông tin cá nhân
+                            </a>
+                            <a href="#password" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                                Bảo mật
+                            </a>
+                            <a href="#notifications" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+                                    <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+                                </svg>
+                                Thông báo
+                            </a>
+                            <a href="#danger-zone" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                                Vùng nguy hiểm
+                            </a>
+                        </nav>
+                    </div>
                 </div>
-            </div>
 
             <!-- Main Content Area -->
             <div class="lg:col-span-3 space-y-8">

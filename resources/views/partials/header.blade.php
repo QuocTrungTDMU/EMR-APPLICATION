@@ -148,15 +148,15 @@
             </nav>
 
             <!-- Desktop Icons -->
-            <div class="flex items-center space-x-4">
-                <!-- Wishlist Icon -->
+           <div class="flex items-center space-x-4">
+                <!-- Biểu tượng Wishlist -->
                 <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Wishlist">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1.01 4.5 2.09C13.09 4.01 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                     </svg>
                 </a>
 
-                <!-- Account Icon with Dropdown -->
+                <!-- Biểu tượng Tài khoản với Dropdown -->
                 <div class="group relative">
                     <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -164,11 +164,11 @@
                             <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
                         </svg>
                     </a>
-                    <!-- Dropdown Menu -->
+                    <!-- Menu Dropdown -->
                     <div class="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out">
                         @auth
                         <div class="px-4 py-2 border-b border-gray-100">
-                            <div class="text-sm font-medium text-gray-500">Signed in as</div>
+                            <div class="text-sm font-medium text-gray-500">Đăng nhập với tên</div>
                             <div class="font-semibold text-gray-900 truncate">{{ auth()->user()->name }}</div>
                         </div>
                         <div class="px-4 py-2">
@@ -176,7 +176,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <span>My Account</span>
+                                <span>Tài khoản của tôi</span>
                             </a>
                         </div>
                         <div class="px-4 py-2 border-t border-gray-100">
@@ -186,7 +186,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                     </svg>
-                                    <span>Logout</span>
+                                    <span>Đăng xuất</span>
                                 </button>
                             </form>
                         </div>
@@ -196,14 +196,14 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                                 </svg>
-                                <span>Login</span>
+                                <span>Đăng nhập</span>
                             </a>
                         </div>
                         @endauth
                     </div>
                 </div>
 
-                <!-- Cart Icon -->
+                <!-- Biểu tượng Giỏ hàng -->
                 <a href="#" class="relative text-gray-600 hover:text-blue-600 transition-colors" title="Cart">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <circle cx="9" cy="21" r="1" />
@@ -212,7 +212,48 @@
                     </svg>
                     <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">1</span>
                 </a>
+
+                <!-- Nút Chuyển đổi Chế độ Sáng/Tối -->
+                <button id="theme-toggle" class="relative text-gray-600 hover:text-blue-600 transition-colors" title="Chuyển chế độ Sáng/Tối">
+                    <svg id="theme-toggle-dark-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <svg id="theme-toggle-light-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
             </div>
+
+            <script>
+                // Lấy nút chuyển đổi và các biểu tượng
+                const themeToggleBtn = document.getElementById('theme-toggle');
+                const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+                const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+                // Kiểm tra chế độ đã lưu trong localStorage
+                if (localStorage.getItem('theme') === 'dark' || 
+                    (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                    themeToggleLightIcon.classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    themeToggleDarkIcon.classList.remove('hidden');
+                }
+
+                // Chuyển đổi chế độ khi nhấn nút
+                themeToggleBtn.addEventListener('click', () => {
+                    document.documentElement.classList.toggle('dark');
+                    if (document.documentElement.classList.contains('dark')) {
+                        localStorage.setItem('theme', 'dark');
+                        themeToggleLightIcon.classList.remove('hidden');
+                        themeToggleDarkIcon.classList.add('hidden');
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        themeToggleDarkIcon.classList.remove('hidden');
+                        themeToggleLightIcon.classList.add('hidden');
+                    }
+                });
+            </script>
         </div>
 
 
