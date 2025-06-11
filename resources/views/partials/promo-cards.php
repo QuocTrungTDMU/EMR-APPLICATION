@@ -1,7 +1,7 @@
 <!-- Promo Cards Section -->
 <section class="py-8 bg-transparent">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row justify-center gap-4 md:gap-6">
+        <div class="flex flex-col md:flex-row justify-center gap-4 md:gap-6 ">
             <!-- Left Card - Hand Sanitizer -->
             <div class="relative rounded-lg overflow-hidden w-full md:w-120 h-56 sm:h-64 md:h-68 flex items-center">
                 <!-- Background Image -->

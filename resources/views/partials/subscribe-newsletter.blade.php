@@ -1,4 +1,4 @@
-<section class="w-screen bg-[#d9f3fa] py-16 flex items-center justify-center">
+<section class="w-screen bg-[#d9f3fa] py-16 flex items-center justify-center" data-aos="fade-in">
     <div class="w-full max-w-3xl mx-auto flex flex-col items-center">
         <!-- Tiêu đề với icon dấu cộng mờ phía sau -->
         <div class="relative flex flex-col items-center mb-3">

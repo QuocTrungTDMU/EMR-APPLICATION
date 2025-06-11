@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-<section class="w-full bg-[#fafdff] py-12">
+<section class="w-full bg-[#fafdff] py-12" data-aos="fade-in">
     <div class="max-w-7xl mx-auto px-6">
         <div class="bg-white rounded-xl">
             <div class="relative">

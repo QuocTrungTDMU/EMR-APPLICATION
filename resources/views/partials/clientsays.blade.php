@@ -3,7 +3,7 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <section class="w-screen bg-[#d6f3fd] py-20 flex flex-col items-center justify-center relative overflow-hidden">
-    <!-- Icon dấu cộng mờ phía sau tiêu đề -->
+
     <span class="absolute top-12 left-1/2 -translate-x-1/2 opacity-20 select-none pointer-events-none z-0">
         <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
             <rect x="20" y="0" width="8" height="48" rx="4" fill="#1c7ca7" />
@@ -11,7 +11,7 @@
         </svg>
     </span>
     <!-- Tiêu đề và mô tả -->
-    <div class="relative z-10 mb-2">
+    <div class="relative z-10 mb-2" data-aos="fade-in">
         <h2 class="text-3xl md:text-4xl font-bold text-[#153B4B] text-center mb-2" style="font-family:'Titillium Web',sans-serif;">
             Our Client Say!
         </h2>
@@ -20,13 +20,13 @@
         </p>
     </div>
     <!-- Swiper Slider -->
-    <div class="relative w-full flex justify-center mt-12">
+    <div class="relative w-full flex justify-center mt-12" data-aos="fade-in">
         <div class="w-full max-w-3xl px-2">
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
                     <!-- Slide 1 -->
                     <div class="swiper-slide flex justify-center">
-                        <div class="relative bg-white rounded-2xl shadow-2xl px-8 py-10 w-full flex flex-col items-center">
+                        <div class="relative bg-white rounded-2xl px-8 py-10 w-full flex flex-col items-center">
                             <!-- Quote icon mờ -->
                             <span class="absolute left-8 top-8 opacity-10 text-7xl select-none pointer-events-none z-0">
                                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -47,7 +47,7 @@
                     </div>
                     <!-- Slide 2 -->
                     <div class="swiper-slide flex justify-center">
-                        <div class="relative bg-white rounded-2xl shadow-2xl px-8 py-10 w-full flex flex-col items-center">
+                        <div class="relative bg-white rounded-2xl px-8 py-10 w-full flex flex-col items-center">
                             <span class="absolute left-8 top-8 opacity-10 text-7xl select-none pointer-events-none z-0">
                                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
                                     <text x="0" y="40" font-size="48" fill="#153B4B">“</text>
@@ -97,6 +97,7 @@
         </div>
     </div>
 </section>
+
 
 <script>
     const swiper = new Swiper('.mySwiper', {

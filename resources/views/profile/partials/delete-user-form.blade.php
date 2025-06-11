@@ -9,18 +9,11 @@
             </p>
         </header>
 
-        <div class="mt-6">
-            <x-danger-button
-                x-data=""
-                x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-                class="bg-red-600 hover:bg-red-700"
-            >
-                {{ __('Xóa tài khoản') }}
-            </x-danger-button>
-        </div>
-    </div>
+    <x-danger-button
+        x-data=""
+        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+    >{{ __('Delete Account') }}</x-danger-button>
 
-    <!-- Modal xác nhận -->
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
         <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
             @csrf
@@ -42,9 +35,10 @@
                     id="password"
                     name="password"
                     type="password"
-                    placeholder="Nhập mật khẩu"
-                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                    class="mt-1 block w-3/4"
+                    placeholder="{{ __('Password') }}"
                 />
+
                 <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
             </div>
 
