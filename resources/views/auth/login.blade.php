@@ -2,7 +2,7 @@
     <div class="fixed inset-0 bg-blue-50 flex items-center justify-center">
         <div class="w-full max-w-md bg-white rounded-xl shadow-md p-8 mx-4">
             <div class="text-center mb-6">
-               <img src="{{ asset('storage/logo.png') }}" alt="Medik Logo" class="mx-auto h-12">
+                <img src="{{ asset('storage/logo.png') }}" alt="Medik Logo" class="mx-auto h-12">
                 <h2 class="text-2xl font-bold text-blue-600 mt-2">Đăng nhập tài khoản</h2>
             </div>
 
