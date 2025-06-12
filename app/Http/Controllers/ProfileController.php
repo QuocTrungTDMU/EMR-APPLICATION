@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -75,16 +76,66 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validated = $request->validated(); // Dữ liệu đã validate (name, email)
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Kiểm tra nếu người dùng có nks_access_token
+        if ($user->nks_access_token) {
+            $client = new Client();
+            try {
+                // Tách name thành firstname và lastname
+                $nameParts = explode(' ', $validated['name'], 2);
+                $firstname = $nameParts[0];
+                $lastname = isset($nameParts[1]) ? $nameParts[1] : '';
+
+                // Gửi yêu cầu cập nhật tới API NKS
+                $response = $client->post('https://account.nks.vn/api/nks/user/updateInfo', [
+                    'multipart' => [
+                        [
+                            'name'     => 'access_token',
+                            'contents' => $user->nks_access_token,
+                        ],
+                        [
+                            'name'     => 'firstname',
+                            'contents' => $firstname,
+                        ],
+                        [
+                            'name'     => 'lastname',
+                            'contents' => $lastname,
+                        ],
+                    ],
+                    'timeout' => 10,
+                ]);
+
+                $body = $response->getBody()->getContents();
+                $data = json_decode($body, true);
+
+                // Kiểm tra xem API có trả về thành công không
+                // Điều chỉnh logic này nếu API có cấu trúc phản hồi khác
+                if (isset($data['success']) && $data['success'] === true) {
+                    Log::info('NKS API: Cập nhật thông tin người dùng thành công', ['user_id' => $user->id]);
+                } else {
+                    Log::error('NKS API: Lỗi khi cập nhật thông tin', ['response' => $body]);
+                    return Redirect::route('profile.edit')->with('error', 'Không thể cập nhật thông tin trên NKS API. Vui lòng thử lại.');
+                }
+            } catch (\Exception $e) {
+                Log::error('Lỗi gọi NKS API: ' . $e->getMessage());
+                return Redirect::route('profile.edit')->with('error', 'Lỗi khi gọi API NKS: ' . $e->getMessage());
+            }
         }
 
-        $request->user()->save();
+        // Cập nhật database local
+        $user->fill($validated);
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'Cập nhật thông tin thành công!');
     }
+
 
     /**
      * Delete the user's account.
