@@ -44,5 +44,6 @@ class EmailVerificationPromptController extends Controller
 
         // Nếu không có thông tin gì, redirect về login
         return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục.');
+
     }
 }

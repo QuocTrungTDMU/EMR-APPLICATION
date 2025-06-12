@@ -271,7 +271,7 @@ class RegisteredUserController extends Controller
             'The password field is required.' => 'Trường mật khẩu là bắt buộc.',
             'The email must be a valid email address.' => 'Email phải là địa chỉ email hợp lệ.',
         ];
-
         return $translations[$message] ?? $message;
+
     }
 }

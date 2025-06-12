@@ -76,7 +76,6 @@
                 <p class="mb-2">Không nhận được email?</p>
                 <p>Kiểm tra thư mục spam hoặc click "Gửi lại email"</p>
             </div>
-
             <!-- Back to Login -->
             <div class="text-center mt-6 pt-6 border-t border-gray-200">
                 <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
@@ -86,3 +85,4 @@
         </div>
     </div>
 </x-guest-layout>
+

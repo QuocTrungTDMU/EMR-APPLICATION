@@ -23,7 +23,6 @@
                                 @include('partials.clientsays')
                                 @include('partials.subscribe-newsletter')
                                 @include('partials.partners-carousel')
-
                             </div>
                         </div>
                     </div>
@@ -32,4 +31,11 @@
         </section>
     </div>
 </div>
+
+@if(request()->has('verified') && request()->get('verified') == '1')
+    <script>
+        // Lưu lại để xác minh email để tab khác biết và redirect
+        localStorage.setItem('email_verified', '1');
+    </script>
+@endif
 @endsection

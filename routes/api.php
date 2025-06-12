@@ -19,4 +19,5 @@ Route::middleware('auth:sanctum')->group(function () {
     // NKS API routes
     Route::post('/nks-user-info', [AuthController::class, 'nksUserInfo']);
     Route::post('/nks-update-info', [AuthController::class, 'nksUpdateUserInfo']);
+   // Route::middleware('auth:sanctum')->post('/api/nks-user-info', [AuthController::class, 'nksUserInfo']);
 });
