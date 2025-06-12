@@ -1,5 +1,3 @@
-import ApexCharts from "apexcharts";
-
 // ===== chartThree
 const chart03 = () => {
   const chartThreeOptions = {

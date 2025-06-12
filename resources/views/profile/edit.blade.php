@@ -78,11 +78,22 @@
                     </div>
 
                     <div class="p-6">
-                        @if ($user)
-                            <p class="text-green-600 mb-4">Dữ liệu từ API: {{ json_encode($user) }}</p> <!-- Debug dữ liệu từ API -->
+                        @if (!empty($rawJson))
+                        <div class="my-6">
+                            <span class="text-green-600 font-bold">Dữ liệu lấy từ NKS API</span>
+                            <pre class="bg-gray-100 text-xs rounded p-4 overflow-x-auto border border-gray-200">
+                            {{ json_encode(json_decode($rawJson), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}
+                            </pre>
+                        </div>
                         @else
-                            <p class="text-red-600 mb-4">Không lấy được dữ liệu từ API. Sử dụng dữ liệu local.</p>
+                        <div class="my-6">
+                            <span class="text-orange-600 font-bold">Dữ liệu lấy từ database local</span>
+                            <pre class="bg-gray-100 text-xs rounded p-4 overflow-x-auto border border-gray-200">
+                            {{ json_encode($user, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}
+                            </pre>
+                        </div>
                         @endif
+
 
                         <form method="post" action="{{ route('profile.update') }}" class="space-y-6">
                             @csrf
@@ -267,4 +278,4 @@
         /* border-r-2 border-blue-600 */
     }
 </style>
-@endsection 
+@endsection

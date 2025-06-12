@@ -35,13 +35,13 @@ class ApiService
         if ($request) {
             // Add CSRF token
             $headers['X-CSRF-TOKEN'] = csrf_token();
-            
+
             // Add session cookies for authentication
             if ($request->hasSession()) {
                 $sessionName = config('session.cookie');
                 $sessionValue = $request->session()->getId();
                 $headers['Cookie'] = "{$sessionName}={$sessionValue}";
-                
+
                 // Add Laravel session cookie
                 $laravelSession = $request->cookie('laravel_session');
                 if ($laravelSession) {
@@ -70,20 +70,19 @@ class ApiService
             ]);
 
             $data = json_decode($response->getBody()->getContents(), true);
-            
+
             return [
                 'success' => true,
                 'data' => $data['data'] ?? [],
                 'message' => $data['message'] ?? 'Lấy thông tin thành công'
             ];
-
         } catch (RequestException $e) {
             Log::error('API Error - Get User Info: ' . $e->getMessage());
-            
+
             if ($e->hasResponse()) {
                 $statusCode = $e->getResponse()->getStatusCode();
                 $errorData = json_decode($e->getResponse()->getBody()->getContents(), true);
-                
+
                 return [
                     'success' => false,
                     'message' => $errorData['message'] ?? 'Lỗi khi lấy thông tin người dùng',
@@ -112,20 +111,19 @@ class ApiService
             ]);
 
             $responseData = json_decode($response->getBody()->getContents(), true);
-            
+
             return [
                 'success' => true,
                 'data' => $responseData['data'] ?? [],
                 'message' => $responseData['message'] ?? 'Cập nhật thông tin thành công'
             ];
-
         } catch (RequestException $e) {
             Log::error('API Error - Update Profile: ' . $e->getMessage());
-            
+
             if ($e->hasResponse()) {
                 $statusCode = $e->getResponse()->getStatusCode();
                 $errorData = json_decode($e->getResponse()->getBody()->getContents(), true);
-                
+
                 return [
                     'success' => false,
                     'message' => $errorData['message'] ?? 'Lỗi khi cập nhật thông tin',
@@ -154,19 +152,18 @@ class ApiService
             ]);
 
             $responseData = json_decode($response->getBody()->getContents(), true);
-            
+
             return [
                 'success' => true,
                 'message' => $responseData['message'] ?? 'Cập nhật mật khẩu thành công'
             ];
-
         } catch (RequestException $e) {
             Log::error('API Error - Update Password: ' . $e->getMessage());
-            
+
             if ($e->hasResponse()) {
                 $statusCode = $e->getResponse()->getStatusCode();
                 $errorData = json_decode($e->getResponse()->getBody()->getContents(), true);
-                
+
                 return [
                     'success' => false,
                     'message' => $errorData['message'] ?? 'Lỗi khi cập nhật mật khẩu',
@@ -195,19 +192,18 @@ class ApiService
             ]);
 
             $responseData = json_decode($response->getBody()->getContents(), true);
-            
+
             return [
                 'success' => true,
                 'message' => $responseData['message'] ?? 'Xóa tài khoản thành công'
             ];
-
         } catch (RequestException $e) {
             Log::error('API Error - Delete Account: ' . $e->getMessage());
-            
+
             if ($e->hasResponse()) {
                 $statusCode = $e->getResponse()->getStatusCode();
                 $errorData = json_decode($e->getResponse()->getBody()->getContents(), true);
-                
+
                 return [
                     'success' => false,
                     'message' => $errorData['message'] ?? 'Lỗi khi xóa tài khoản',
@@ -229,7 +225,7 @@ class ApiService
     private function getCookieJar(Request $request)
     {
         $jar = new \GuzzleHttp\Cookie\CookieJar();
-        
+
         // Add all cookies from the request
         foreach ($request->cookies as $name => $value) {
             $jar->setCookie(new \GuzzleHttp\Cookie\SetCookie([
@@ -238,7 +234,7 @@ class ApiService
                 'Domain' => $request->getHost(),
             ]));
         }
-        
+
         return $jar;
     }
 }

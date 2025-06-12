@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 </head>
+
 <body class="bg-gray-100 p-8">
     <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
         <div class="text-center mb-6">
@@ -36,14 +38,14 @@
 
                 <!-- Modal Crop -->
                 <div x-show="showCropModal"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0"
-                     x-transition:enter-end="opacity-100"
-                     x-transition:leave="transition ease-in duration-200"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0"
-                     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                     style="display: none;">
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    style="display: none;">
                     <div class="bg-white p-4 rounded-lg w-11/12 max-w-md">
                         <div class="relative" style="height: 400px;">
                             <img x-ref="cropImage" class="w-full h-full object-contain" alt="Image to crop">
@@ -108,7 +110,7 @@
                         height: 240,
                     });
                     this.previewImage = canvas.toDataURL('image/png'); // chuyển đổi ra base64 theo anh Nhựt kêu, nhưng nên coi lại đúng chuẩn base64 chưa
-                   // console.log('Base64 của ảnh đã crop:', base64Image); // (không lên)
+                    // console.log('Base64 của ảnh đã crop:', base64Image); // (không lên)
                     this.cropper.destroy();
                     this.cropper = null;
                     this.scale = 1;
@@ -134,4 +136,5 @@
         }
     </script>
 </body>
+
 </html>
