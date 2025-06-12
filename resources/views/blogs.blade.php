@@ -12,7 +12,6 @@
         style="background-image: url('http://medik.wpenginepowered.com/wp-content/uploads/2020/02/breadcrumb-bg.jpg');">
     </div>
 
-
     <!-- Content -->
     <div class="relative z-10 container mx-auto px-4 py-16 md:py-10">
         <!-- Main Title -->
@@ -28,7 +27,7 @@
             <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
             </svg>
-            <span class="text-gray-300">Contact Us</span>
+            <span class="text-gray-300">Blogs</span>
         </nav>
     </div>
 </section>
@@ -50,90 +49,26 @@
                     <!-- Categories List với nền xám nhạt -->
                     <div class="bg-gray-50 px-6 py-4">
                         <ul class="space-y-4">
+                            @forelse($categories as $index => $category)
+                            <li class="flex items-center justify-between py-2 {{ $index < count($categories) - 1 ? 'border-b-2 border-gray-300 border-dotted' : '' }}">
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                    <a href="{{ route('blogs.category', $category['slug']) }}" class="text-gray-600 hover:text-cyan-400 transition-colors text-base">{{ $category['name'] }}</a>
+                                </div>
+                                <span class="text-gray-400 text-base">({{ $category['count'] }})</span>
+                            </li>
+                            @empty
                             <li class="flex items-center justify-between py-2 border-b-2 border-gray-300 border-dotted">
                                 <div class="flex items-center">
                                     <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                    <a href="#" class="text-cyan-400 hover:text-cyan-500 transition-colors text-base">Aroma Therapy</a>
+                                    <a href="#" class="text-cyan-400 hover:text-cyan-500 transition-colors text-base">General</a>
                                 </div>
-                                <span class="text-gray-400 text-base">(2)</span>
+                                <span class="text-gray-400 text-base">(0)</span>
                             </li>
-
-                            <li class="flex items-center justify-between py-2 border-b-2 border-gray-300 border-dotted">
-                                <div class="flex items-center">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                    <a href="#" class="text-gray-600 hover:text-cyan-400 transition-colors text-base">Audio</a>
-                                </div>
-                                <span class="text-gray-400 text-base">(1)</span>
-                            </li>
-
-                            <li class="flex items-center justify-between py-2 border-b-2 border-gray-300 border-dotted">
-                                <div class="flex items-center">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                    <a href="#" class="text-gray-600 hover:text-cyan-400 transition-colors text-base">Massage</a>
-                                </div>
-                                <span class="text-gray-400 text-base">(5)</span>
-                            </li>
-
-                            <li class="flex items-center justify-between py-2 border-b-2 border-gray-300 border-dotted">
-                                <div class="flex items-center">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                    <a href="#" class="text-gray-600 hover:text-cyan-400 transition-colors text-base">Medical</a>
-                                </div>
-                                <span class="text-gray-400 text-base">(1)</span>
-                            </li>
-
-                            <li class="flex items-center justify-between py-2 border-b-2 border-gray-300 border-dotted">
-                                <div class="flex items-center">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                    <a href="#" class="text-gray-600 hover:text-cyan-400 transition-colors text-base">Physiotherapy</a>
-                                </div>
-                                <span class="text-gray-400 text-base">(2)</span>
-                            </li>
-
-                            <li class="flex items-center justify-between py-2 border-b-2 border-gray-300 border-dotted">
-                                <div class="flex items-center">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                    <a href="#" class="text-gray-600 hover:text-cyan-400 transition-colors text-base">Reiki</a>
-                                </div>
-                                <span class="text-gray-400 text-base">(1)</span>
-                            </li>
-
-                            <li class="flex items-center justify-between py-2 border-b-2 border-gray-300 border-dotted">
-                                <div class="flex items-center">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                    <a href="#" class="text-gray-600 hover:text-cyan-400 transition-colors text-base">Sanitize</a>
-                                </div>
-                                <span class="text-gray-400 text-base">(2)</span>
-                            </li>
-
-                            <li class="flex items-center justify-between py-2 border-b-2 border-gray-300 border-dotted">
-                                <div class="flex items-center">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                    <a href="#" class="text-gray-600 hover:text-cyan-400 transition-colors text-base">Steam Bath</a>
-                                </div>
-                                <span class="text-gray-400 text-base">(1)</span>
-                            </li>
-
-                            <li class="flex items-center justify-between py-2 border-b-2 border-gray-300 border-dotted">
-                                <div class="flex items-center">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                    <a href="#" class="text-gray-600 hover:text-cyan-400 transition-colors text-base">Temperature</a>
-                                </div>
-                                <span class="text-gray-400 text-base">(1)</span>
-                            </li>
-
-                            <li class="flex items-center justify-between py-2">
-                                <div class="flex items-center">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                                    <a href="#" class="text-gray-600 hover:text-cyan-400 transition-colors text-base">Test</a>
-                                </div>
-                                <span class="text-gray-400 text-base">(1)</span>
-                            </li>
+                            @endforelse
                         </ul>
                     </div>
                 </div>
-
-
 
                 <!-- Instagram Feed Widget -->
                 <div class="w-full max-w-sm">
@@ -193,60 +128,54 @@
                     </div>
                 </div>
 
-
-                <div class="w-full max-w-sm">
-                    <!-- Header màu xanh -->
-                    <div class="bg-[#076cec] px-4 py-3 rounded-t-sm rounded-b-sm">
-                        <h3 class="text-white font-medium text-base">Instagram Feed</h3>
-                    </div>
-                    <!-- Hot Deal Widget -->
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <h3 class="text-xl font-bold text-blue-600 mb-6 border-b-2 border-gray-300 pb-3">Hot Deal</h3>
-                        <div class="text-center">
-                            <div class="relative mb-4">
-                                <img src="https://medik.wpenginepowered.com/wp-content/uploads/2020/05/shop-5-13-1000x1000.jpg"
-                                    alt="Liquid Sanitizer" class="w-full h-48 object-cover rounded-lg">
-                                <div class="absolute inset-0 bg-black bg-opacity-20 rounded-lg"></div>
-                            </div>
-                            <h4 class="text-lg font-semibold text-gray-900 mb-2">Liquid Sanitizer</h4>
-                            <div class="text-2xl font-bold text-blue-600 mb-2">₹50.00</div>
-                            <div class="flex justify-center items-center mb-4">
-                                <div class="flex text-yellow-400">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200">
-                                Quick View
-                            </button>
+                <!-- Hot Deal Widget -->
+                <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+                    <h3 class="text-xl font-bold text-blue-600 mb-6 border-b-2 border-gray-300 pb-3">Hot Deal</h3>
+                    <div class="text-center">
+                        <div class="relative mb-4">
+                            <img src="https://medik.wpenginepowered.com/wp-content/uploads/2020/05/shop-5-13-1000x1000.jpg"
+                                alt="Liquid Sanitizer" class="w-full h-48 object-cover rounded-lg">
+                            <div class="absolute inset-0 bg-black bg-opacity-20 rounded-lg"></div>
                         </div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Liquid Sanitizer</h4>
+                        <div class="text-2xl font-bold text-blue-600 mb-2">₹50.00</div>
+                        <div class="flex justify-center items-center mb-4">
+                            <div class="flex text-yellow-400">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200">
+                            Quick View
+                        </button>
                     </div>
+                </div>
             </aside>
 
             <!-- Main Content -->
             <main class="lg:w-3/4 order-1 lg:order-2">
                 <!-- Blog Posts Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-12" data-aos="fade-up">
-
-                    <!-- Blog Post 1 -->
+                    @forelse($paginatedPosts as $post)
+                    <!-- Blog Post từ API -->
                     <div class="bg-white rounded-xl shadow border border-gray-300 overflow-hidden flex flex-col max-w-sm mx-auto">
                         <!-- Ảnh blog -->
-                        <a href="https://medik.wpengine.com/hand-sanitizers/" class="block">
-                            <img src="https://medik.wpenginepowered.com/wp-content/uploads/2020/05/blog-4-6.jpg"
-                                alt="Hand Sanitizers"
+                        <a href="{{ route('blogs.show', $post['slug']) }}" class="block">
+                            <img src="{{ $post['image'] ?? 'https://medik.wpenginepowered.com/wp-content/uploads/2020/05/blog-4-6.jpg' }}"
+                                alt="{{ $post['title'] }}"
                                 class="w-full h-48 object-cover">
                         </a>
                         <!-- Meta: ngày và comment -->
@@ -258,55 +187,53 @@
                                     <line x1="8" x2="8" y1="2" y2="6"></line>
                                     <line x1="3" x2="21" y1="10" y2="10"></line>
                                 </svg>
-                                <span>May 16, 2020</span>
+                                <span>{{ $post['formatedDate'] ?? 'May 16, 2020' }}</span>
                             </div>
                             <span class="mx-4 h-5 border-l border-gray-300"></span>
                             <div class="flex items-center gap-2 text-gray-500 text-base">
                                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                 </svg>
-                                <span>0 Comments</span>
+                                <span>{{ $post['readTime'] ?? '1' }} min read</span>
                             </div>
                         </div>
                         <!-- Nội dung -->
                         <div class="p-5 flex flex-col flex-1">
                             <h2 class="text-xl font-semibold mb-2">
-                                <a href="https://medik.wpengine.com/hand-sanitizers/" class="hover:text-blue-600 transition">Hand Sanitizers</a>
+                                <a href="{{ route('blogs.show', $post['slug']) }}" class="hover:text-blue-600 transition">{{ $post['title'] }}</a>
                             </h2>
                             <p class="text-gray-500 text-base mb-4">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt nunc lorem, nec faucibus mi facilisis eget. Mauris laoreet, nisl id faucibus pellentesque, mi mi tempor enim, sit amet interdum felis nibh...
+                                {{ $post['excerpt'] ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt nunc lorem, nec faucibus mi facilisis eget...' }}
                             </p>
                             <!-- Tags -->
                             <div class="flex items-center gap-2 text-base mb-4">
                                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path d="M20 12H4" />
                                 </svg>
-                                <span class="text-blue-600">Precaution</span>
+                                <span class="text-blue-600">{{ $post['postCategory'] ?? 'General' }}</span>
+                                @if(isset($post['author']['name']))
                                 <span class="text-gray-400">,</span>
-                                <span class="text-blue-600">Safety</span>
+                                <span class="text-blue-600">{{ $post['author']['name'] }}</span>
+                                @endif
                             </div>
                             <!-- Button -->
-                            <a href="https://medik.wpengine.com/hand-sanitizers/"
+                            <a href="{{ route('blogs.show', $post['slug']) }}"
                                 class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-6 py-3 mt-auto shadow-lg shadow-blue-500/20 transition-all duration-200">
                                 Read More
                                 <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                                 </svg>
                             </a>
-
                         </div>
                     </div>
-
-
-                    <!-- Blog Post 2 -->
+                    @empty
+                    <!-- Fallback - 1 blog post mẫu khi không có dữ liệu -->
                     <div class="bg-white rounded-xl shadow border border-gray-300 overflow-hidden flex flex-col max-w-sm mx-auto">
-                        <!-- Ảnh blog -->
-                        <a href="https://medik.wpengine.com/hand-sanitizers/" class="block">
+                        <a href="#" class="block">
                             <img src="https://medik.wpenginepowered.com/wp-content/uploads/2020/05/blog-4-6.jpg"
-                                alt="Hand Sanitizers"
+                                alt="Sample Post"
                                 class="w-full h-48 object-cover">
                         </a>
-                        <!-- Meta: ngày và comment -->
                         <div class="flex items-center justify-between px-4 py-2 border-b-2 border-gray-100 bg-white">
                             <div class="flex items-center gap-2 text-gray-500 text-base">
                                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -315,296 +242,83 @@
                                     <line x1="8" x2="8" y1="2" y2="6"></line>
                                     <line x1="3" x2="21" y1="10" y2="10"></line>
                                 </svg>
-                                <span>May 16, 2020</span>
+                                <span>{{ date('M d, Y') }}</span>
                             </div>
                             <span class="mx-4 h-5 border-l border-gray-300"></span>
                             <div class="flex items-center gap-2 text-gray-500 text-base">
                                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                 </svg>
-                                <span>0 Comments</span>
+                                <span>2 min read</span>
                             </div>
                         </div>
-                        <!-- Nội dung -->
                         <div class="p-5 flex flex-col flex-1">
                             <h2 class="text-xl font-semibold mb-2">
-                                <a href="https://medik.wpengine.com/hand-sanitizers/" class="hover:text-blue-600 transition">Hand Sanitizers</a>
+                                <a href="#" class="hover:text-blue-600 transition">No Posts Available</a>
                             </h2>
                             <p class="text-gray-500 text-base mb-4">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt nunc lorem, nec faucibus mi facilisis eget. Mauris laoreet, nisl id faucibus pellentesque, mi mi tempor enim, sit amet interdum felis nibh...
+                                Blog posts will appear here when data is available from the API.
                             </p>
-                            <!-- Tags -->
                             <div class="flex items-center gap-2 text-base mb-4">
                                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path d="M20 12H4" />
                                 </svg>
-                                <span class="text-blue-600">Precaution</span>
-                                <span class="text-gray-400">,</span>
-                                <span class="text-blue-600">Safety</span>
+                                <span class="text-blue-600">General</span>
                             </div>
-                            <!-- Button -->
-                            <a href="https://medik.wpengine.com/hand-sanitizers/"
+                            <a href="#"
                                 class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-6 py-3 mt-auto shadow-lg shadow-blue-500/20 transition-all duration-200">
                                 Read More
                                 <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                                 </svg>
                             </a>
-
                         </div>
                     </div>
-
-
-                    <!-- Blog Post 3 -->
-                    <div class="bg-white rounded-xl shadow border border-gray-300 overflow-hidden flex flex-col max-w-sm mx-auto">
-                        <!-- Ảnh blog -->
-                        <a href="https://medik.wpengine.com/hand-sanitizers/" class="block">
-                            <img src="https://medik.wpenginepowered.com/wp-content/uploads/2020/05/blog-4-6.jpg"
-                                alt="Hand Sanitizers"
-                                class="w-full h-48 object-cover">
-                        </a>
-                        <!-- Meta: ngày và comment -->
-                        <div class="flex items-center justify-between px-4 py-2 border-b-2 border-gray-100 bg-white">
-                            <div class="flex items-center gap-2 text-gray-500 text-base">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
-                                    <line x1="16" x2="16" y1="2" y2="6"></line>
-                                    <line x1="8" x2="8" y1="2" y2="6"></line>
-                                    <line x1="3" x2="21" y1="10" y2="10"></line>
-                                </svg>
-                                <span>May 16, 2020</span>
-                            </div>
-                            <span class="mx-4 h-5 border-l border-gray-300"></span>
-                            <div class="flex items-center gap-2 text-gray-500 text-base">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                </svg>
-                                <span>0 Comments</span>
-                            </div>
-                        </div>
-                        <!-- Nội dung -->
-                        <div class="p-5 flex flex-col flex-1">
-                            <h2 class="text-xl font-semibold mb-2">
-                                <a href="https://medik.wpengine.com/hand-sanitizers/" class="hover:text-blue-600 transition">Hand Sanitizers</a>
-                            </h2>
-                            <p class="text-gray-500 text-base mb-4">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt nunc lorem, nec faucibus mi facilisis eget. Mauris laoreet, nisl id faucibus pellentesque, mi mi tempor enim, sit amet interdum felis nibh...
-                            </p>
-                            <!-- Tags -->
-                            <div class="flex items-center gap-2 text-base mb-4">
-                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M20 12H4" />
-                                </svg>
-                                <span class="text-blue-600">Precaution</span>
-                                <span class="text-gray-400">,</span>
-                                <span class="text-blue-600">Safety</span>
-                            </div>
-                            <!-- Button -->
-                            <a href="https://medik.wpengine.com/hand-sanitizers/"
-                                class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-6 py-3 mt-auto shadow-lg shadow-blue-500/20 transition-all duration-200">
-                                Read More
-                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-
-                        </div>
-                    </div>
-
-
-                    <!-- Blog Post 4 -->
-                    <div class="bg-white rounded-xl shadow border border-gray-300 overflow-hidden flex flex-col max-w-sm mx-auto">
-                        <!-- Ảnh blog -->
-                        <a href="https://medik.wpengine.com/hand-sanitizers/" class="block">
-                            <img src="https://medik.wpenginepowered.com/wp-content/uploads/2020/05/blog-4-6.jpg"
-                                alt="Hand Sanitizers"
-                                class="w-full h-48 object-cover">
-                        </a>
-                        <!-- Meta: ngày và comment -->
-                        <div class="flex items-center justify-between px-4 py-2 border-b-2 border-gray-100 bg-white">
-                            <div class="flex items-center gap-2 text-gray-500 text-base">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
-                                    <line x1="16" x2="16" y1="2" y2="6"></line>
-                                    <line x1="8" x2="8" y1="2" y2="6"></line>
-                                    <line x1="3" x2="21" y1="10" y2="10"></line>
-                                </svg>
-                                <span>May 16, 2020</span>
-                            </div>
-                            <span class="mx-4 h-5 border-l border-gray-300"></span>
-                            <div class="flex items-center gap-2 text-gray-500 text-base">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                </svg>
-                                <span>0 Comments</span>
-                            </div>
-                        </div>
-                        <!-- Nội dung -->
-                        <div class="p-5 flex flex-col flex-1">
-                            <h2 class="text-xl font-semibold mb-2">
-                                <a href="https://medik.wpengine.com/hand-sanitizers/" class="hover:text-blue-600 transition">Hand Sanitizers</a>
-                            </h2>
-                            <p class="text-gray-500 text-base mb-4">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt nunc lorem, nec faucibus mi facilisis eget. Mauris laoreet, nisl id faucibus pellentesque, mi mi tempor enim, sit amet interdum felis nibh...
-                            </p>
-                            <!-- Tags -->
-                            <div class="flex items-center gap-2 text-base mb-4">
-                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M20 12H4" />
-                                </svg>
-                                <span class="text-blue-600">Precaution</span>
-                                <span class="text-gray-400">,</span>
-                                <span class="text-blue-600">Safety</span>
-                            </div>
-                            <!-- Button -->
-                            <a href="https://medik.wpengine.com/hand-sanitizers/"
-                                class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-6 py-3 mt-auto shadow-lg shadow-blue-500/20 transition-all duration-200">
-                                Read More
-                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-
-                        </div>
-                    </div>
-
-
-                    <!-- Blog Post 5 -->
-                    <div class="bg-white rounded-xl shadow border border-gray-300 overflow-hidden flex flex-col max-w-sm mx-auto">
-                        <!-- Ảnh blog -->
-                        <a href="https://medik.wpengine.com/hand-sanitizers/" class="block">
-                            <img src="https://medik.wpenginepowered.com/wp-content/uploads/2020/05/blog-4-6.jpg"
-                                alt="Hand Sanitizers"
-                                class="w-full h-48 object-cover">
-                        </a>
-                        <!-- Meta: ngày và comment -->
-                        <div class="flex items-center justify-between px-4 py-2 border-b-2 border-gray-100 bg-white">
-                            <div class="flex items-center gap-2 text-gray-500 text-base">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
-                                    <line x1="16" x2="16" y1="2" y2="6"></line>
-                                    <line x1="8" x2="8" y1="2" y2="6"></line>
-                                    <line x1="3" x2="21" y1="10" y2="10"></line>
-                                </svg>
-                                <span>May 16, 2020</span>
-                            </div>
-                            <span class="mx-4 h-5 border-l border-gray-300"></span>
-                            <div class="flex items-center gap-2 text-gray-500 text-base">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                </svg>
-                                <span>0 Comments</span>
-                            </div>
-                        </div>
-                        <!-- Nội dung -->
-                        <div class="p-5 flex flex-col flex-1">
-                            <h2 class="text-xl font-semibold mb-2">
-                                <a href="https://medik.wpengine.com/hand-sanitizers/" class="hover:text-blue-600 transition">Hand Sanitizers</a>
-                            </h2>
-                            <p class="text-gray-500 text-base mb-4">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt nunc lorem, nec faucibus mi facilisis eget. Mauris laoreet, nisl id faucibus pellentesque, mi mi tempor enim, sit amet interdum felis nibh...
-                            </p>
-                            <!-- Tags -->
-                            <div class="flex items-center gap-2 text-base mb-4">
-                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M20 12H4" />
-                                </svg>
-                                <span class="text-blue-600">Precaution</span>
-                                <span class="text-gray-400">,</span>
-                                <span class="text-blue-600">Safety</span>
-                            </div>
-                            <!-- Button -->
-                            <a href="https://medik.wpengine.com/hand-sanitizers/"
-                                class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-6 py-3 mt-auto shadow-lg shadow-blue-500/20 transition-all duration-200">
-                                Read More
-                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-
-                        </div>
-                    </div>
-
-
-                    <!-- Blog Post 6 -->
-                    <div class="bg-white rounded-xl shadow border border-gray-300 overflow-hidden flex flex-col max-w-sm mx-auto">
-                        <!-- Ảnh blog -->
-                        <a href="https://medik.wpengine.com/hand-sanitizers/" class="block">
-                            <img src="https://medik.wpenginepowered.com/wp-content/uploads/2020/05/blog-4-6.jpg"
-                                alt="Hand Sanitizers"
-                                class="w-full h-48 object-cover">
-                        </a>
-                        <!-- Meta: ngày và comment -->
-                        <div class="flex items-center justify-between px-4 py-2 border-b-2 border-gray-100 bg-white">
-                            <div class="flex items-center gap-2 text-gray-500 text-base">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
-                                    <line x1="16" x2="16" y1="2" y2="6"></line>
-                                    <line x1="8" x2="8" y1="2" y2="6"></line>
-                                    <line x1="3" x2="21" y1="10" y2="10"></line>
-                                </svg>
-                                <span>May 16, 2020</span>
-                            </div>
-                            <span class="mx-4 h-5 border-l border-gray-300"></span>
-                            <div class="flex items-center gap-2 text-gray-500 text-base">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                </svg>
-                                <span>0 Comments</span>
-                            </div>
-                        </div>
-                        <!-- Nội dung -->
-                        <div class="p-5 flex flex-col flex-1">
-                            <h2 class="text-xl font-semibold mb-2">
-                                <a href="https://medik.wpengine.com/hand-sanitizers/" class="hover:text-blue-600 transition">Hand Sanitizers</a>
-                            </h2>
-                            <p class="text-gray-500 text-base mb-4">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt nunc lorem, nec faucibus mi facilisis eget. Mauris laoreet, nisl id faucibus pellentesque, mi mi tempor enim, sit amet interdum felis nibh...
-                            </p>
-                            <!-- Tags -->
-                            <div class="flex items-center gap-2 text-base mb-4">
-                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M20 12H4" />
-                                </svg>
-                                <span class="text-blue-600">Precaution</span>
-                                <span class="text-gray-400">,</span>
-                                <span class="text-blue-600">Safety</span>
-                            </div>
-                            <!-- Button -->
-                            <a href="https://medik.wpengine.com/hand-sanitizers/"
-                                class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-6 py-3 mt-auto shadow-lg shadow-blue-500/20 transition-all duration-200">
-                                Read More
-                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-
-                        </div>
-                    </div>
-
-
+                    @endforelse
                 </div>
 
                 <!-- Pagination -->
+                @if(isset($totalPages) && $totalPages > 1)
                 <div class="flex justify-center items-center space-x-2" data-aos="fade-up">
                     <nav class="flex items-center space-x-1">
-                        <span class="inline-flex items-center px-4 py-2 text-base font-medium text-white bg-blue-600 border border-b-2lue-600 rounded cursor-default">
-                            1
-                        </span>
-                        <a href="#" class="inline-flex items-center px-4 py-2 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-gray-700 transition-colors">
-                            2
+                        @if($page > 1)
+                        <a href="{{ request()->url() }}?page={{ $page - 1 }}" class="inline-flex items-center px-4 py-2 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                            Previous
                         </a>
-                        <a href="#" class="inline-flex items-center px-4 py-2 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-gray-700 transition-colors">
-                            3
-                        </a>
-                        <a href="#" class="inline-flex items-center px-4 py-2 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-gray-700 transition-colors">
-                            Next
-                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </a>
+                        @endif
+
+                        @for($i = 1; $i <= $totalPages; $i++)
+                            @if($i==$page)
+                            <span class="inline-flex items-center px-4 py-2 text-base font-medium text-white bg-blue-600 border border-blue-600 rounded cursor-default">
+                            {{ $i }}
+                            </span>
+                            @else
+                            <a href="{{ request()->url() }}?page={{ $i }}" class="inline-flex items-center px-4 py-2 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                                {{ $i }}
+                            </a>
+                            @endif
+                            @endfor
+
+                            @if($page < $totalPages)
+                                <a href="{{ request()->url() }}?page={{ $page + 1 }}" class="inline-flex items-center px-4 py-2 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                                Next
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                                </a>
+                                @endif
                     </nav>
                 </div>
+                @else
+                <!-- Fallback pagination khi không có dữ liệu -->
+                <div class="flex justify-center items-center space-x-2" data-aos="fade-up">
+                    <nav class="flex items-center space-x-1">
+                        <span class="inline-flex items-center px-4 py-2 text-base font-medium text-white bg-blue-600 border border-blue-600 rounded cursor-default">
+                            1
+                        </span>
+                    </nav>
+                </div>
+                @endif
             </main>
 
         </div>
@@ -619,5 +333,9 @@
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
+    }
+
+    .shadow-custom-blue {
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
     }
 </style>
