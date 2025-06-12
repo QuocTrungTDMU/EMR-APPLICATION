@@ -27,7 +27,7 @@
 <body class="font-sans antialiased overflow-x-hidden">
     @include('partials.header')
 
-    @if (!request()->is('contact') && !request()->is('profile*'))
+    @if (!request()->is('contact') && !request()->is('profile*') && !request()->is('blogs*') && !request()->is('blog-detail*') && !request()->is('cart*') && !request()->is('checkout*'))
     @include('partials.hero-slider')
     @endif
 

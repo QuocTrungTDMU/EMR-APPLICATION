@@ -14,6 +14,22 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
+Route::get('/cart', function () {
+    return view('cart');
+})->name('cart');
+
+Route::get('/checkout', function () {
+    return view('checkout');
+})->name('checkout');
+
+Route::get('/blogs', function () {
+    return view('blogs');
+})->name('blogs');
+
+Route::get('/blog-detail', function () {
+    return view('blog-detail');
+})->name('blog-detail');
+
 Route::get('/login', function () {
     return view('auth.login');
 })->middleware('guest')->name('login');
@@ -27,5 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Route
+Route::get('/admin', function () {
+    return view('admin.dashboard');
+})->name('admin.dashboard');
 
 require __DIR__ . '/auth.php';

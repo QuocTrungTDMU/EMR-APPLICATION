@@ -64,4 +64,12 @@
             }, 1000);
         });
     </script>
+    <script>
+    window.addEventListener('storage', function(event) {
+        if (event.key === 'email_verified' && event.newValue === '1') {
+            window.location.href = "{{ route('homepage') }}?verified=1";
+        }
+    });
+</script>
+
 </x-guest-layout>
