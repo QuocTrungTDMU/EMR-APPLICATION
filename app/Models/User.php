@@ -33,4 +33,21 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+    // Thêm vào User model
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function publishedPosts()
+    {
+        return $this->hasMany(Post::class)->where('status', 'published');
+    }
 }
