@@ -19,9 +19,6 @@
         <!-- Main Title -->
         <div class="mb-6">
             <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">{{ $post['title'] ?? 'Blog Detail' }}</h1>
-            <p class="text-xl text-gray-200 max-w-2xl mx-auto">
-                {{ $post['excerpt'] ?? 'Essential protection for your health and safety' }}
-            </p>
         </div>
 
         <!-- Breadcrumb -->
@@ -133,8 +130,10 @@
 
                         <!-- Main Content -->
                         <div class="prose prose-lg max-w-none">
-                            @if(isset($post['body']) && !empty($post['body']) && $post['body'] !== $post['excerpt'])
-                            {!! nl2br(e($post['body'])) !!}
+                            @if(isset($post['body']) && !empty($post['body']))
+                            <div class="blog-content">
+                                {!! $post['body'] !!}
+                            </div>
                             @else
                             <p class="text-gray-700 leading-relaxed mb-6 text-lg">
                                 {{ $post['excerpt'] ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt nunc lorem, nec faucibus mi facilisis eget. Mauris laoreet, nisl id faucibus pellentesque, mi mi tempor enim, sit amet interdum felis nibh a leo. Donec efficitur velit ac nisi rutrum, eu ornare augue tristique. Vivamus accumsan nisl id massa finibus aliquet. Pellentesque blandit ut urna dignissim pulvinar. Aliquam in ultrices ante. Nam condimentum eleifend consectetur.' }}
@@ -171,177 +170,128 @@
                             </div>
                         </div>
 
-                        <!-- Key Points Section -->
-                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-8 mb-12 border border-green-200">
-                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                                <i class="fas fa-lightbulb text-yellow-500 mr-3"></i>
-                                Key Benefits of {{ $post['postCategory'] ?? 'Hand Sanitizers' }}
-                            </h3>
 
-                            <div class="grid md:grid-cols-2 gap-8">
-                                <!-- Left Column - Benefits List -->
-                                <div>
-                                    <ul class="space-y-4">
-                                        <li class="flex items-start">
-                                            <div class="bg-green-500 rounded-full w-3 h-3 mt-2 mr-4 flex-shrink-0"></div>
-                                            <span class="text-gray-700 text-lg">Kills 99.9% of germs and bacteria instantly</span>
-                                        </li>
-                                        <li class="flex items-start">
-                                            <div class="bg-green-500 rounded-full w-3 h-3 mt-2 mr-4 flex-shrink-0"></div>
-                                            <span class="text-gray-700 text-lg">Convenient and portable for on-the-go use</span>
-                                        </li>
-                                        <li class="flex items-start">
-                                            <div class="bg-green-500 rounded-full w-3 h-3 mt-2 mr-4 flex-shrink-0"></div>
-                                            <span class="text-gray-700 text-lg">No water or soap required</span>
-                                        </li>
-                                        <li class="flex items-start">
-                                            <div class="bg-green-500 rounded-full w-3 h-3 mt-2 mr-4 flex-shrink-0"></div>
-                                            <span class="text-gray-700 text-lg">Effective against viruses including COVID-19</span>
-                                        </li>
-                                        <li class="flex items-start">
-                                            <div class="bg-green-500 rounded-full w-3 h-3 mt-2 mr-4 flex-shrink-0"></div>
-                                            <span class="text-gray-700 text-lg">Quick application and fast drying</span>
-                                        </li>
-                                    </ul>
-                                </div>
 
-                                <!-- Right Column - Usage Tips -->
-                                <div class="bg-white rounded-lg p-6 shadow-sm border">
-                                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                                        Proper Usage Tips
-                                    </h4>
-                                    <ol class="space-y-3 text-gray-700">
-                                        <li class="flex items-start">
-                                            <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">1</span>
-                                            <span>Apply enough product to cover all hand surfaces</span>
-                                        </li>
-                                        <li class="flex items-start">
-                                            <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">2</span>
-                                            <span>Rub hands together for at least 20 seconds</span>
-                                        </li>
-                                        <li class="flex items-start">
-                                            <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">3</span>
-                                            <span>Cover all surfaces including fingertips and nails</span>
-                                        </li>
-                                        <li class="flex items-start">
-                                            <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">4</span>
-                                            <span>Continue until hands are completely dry</span>
-                                        </li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Additional Content -->
-                        <div class="prose prose-lg max-w-none mb-12">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-6">When to Use {{ $post['postCategory'] ?? 'Hand Sanitizers' }}</h2>
-                            <p class="text-gray-700 leading-relaxed text-lg mb-6">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                            </p>
-
-                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-r-lg mb-8">
-                                <div class="flex items-center mb-2">
-                                    <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
-                                    <h3 class="text-lg font-semibold text-yellow-800">Important Note</h3>
-                                </div>
-                                <p class="text-yellow-700">
-                                    Hand sanitizers are most effective when hands are not visibly dirty. For best results, wash with soap and water when available, especially before eating or after using the restroom.
-                                </p>
-                            </div>
-                        </div>
 
                         <!-- Social Share Buttons -->
-                        <div class="flex items-center justify-between py-6 border-t border-b border-gray-200 mb-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between py-8 border-t border-b border-gray-200 mb-8 space-y-4 sm:space-y-0">
                             <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Share this article:</h4>
+                                <h4 class="text-lg font-semibold text-gray-800 flex items-center">
+                                    <i class="fas fa-share-alt mr-2 text-blue-500"></i>
+                                    Share this article:
+                                </h4>
                             </div>
                             <div class="flex space-x-3">
-                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full transition-colors duration-200">
-                                    <i class="fab fa-facebook-f"></i>
+                                <!-- Facebook -->
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
+                                    target="_blank"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full transition-all duration-200 hover:scale-110 shadow-lg group"
+                                    title="Share on Facebook">
+                                    <i class="fab fa-facebook-f text-lg group-hover:animate-pulse"></i>
                                 </a>
-                                <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post['title'] ?? '') }}" target="_blank" class="bg-blue-400 hover:bg-blue-500 text-white p-3 rounded-full transition-colors duration-200">
-                                    <i class="fab fa-twitter"></i>
+
+                                <!-- Twitter/X -->
+                                <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post['title'] ?? '') }}"
+                                    target="_blank"
+                                    class="bg-black hover:bg-gray-800 text-white p-3 rounded-full transition-all duration-200 hover:scale-110 shadow-lg group"
+                                    title="Share on X (Twitter)">
+                                    <i class="fab fa-x-twitter text-lg group-hover:animate-pulse"></i>
                                 </a>
-                                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode(request()->url()) }}" target="_blank" class="bg-blue-700 hover:bg-blue-800 text-white p-3 rounded-full transition-colors duration-200">
-                                    <i class="fab fa-linkedin-in"></i>
+
+                                <!-- LinkedIn -->
+                                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode(request()->url()) }}"
+                                    target="_blank"
+                                    class="bg-blue-700 hover:bg-blue-800 text-white p-3 rounded-full transition-all duration-200 hover:scale-110 shadow-lg group"
+                                    title="Share on LinkedIn">
+                                    <i class="fab fa-linkedin-in text-lg group-hover:animate-pulse"></i>
                                 </a>
-                                <a href="https://wa.me/?text={{ urlencode($post['title'] ?? '') }}%20{{ urlencode(request()->url()) }}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white p-3 rounded-full transition-colors duration-200">
-                                    <i class="fab fa-whatsapp"></i>
+
+                                <!-- WhatsApp -->
+                                <a href="https://wa.me/?text={{ urlencode($post['title'] ?? '') }}%20{{ urlencode(request()->url()) }}"
+                                    target="_blank"
+                                    class="bg-green-600 hover:bg-green-700 text-white p-3 rounded-full transition-all duration-200 hover:scale-110 shadow-lg group"
+                                    title="Share on WhatsApp">
+                                    <i class="fab fa-whatsapp text-lg group-hover:animate-pulse"></i>
                                 </a>
+
+                                <!-- Copy Link -->
+                                <button onclick="copyToClipboard('{{ request()->url() }}')"
+                                    class="bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full transition-all duration-200 hover:scale-110 shadow-lg group"
+                                    title="Copy Link">
+                                    <i class="fas fa-link text-lg group-hover:animate-pulse"></i>
+                                </button>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Tags Section -->
-                    <div class="px-8 py-6 border-t border-gray-200 bg-gray-50">
-                        <div class="flex flex-wrap items-center gap-3">
-                            <span class="text-gray-600 font-medium flex items-center">
-                                <i class="fas fa-tags mr-2"></i>
-                                Tags:
-                            </span>
-                            @if(isset($post['tags']) && is_array($post['tags']))
-                            @foreach($post['tags'] as $tag)
-                            <a href="#" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200">
-                                {{ $tag }}
-                            </a>
-                            @endforeach
-                            @else
-                            <a href="#" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200">
-                                {{ $post['postCategory'] ?? 'Health' }}
-                            </a>
-                            <a href="#" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200">
-                                Safety
-                            </a>
-                            <a href="#" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200">
-                                COVID-19
-                            </a>
-                            <a href="#" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200">
-                                Prevention
-                            </a>
-                            @endif
+                        <!-- Tags Section -->
+                        <div class="px-8 py-6 border-t border-gray-200 bg-gray-50">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <span class="text-gray-600 font-medium flex items-center">
+                                    <i class="fas fa-tags mr-2"></i>
+                                    Tags:
+                                </span>
+                                @if(isset($post['tags']) && is_array($post['tags']))
+                                @foreach($post['tags'] as $tag)
+                                <a href="#" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200">
+                                    {{ $tag }}
+                                </a>
+                                @endforeach
+                                @else
+                                <a href="#" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200">
+                                    {{ $post['postCategory'] ?? 'Health' }}
+                                </a>
+                                <a href="#" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200">
+                                    Safety
+                                </a>
+                                <a href="#" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200">
+                                    COVID-19
+                                </a>
+                                <a href="#" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200">
+                                    Prevention
+                                </a>
+                                @endif
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Comments Section -->
-                    <div id="comments" class="px-8 py-10 border-t border-gray-200">
-                        <div class="comments-area">
-                            <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-comments mr-3 text-blue-500"></i>
-                                Comments (0)
-                            </h3>
+                        <!-- Comments Section -->
+                        <div id="comments" class="px-8 py-10 border-t border-gray-200">
+                            <div class="comments-area">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
+                                    <i class="fas fa-comments mr-3 text-blue-500"></i>
+                                    Comments (0)
+                                </h3>
 
-                            <!-- Comment Form -->
-                            <div class="bg-gray-50 rounded-xl p-8 mb-8">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-6">Leave a Comment</h4>
-                                <form class="space-y-6">
-                                    <div class="grid md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label class="block text-gray-700 font-medium mb-2">Name *</label>
-                                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <!-- Comment Form -->
+                                <div class="bg-gray-50 rounded-xl p-8 mb-8">
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-6">Leave a Comment</h4>
+                                    <form class="space-y-6">
+                                        <div class="grid md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-gray-700 font-medium mb-2">Name *</label>
+                                                <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            </div>
+                                            <div>
+                                                <label class="block text-gray-700 font-medium mb-2">Email *</label>
+                                                <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            </div>
                                         </div>
                                         <div>
-                                            <label class="block text-gray-700 font-medium mb-2">Email *</label>
-                                            <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <label class="block text-gray-700 font-medium mb-2">Comment *</label>
+                                            <textarea rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-gray-700 font-medium mb-2">Comment *</label>
-                                        <textarea rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-                                    </div>
-                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors duration-200">
-                                        Post Comment
-                                    </button>
-                                </form>
-                            </div>
+                                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors duration-200">
+                                            Post Comment
+                                        </button>
+                                    </form>
+                                </div>
 
-                            <!-- No Comments Message -->
-                            <div class="text-center py-12 text-gray-500">
-                                <i class="fas fa-comment-dots text-4xl mb-4 opacity-50"></i>
-                                <p class="text-lg">No comments yet. Be the first to share your thoughts!</p>
+                                <!-- No Comments Message -->
+                                <div class="text-center py-12 text-gray-500">
+                                    <i class="fas fa-comment-dots text-4xl mb-4 opacity-50"></i>
+                                    <p class="text-lg">No comments yet. Be the first to share your thoughts!</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
                 </article>
 
                 <!-- Related Posts Section -->
@@ -514,4 +464,424 @@
         border-radius: 0 8px 8px 0;
     }
 </style>
+@endpush
+
+
+@push('styles')
+<style>
+    /* ✅ ENHANCED TYPOGRAPHY & SPACING */
+    .blog-content {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        line-height: 1.8;
+        font-size: 1.125rem;
+        color: #2d3748;
+        max-width: none;
+    }
+
+    /* ✅ BEAUTIFUL PARAGRAPH STYLING */
+    .blog-content p {
+        margin-bottom: 1.75rem;
+        font-size: 1.125rem;
+        line-height: 1.8;
+        color: #4a5568;
+        text-align: justify;
+        font-weight: 400;
+        letter-spacing: 0.025em;
+    }
+
+    /* ✅ ENHANCED HEADINGS */
+    .blog-content h1,
+    .blog-content h2,
+    .blog-content h3,
+    .blog-content h4 {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 700;
+        color: #1a202c;
+        margin-top: 3rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.3;
+        letter-spacing: -0.025em;
+    }
+
+    .blog-content h1 {
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+    }
+
+    .blog-content h2 {
+        font-size: 2rem;
+        color: #2d3748;
+        border-bottom: 3px solid #e2e8f0;
+        padding-bottom: 0.75rem;
+        position: relative;
+    }
+
+    .blog-content h2::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+
+    .blog-content h3 {
+        font-size: 1.5rem;
+        color: #4299e1;
+        margin-top: 2.5rem;
+    }
+
+    /* ✅ FIRST PARAGRAPH SPECIAL STYLING */
+    .blog-content p:first-of-type {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: #2d3748;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        padding-left: 1rem;
+        border-left: 4px solid #667eea;
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        padding: 1.5rem;
+        border-radius: 0 12px 12px 0;
+        position: relative;
+    }
+
+    .blog-content p:first-of-type::before {
+        content: '"';
+        font-size: 4rem;
+        color: #667eea;
+        position: absolute;
+        top: -10px;
+        left: 20px;
+        opacity: 0.3;
+        font-family: Georgia, serif;
+    }
+
+    /* ✅ BEAUTIFUL LISTS */
+    .blog-content ul,
+    .blog-content ol {
+        margin: 2rem 0;
+        padding-left: 0;
+        list-style: none;
+    }
+
+    .blog-content ul li {
+        position: relative;
+        padding-left: 2rem;
+        margin-bottom: 1rem;
+        font-size: 1.125rem;
+        line-height: 1.7;
+        color: #4a5568;
+    }
+
+    .blog-content ul li::before {
+        content: '●';
+        color: #667eea;
+        font-size: 1.5rem;
+        position: absolute;
+        left: 0;
+        top: -2px;
+    }
+
+    .blog-content ol {
+        counter-reset: custom-counter;
+    }
+
+    .blog-content ol li {
+        position: relative;
+        padding-left: 3rem;
+        margin-bottom: 1rem;
+        counter-increment: custom-counter;
+    }
+
+    .blog-content ol li::before {
+        content: counter(custom-counter);
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: bold;
+    }
+
+    /* ✅ ENHANCED LINKS */
+    .blog-content a {
+        color: #4299e1;
+        text-decoration: none;
+        font-weight: 500;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .blog-content a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #4299e1, #667eea);
+        transition: width 0.3s ease;
+    }
+
+    .blog-content a:hover::after {
+        width: 100%;
+    }
+
+    .blog-content a:hover {
+        color: #2b6cb0;
+    }
+
+    /* ✅ BEAUTIFUL BLOCKQUOTES */
+    .blog-content blockquote {
+        margin: 3rem 0;
+        padding: 2rem;
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        border-left: 5px solid #667eea;
+        border-radius: 0 15px 15px 0;
+        position: relative;
+        font-style: italic;
+        font-size: 1.25rem;
+        color: #2d3748;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-content blockquote::before {
+        content: '"';
+        font-size: 6rem;
+        color: #667eea;
+        position: absolute;
+        top: -20px;
+        left: 20px;
+        opacity: 0.2;
+        font-family: Georgia, serif;
+    }
+
+    /* ✅ CODE STYLING */
+    .blog-content code {
+        background: linear-gradient(135deg, #2d3748, #4a5568);
+        color: #e2e8f0;
+        padding: 0.25rem 0.75rem;
+        border-radius: 8px;
+        font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+        font-size: 0.875rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+    }
+
+    .blog-content pre {
+        background: linear-gradient(135deg, #1a202c, #2d3748);
+        color: #e2e8f0;
+        padding: 2rem;
+        border-radius: 15px;
+        overflow-x: auto;
+        margin: 2rem 0;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    .blog-content pre::before {
+        content: '';
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        width: 12px;
+        height: 12px;
+        background: #ff5f56;
+        border-radius: 50%;
+        box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27ca3f;
+    }
+
+    /* ✅ IMAGES ENHANCEMENT */
+    .blog-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 15px;
+        margin: 2.5rem auto;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: block;
+    }
+
+    .blog-content img:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px -15px rgba(0, 0, 0, 0.25);
+    }
+
+    /* ✅ TABLE STYLING */
+    .blog-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 2.5rem 0;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-content th {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .blog-content td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #4a5568;
+    }
+
+    .blog-content tr:nth-child(even) {
+        background: #f7fafc;
+    }
+
+    .blog-content tr:hover {
+        background: #edf2f7;
+        transition: background 0.2s ease;
+    }
+
+    /* ✅ SPACING BETWEEN ELEMENTS */
+    .blog-content>*+* {
+        margin-top: 1.5rem;
+    }
+
+    .blog-content>h2+*,
+    .blog-content>h3+* {
+        margin-top: 1rem;
+    }
+
+    /* ✅ RESPONSIVE DESIGN */
+    @media (max-width: 768px) {
+        .blog-content {
+            font-size: 1rem;
+        }
+
+        .blog-content h1 {
+            font-size: 2rem;
+        }
+
+        .blog-content h2 {
+            font-size: 1.5rem;
+        }
+
+        .blog-content h3 {
+            font-size: 1.25rem;
+        }
+
+        .blog-content p:first-of-type {
+            font-size: 1.125rem;
+            padding: 1rem;
+        }
+
+        .blog-content blockquote {
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .blog-content pre {
+            padding: 1rem;
+        }
+    }
+
+    /* ✅ READING PROGRESS INDICATOR */
+    .reading-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        z-index: 1000;
+        transition: width 0.3s ease;
+    }
+
+    /* ✅ SMOOTH SCROLLING */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* ✅ SELECTION STYLING */
+    .blog-content ::selection {
+        background: rgba(102, 126, 234, 0.2);
+        color: #1a202c;
+    }
+
+    /* ✅ FOCUS STYLES FOR ACCESSIBILITY */
+    .blog-content a:focus,
+    .blog-content button:focus {
+        outline: 2px solid #667eea;
+        outline-offset: 2px;
+    }
+</style>
+@endpush
+
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create reading progress bar
+        const progressBar = document.createElement('div');
+        progressBar.className = 'reading-progress';
+        document.body.appendChild(progressBar);
+
+        // Update progress on scroll
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset;
+            const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / documentHeight) * 100;
+            progressBar.style.width = progress + '%';
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    });
+</script>
+@endpush
+
+@push('scripts')
+<script>
+    // Xóa tất cả empty p tags sau khi content được render
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tìm và xóa các p tags rỗng hoặc chỉ chứa &nbsp;
+        const emptyParagraphs = document.querySelectorAll('.blog-content p');
+
+        emptyParagraphs.forEach(p => {
+            const text = p.textContent || p.innerText || '';
+            const cleanText = text.replace(/\s+/g, '').replace(/&nbsp;/g, '');
+
+            // Nếu paragraph rỗng hoặc chỉ chứa whitespace
+            if (cleanText === '' || cleanText.length === 0) {
+                p.remove();
+            }
+        });
+    });
+</script>
 @endpush

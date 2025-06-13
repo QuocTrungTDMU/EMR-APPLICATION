@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ContactController;
 
 require __DIR__ . '/auth.php';
 
@@ -10,9 +12,14 @@ Route::get('/', function () {
     return view('homepage');
 });
 
-Route::get('/contact', function () {
-    return view('contact');
-})->name('contact');
+
+
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
+Route::get('/about', function () {
+    return view('about-us');
+})->name('about');
 
 Route::get('/cart', function () {
     return view('cart');
@@ -21,6 +28,7 @@ Route::get('/cart', function () {
 Route::get('/checkout', function () {
     return view('checkout');
 })->name('checkout');
+
 
 
 Route::get('/login', function () {
@@ -52,53 +60,22 @@ Route::redirect('/blog', '/blogs');
 
 
 
-// routes/web.php - debug controller execution  
-Route::get('/debug-controller-execution/{slug}', function ($slug) {
+Route::get('/', [HomeController::class, 'index'])->name('homepage');
+
+// Tạo test route để debug
+Route::get('/test-email', function () {
     try {
-        Log::info('=== DEBUGGING CONTROLLER EXECUTION ===', ['slug' => $slug]);
+        Mail::raw('Test email from Laravel', function ($message) {
+            $message->to('enjoy4624@gmail.com')
+                ->subject('Test Email');
+        });
 
-        // Test service first
-        $service = app(App\Services\NksApiService::class);
-        Log::info('Service created successfully');
-
-        // Test insight API
-        $insightResult = $service->getInsight($slug);
-        Log::info('Insight API called', [
-            'result' => !is_null($insightResult),
-            'success' => $insightResult['success'] ?? false
-        ]);
-
-        // Test controller manually
-        $controller = app(App\Http\Controllers\BlogController::class);
-        Log::info('Controller created successfully');
-
-        // Call show method
-        $result = $controller->show($slug);
-        Log::info('Controller show method executed successfully');
-
-        return response()->json([
-            'success' => true,
-            'service_works' => !is_null($insightResult),
-            'controller_works' => true,
-            'result_type' => get_class($result)
-        ]);
+        return 'Email sent successfully!';
     } catch (\Exception $e) {
-        Log::error('Controller execution failed', [
-            'error' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-            'error_class' => get_class($e),
-            'file' => basename($e->getFile()),
-            'line' => $e->getLine(),
-            'trace' => array_slice(explode("\n", $e->getTraceAsString()), 0, 5)
-        ]);
+        return 'Error: ' . $e->getMessage();
     }
 });
+
 
 
 

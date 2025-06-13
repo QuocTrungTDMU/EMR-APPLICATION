@@ -121,8 +121,8 @@
                             <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Medik Shop</a>
                         </div>
                     </li>
-                    <li><a href="#" class="text-gray-700 hover:text-blue-600 transition-colors py-2">About</a></li>
-                    <li><a href="#" class="text-gray-700 hover:text-blue-600 transition-colors py-2">Blog</a></li>
+                    <li><a href="{{ route('about') }}" class="text-gray-700 hover:text-blue-600 transition-colors py-2">About</a></li>
+                    <li><a href="{{ route('blogs.index') }}" class="text-gray-700 hover:text-blue-600 transition-colors py-2">Blog</a></li>
                     <li><a href="#" class="text-gray-700 hover:text-blue-600 transition-colors py-2">Collection</a></li>
                     <!-- Shop with submenu -->
                     <li class="relative group">
@@ -408,10 +408,10 @@
         </div>
 
         <!-- About -->
-        <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">About</a>
+        <a href="{{ route('about') }}" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">About</a>
 
         <!-- Blog -->
-        <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Blog</a>
+        <a href="{{ route('blogs.index') }}" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Blog</a>
 
         <!-- Collection -->
         <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Collection</a>
