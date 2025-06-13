@@ -171,17 +171,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-12" data-aos="fade-up">
                     @forelse($paginatedPosts as $post)
                     <!-- Blog Post từ API -->
-                    <div class="bg-white rounded-xl shadow border border-gray-300 overflow-hidden flex flex-col max-w-sm mx-auto">
-                        <!-- Ảnh blog -->
-                        <a href="{{ route('blogs.show', $post['slug']) }}" class="block">
+                    <article class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden flex flex-col h-full">
+                        <!-- Image -->
+                        <a href="{{ route('blogs.show', $post['slug']) }}" class="block flex-shrink-0">
                             <img src="{{ $post['image'] ?? 'https://medik.wpenginepowered.com/wp-content/uploads/2020/05/blog-4-6.jpg' }}"
                                 alt="{{ $post['title'] }}"
-                                class="w-full h-48 object-cover">
+                                class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
                         </a>
-                        <!-- Meta: ngày và comment -->
-                        <div class="flex items-center justify-between px-4 py-2 border-b-2 border-gray-100 bg-white">
-                            <div class="flex items-center gap-2 text-gray-500 text-base">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+
+                        <!-- Meta Section -->
+                        <div class="flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-white">
+                            <div class="flex items-center gap-2 text-gray-500 text-sm">
+                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
                                     <line x1="16" x2="16" y1="2" y2="6"></line>
                                     <line x1="8" x2="8" y1="2" y2="6"></line>
@@ -189,43 +190,54 @@
                                 </svg>
                                 <span>{{ $post['formatedDate'] ?? 'May 16, 2020' }}</span>
                             </div>
-                            <span class="mx-4 h-5 border-l border-gray-300"></span>
-                            <div class="flex items-center gap-2 text-gray-500 text-base">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+
+                            <div class="w-px h-4 bg-gray-300"></div>
+
+                            <div class="flex items-center gap-2 text-gray-500 text-sm">
+                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                 </svg>
-                                <span>{{ $post['readTime'] ?? '1' }} min read</span>
+                                <span>0 Comments</span>
                             </div>
                         </div>
-                        <!-- Nội dung -->
-                        <div class="p-5 flex flex-col flex-1">
-                            <h2 class="text-xl font-semibold mb-2">
-                                <a href="{{ route('blogs.show', $post['slug']) }}" class="hover:text-blue-600 transition">{{ $post['title'] }}</a>
-                            </h2>
-                            <p class="text-gray-500 text-base mb-4">
-                                {{ $post['excerpt'] ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt nunc lorem, nec faucibus mi facilisis eget...' }}
-                            </p>
-                            <!-- Tags -->
-                            <div class="flex items-center gap-2 text-base mb-4">
-                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M20 12H4" />
-                                </svg>
-                                <span class="text-blue-600">{{ $post['postCategory'] ?? 'General' }}</span>
-                                @if(isset($post['author']['name']))
-                                <span class="text-gray-400">,</span>
-                                <span class="text-blue-600">{{ $post['author']['name'] }}</span>
-                                @endif
+
+                        <!-- Content -->
+                        <div class="p-6 flex flex-col flex-1">
+                            <!-- Title -->
+                            <h3 class="text-xl font-bold text-gray-800 mb-3 leading-tight">
+                                <a href="{{ route('blogs.show', $post['slug']) }}"
+                                    class="hover:text-blue-600 transition-colors">
+                                    {{ $post['title'] }}
+                                </a>
+                            </h3>
+
+                            <!-- Description -->
+                            <div class="flex-1 mb-4">
+                                <p class="text-gray-600 leading-relaxed">
+                                    {{ \Str::limit($post['excerpt'] ?? '', 120) }}
+                                </p>
                             </div>
-                            <!-- Button -->
-                            <a href="{{ route('blogs.show', $post['slug']) }}"
-                                class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-6 py-3 mt-auto shadow-lg shadow-blue-500/20 transition-all duration-200">
-                                Read More
-                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
+
+                            <!-- ✅ BOTTOM SECTION - Exact match image -->
+                            <div class="mt-auto space-y-4">
+                                <!-- Tags như trong hình -->
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="text-blue-600 font-medium">{{ $post['postCategory'] ?? 'Blog' }}</span>
+                                </div>
+
+                                <a href="{{ route('blogs.show', $post['slug']) }}"
+                                    class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-6 py-3 transition-colors duration-200 shadow-sm">
+                                    Read More
+                                    <svg class="w-4 h-4 ml-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    </article>
                     @empty
                     <!-- Fallback - 1 blog post mẫu khi không có dữ liệu -->
                     <div class="bg-white rounded-xl shadow border border-gray-300 overflow-hidden flex flex-col max-w-sm mx-auto">
@@ -277,48 +289,109 @@
                     @endforelse
                 </div>
 
-                <!-- Pagination -->
+                <!-- RESPONSIVE PAGINATION - Fixed -->
                 @if(isset($totalPages) && $totalPages > 1)
-                <div class="flex justify-center items-center space-x-2" data-aos="fade-up">
-                    <nav class="flex items-center space-x-1">
-                        @if($page > 1)
-                        <a href="{{ request()->url() }}?page={{ $page - 1 }}" class="inline-flex items-center px-4 py-2 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-gray-700 transition-colors">
-                            Previous
-                        </a>
-                        @endif
+                <div class="flex justify-center items-center py-8 overflow-x-auto" data-aos="fade-up">
+                    <nav class="flex items-center" aria-label="Pagination">
+                        <div class="flex items-center space-x-1 md:space-x-2">
 
-                        @for($i = 1; $i <= $totalPages; $i++)
-                            @if($i==$page)
-                            <span class="inline-flex items-center px-4 py-2 text-base font-medium text-white bg-blue-600 border border-blue-600 rounded cursor-default">
-                            {{ $i }}
-                            </span>
-                            @else
-                            <a href="{{ request()->url() }}?page={{ $i }}" class="inline-flex items-center px-4 py-2 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-gray-700 transition-colors">
-                                {{ $i }}
-                            </a>
-                            @endif
-                            @endfor
-
-                            @if($page < $totalPages)
-                                <a href="{{ request()->url() }}?page={{ $page + 1 }}" class="inline-flex items-center px-4 py-2 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 hover:text-gray-700 transition-colors">
-                                Next
-                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            <!-- ✅ PREVIOUS BUTTON -->
+                            @if($page > 1)
+                            <a href="{{ request()->url() }}?page={{ $page - 1 }}"
+                                class="inline-flex items-center px-2 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                                <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                                 </svg>
+                                <span class="hidden md:inline">Previous</span>
+                            </a>
+                            @else
+                            <span class="inline-flex items-center px-2 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-gray-300 bg-gray-100 border border-gray-300 rounded-l-lg cursor-not-allowed">
+                                <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                                <span class="hidden md:inline">Previous</span>
+                            </span>
+                            @endif
+
+                            <!-- PAGE NUMBERS - Responsive Logic -->
+                            @php
+                            $start = max(1, $page - 2);
+                            $end = min($totalPages, $page + 2);
+
+                            // Mobile: Show fewer pages
+                            if (request()->header('User-Agent') && preg_match('/Mobile|Android|iPhone/', request()->header('User-Agent'))) {
+                            $start = max(1, $page - 1);
+                            $end = min($totalPages, $page + 1);
+                            }
+                            @endphp
+
+                            <!-- First page (if not in range) -->
+                            @if($start > 1)
+                            <a href="{{ request()->url() }}?page=1"
+                                class="hidden sm:inline-flex items-center px-2 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                                1
+                            </a>
+                            @if($start > 2)
+                            <span class="hidden sm:inline-flex items-center px-2 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-gray-500 bg-white border border-gray-300">
+                                ...
+                            </span>
+                            @endif
+                            @endif
+
+                            <!-- Page numbers in range -->
+                            @for($i = $start; $i <= $end; $i++)
+                                @if($i==$page)
+                                <span class="inline-flex items-center px-2 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-white bg-blue-600 border border-blue-600 cursor-default z-10">
+                                {{ $i }}
+                                </span>
+                                @else
+                                <a href="{{ request()->url() }}?page={{ $i }}"
+                                    class="inline-flex items-center px-2 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                                    {{ $i }}
                                 </a>
                                 @endif
+                                @endfor
+
+                                <!-- Last page (if not in range) -->
+                                @if($end < $totalPages)
+                                    @if($end < $totalPages - 1)
+                                    <span class="hidden sm:inline-flex items-center px-2 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-gray-500 bg-white border border-gray-300">
+                                    ...
+                                    </span>
+                                    @endif
+                                    <a href="{{ request()->url() }}?page={{ $totalPages }}"
+                                        class="hidden sm:inline-flex items-center px-2 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                                        {{ $totalPages }}
+                                    </a>
+                                    @endif
+
+
+                                    @if($page < $totalPages)
+                                        <a href="{{ request()->url() }}?page={{ $page + 1 }}"
+                                        class="inline-flex items-center px-2 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                                        <span class="hidden md:inline">Next</span>
+                                        <svg class="w-4 h-4 md:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                        </a>
+                                        @else
+                                        <span class="inline-flex items-center px-2 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-gray-300 bg-gray-100 border border-gray-300 rounded-r-lg cursor-not-allowed">
+                                            <span class="hidden md:inline">Next</span>
+                                            <svg class="w-4 h-4 md:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </span>
+                                        @endif
+                        </div>
                     </nav>
                 </div>
-                @else
-                <!-- Fallback pagination khi không có dữ liệu -->
-                <div class="flex justify-center items-center space-x-2" data-aos="fade-up">
-                    <nav class="flex items-center space-x-1">
-                        <span class="inline-flex items-center px-4 py-2 text-base font-medium text-white bg-blue-600 border border-blue-600 rounded cursor-default">
-                            1
-                        </span>
-                    </nav>
+
+                <!--  PAGE INFO (Mobile) -->
+                <div class="sm:hidden text-center text-sm text-gray-600 mt-4">
+                    Page {{ $page }} of {{ $totalPages }}
                 </div>
                 @endif
+
             </main>
 
         </div>

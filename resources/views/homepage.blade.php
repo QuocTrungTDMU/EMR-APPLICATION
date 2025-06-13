@@ -21,6 +21,7 @@
                                 @include('partials.countdown-promo')
                                 @include('partials.our-product')
                                 @include('partials.clientsays')
+                                @include('partials.latest-new', ['latestNews' => $latestNews ?? []])
                                 @include('partials.subscribe-newsletter')
                                 @include('partials.partners-carousel')
 
