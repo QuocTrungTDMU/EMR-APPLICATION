@@ -1,4 +1,10 @@
-<div id="password" x-data="passwordGenerator()" class="bg-white rounded-2xl shadow-lg overflow-hidden max-w-full mx-auto">
+@extends('layouts.app')
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@section('content') 
+
+<div id="password" x-data="passwordGenerator()" class="bg-white rounded-2xl max-w-4xl shadow-lg overflow-hidden mx-auto">
     <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4">
         <h2 class="text-xl font-semibold text-white flex items-center">
             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -19,17 +25,17 @@
                     Mật khẩu hiện tại <span class="text-red-500">*</span>
                 </label>
                 <div class="relative">
-                    <input id="current_password" name="current_password" type="password"
-                        :type="showPasswordCurrent ? 'text' : 'password'"
-                        x-model="currentPassword"
-                        class="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition-all bg-white">
+                    <input id="current_password" name="current_password"
+                           :type="showPasswordCurrent ? 'text' : 'password'"
+                           x-model="currentPassword"
+                           class="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition-all bg-white">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                         </svg>
                     </div>
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <button type="button" @click="showPasswordCurrent = !showPasswordCurrent" class="focus:outline-none">
+                        <button type="button" @click="togglePassword('current')" class="focus:outline-none">
                             <svg x-show="!showPasswordCurrent" class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S3.732 16.057 2.458 12z" />
@@ -56,7 +62,7 @@
                     </label>
                     <div class="relative">
                         <input id="password" name="password" :type="showPassword1 ? 'text' : 'password'" x-model="password"
-                            class="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition-all bg-white">
+                               class="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition-all bg-white">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -64,7 +70,7 @@
                             </svg>
                         </div>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <button type="button" @click="showPassword1 = !showPassword1" class="focus:outline-none">
+                            <button type="button" @click="togglePassword('new')" class="focus:outline-none">
                                 <svg x-show="!showPassword1" class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S3.732 16.057 2.458 12z" />
@@ -90,14 +96,14 @@
                     </label>
                     <div class="relative">
                         <input id="password_confirmation" name="password_confirmation" :type="showPassword2 ? 'text' : 'password'" x-model="password_confirmation"
-                            class="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition-all bg-white">
+                               class="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition-all bg-white">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <button type="button" @click="showPassword2 = !showPassword2" class="focus:outline-none">
+                            <button type="button" @click="togglePassword('confirm')" class="focus:outline-none">
                                 <svg x-show="!showPassword2" class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S3.732 16.057 2.458 12z" />
@@ -112,39 +118,38 @@
                 </div>
             </div>
 
-            <!-- Password Generator -->
-            <div x-data="passwordGenerator()" class="bg-gray-50 p-4 rounded-xl space-y-4">
+            <div class="bg-gray-50 p-4 rounded-xl space-y-4">
                 <label class="block font-semibold text-gray-700">Tùy chọn thành phần mật khẩu:</label>
                 <div class="space-y-2">
                     <label class="flex items-center space-x-2">
-                        <input type="checkbox" x-model="useLowercase" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                        <input type="checkbox" x-model="useLowercase" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
                         <span>Chữ thường (a-z)</span>
                     </label>
                     <label class="flex items-center space-x-2">
-                        <input type="checkbox" x-model="useUppercase" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                        <input type="checkbox" x-model="useUppercase" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
                         <span>Chữ hoa (A-Z)</span>
                     </label>
                     <label class="flex items-center space-x-2">
-                        <input type="checkbox" x-model="useNumbers" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                        <input type="checkbox" x-model="useNumbers" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
                         <span>Số (0-9)</span>
                     </label>
                     <label class="flex items-center space-x-2">
-                        <input type="checkbox" x-model="useSymbols" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                        <input type="checkbox" x-model="useSymbols" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
                         <span>Ký tự đặc biệt (!@#$...)</span>
                     </label>
                 </div>
 
                 <div>
                     <label class="block font-semibold text-gray-700 mb-1">Độ dài mật khẩu: <span x-text="length"></span></label>
-                    <input type="range" min="8" max="30" x-model="length" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600">
+                    <input type="range" min="8" max="30" x-model="length" @input="generate()" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600">
                 </div>
 
-                <button @click="generate()" type="button" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-md hover:shadow-lg flex items-center justify-center w-full">
+                {{-- <button @click="generate()" type="button" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-md hover:shadow-lg flex items-center justify-center w-full">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                     Tạo mật khẩu
-                </button>
+                </button> --}}
 
                 <template x-if="generatedPassword">
                     <div class="mt-2 p-3 bg-green-50 rounded-lg flex justify-between items-center">
@@ -171,7 +176,7 @@
             <div class="flex items-center justify-between pt-4 border-t border-gray-200 bg-gray-50 p-4 rounded-xl">
                 <div class="text-sm text-gray-500">Mật khẩu được mã hóa an toàn</div>
                 <button type="submit"
-                    class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center">
+                        class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
@@ -181,8 +186,9 @@
         </form>
     </div>
 </div>
+@endsection
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     function passwordGenerator() {
         return {
@@ -190,7 +196,7 @@
             useUppercase: true,
             useNumbers: true,
             useSymbols: true,
-            length: 8,
+            length: 12,
             generatedPassword: '',
             error: '',
             passwordError: '',
@@ -202,6 +208,16 @@
             currentPassword: '',
             currentPasswordError: '',
             confirmSave: false,
+
+            init() {
+                this.generate();
+            },
+
+            togglePassword(type) {
+                if (type === 'current') this.showPasswordCurrent = !this.showPasswordCurrent;
+                else if (type === 'new') this.showPassword1 = !this.showPassword1;
+                else if (type === 'confirm') this.showPassword2 = !this.showPassword2;
+            },
 
             generate() {
                 this.error = '';
@@ -222,29 +238,30 @@
                     const randomIndex = Math.floor(Math.random() * charset.length);
                     password += charset[randomIndex];
                 }
-
                 this.generatedPassword = password;
                 this.password = password;
                 this.password_confirmation = password;
             },
 
             copyToClipboard() {
-                navigator.clipboard.writeText(this.generatedPassword).then(() => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Thành công!',
-                        text: 'Mật khẩu đã được sao chép!',
-                        showConfirmButton: false,
-                        timer: 1500
+                if (this.generatedPassword) {
+                    navigator.clipboard.writeText(this.generatedPassword).then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: 'Mật khẩu đã được sao chép!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }).catch(err => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Không thể sao chép mật khẩu: ' + err,
+                            confirmButtonText: 'OK'
+                        });
                     });
-                }).catch(err => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Không thể sao chép mật khẩu: ' + err,
-                        confirmButtonText: 'OK'
-                    });
-                });
+                }
             },
 
             handleSubmit() {
@@ -252,7 +269,7 @@
                 this.passwordError = '';
 
                 if (!this.currentPassword) {
-                    this.currentPasswordError = 'Vui lòng nhập mật khẩu hiện tại để tiếp tục.';
+                    this.currentPasswordError = 'Vui lòng nhập mật khẩu hiện tại.';
                     return;
                 }
 
@@ -262,7 +279,7 @@
                 }
 
                 if (this.password !== this.password_confirmation) {
-                    this.passwordError = 'Mật khẩu mới và xác nhận mật khẩu không khớp. Vui lòng kiểm tra lại.';
+                    this.passwordError = 'Mật khẩu mới và xác nhận không khớp.';
                     return;
                 }
 
@@ -270,15 +287,13 @@
                     Swal.fire({
                         icon: 'warning',
                         title: 'Cảnh báo!',
-                        text: 'Vui lòng xác nhận lưu mật khẩu trước khi cập nhật.',
+                        text: 'Vui lòng xác nhận lưu mật khẩu.',
                         confirmButtonText: 'OK'
                     });
                     return;
                 }
 
                 let formData = new FormData(this.$refs.form);
-                console.log('Dữ liệu gửi lên:', Object.fromEntries(formData));
-                console.log('Route:', this.$refs.form.action);
                 fetch(this.$refs.form.action, {
                     method: 'POST',
                     body: formData,
@@ -286,48 +301,35 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         'Accept': 'application/json'
                     }
-                })
-                .then(response => {
-                    console.log('Phản hồi từ server:', response);
-                    if (!response.ok) {
-                        return response.json(); // Dùng json() trực tiếp cho 422
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Dữ liệu phản hồi:', data);
-                    if (data.errors) {
-                        this.currentPasswordError = data.errors.current_password ? data.errors.current_password[0] : '';
-                        this.passwordError = data.errors.password ? data.errors.password[0] : data.errors.password_confirmation ? data.errors.password_confirmation[0] : '';
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: this.currentPasswordError || this.passwordError,
-                            confirmButtonText: 'OK'
-                        });
-                    } else if (data.status === 'success' || !data.errors) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công!',
-                            text: 'Mật khẩu đã được cập nhật thành công!',
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            this.resetForm();
-                        });
-                    } else {
-                        throw new Error('Phản hồi không mong muốn từ server: ' + JSON.stringify(data));
-                    }
-                })
-                .catch(error => {
-                    console.error('Lỗi chi tiết:', error.message);
-                    this.currentPasswordError = 'Có lỗi khi gửi form. Vui lòng kiểm tra console log hoặc nhập đúng mật khẩu hiện tại.';
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: this.currentPasswordError,
-                        confirmButtonText: 'OK'
-                    });
-                });
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          Swal.fire({
+                              icon: 'success',
+                              title: 'Thành công!',
+                              text: 'Mật khẩu đã được cập nhật.',
+                              confirmButtonText: 'OK'
+                          }).then(() => this.resetForm());
+                      } else {
+                          this.currentPasswordError = data.errors?.current_password?.[0] || 'Lỗi không xác định.';
+                          this.passwordError = data.errors?.password?.[0] || data.errors?.password_confirmation?.[0];
+                          Swal.fire({
+                              icon: 'error',
+                              title: 'Lỗi!',
+                              text: this.currentPasswordError || this.passwordError,
+                              confirmButtonText: 'OK'
+                          });
+                      }
+                  }).catch(error => {
+                      console.error('Lỗi:', error);
+                      this.currentPasswordError = 'Có lỗi khi gửi yêu cầu.';
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'Lỗi!',
+                          text: this.currentPasswordError,
+                          confirmButtonText: 'OK'
+                      });
+                  });
             },
 
             resetForm() {
@@ -335,6 +337,7 @@
                 this.password = '';
                 this.password_confirmation = '';
                 this.confirmSave = false;
+                this.generate();
             }
         }
     }

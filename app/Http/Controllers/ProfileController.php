@@ -3,41 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use GuzzleHttp\Client;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Hash;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form, ưu tiên dữ liệu từ NKS API.
+     * Hiển thị thông tin cá nhân (có thể lấy từ API nếu có token)
      */
-    public function edit(Request $request): View
+    public function view(): View
     {
-        /** @var \App\Models\User $user */
-        $user = $request->user();
-
-        if (!$user) {
-            abort(401, 'Unauthorized: User not found');
-        }
-
-        $nksToken = $user->nks_access_token;
-        $apiUser = null;
+        $user = auth()->user();
         $rawJson = null;
+        $accessToken = $user->nks_access_token ?? ''; // Lấy token từ user
 
-        if ($nksToken) {
-            $client = new \GuzzleHttp\Client();
+        if ($accessToken) {
             try {
+                $client = new Client();
                 $response = $client->post('https://account.nks.vn/api/nks/user', [
                     'multipart' => [
-                        [
-                            'name'     => 'access_token',
-                            'contents' => $nksToken,
-                        ]
+                        ['name' => 'access_token', 'contents' => $accessToken],
                     ],
                     'timeout' => 10,
                 ]);
@@ -46,63 +39,49 @@ class ProfileController extends Controller
                 $rawJson = $body;
                 $data = json_decode($body, true);
 
-                // Ưu tiên lấy họ tên từ API (ghép firstname và lastname nếu có)
                 if (isset($data['data']['firstname']) && isset($data['data']['lastname'])) {
                     $data['data']['name'] = trim($data['data']['firstname'] . ' ' . $data['data']['lastname']);
                 }
 
                 if (isset($data['data']['name'])) {
-                    $apiUser = $data['data'];
+                    $user = (object) $data['data'];
                 }
             } catch (\Exception $e) {
-                //Log::error('NKS API Exception: ' . $e->getMessage());
+                Log::error('Lỗi lấy dữ liệu từ API NKS: ' . $e->getMessage());
             }
         }
 
-        // Ưu tiên dữ liệu từ API, fallback về local
-        $displayUser = $apiUser ?: $user->makeHidden(['nks_access_token', 'password'])->toArray();
-
-        return view('profile.edit', [
-            'user' => $displayUser,
-            'rawJson' => $rawJson,
-            'from_api' => $apiUser ? true : false,
-        ]);
+        return view('profile.index', compact('user', 'rawJson', 'accessToken')); // Truyền accessToken
+    }
+    /**
+     * Hiển thị form chỉnh sửa thông tin cá nhân
+     */
+    public function edit(): View
+    {
+        $user = auth()->user();
+        return view('profile.partials.edit-info.update-profile-information-form', compact('user'));
     }
 
-
-
     /**
-     * Update the user's profile information.
+     * Cập nhật thông tin cá nhân (ưu tiên qua NKS API nếu có token)
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        $validated = $request->validated(); // Dữ liệu đã validate (name, email)
+        $validated = $request->validated();
 
-        // Kiểm tra nếu người dùng có nks_access_token
         if ($user->nks_access_token) {
-            $client = new Client();
             try {
-                // Tách name thành firstname và lastname
                 $nameParts = explode(' ', $validated['name'], 2);
                 $firstname = $nameParts[0];
-                $lastname = isset($nameParts[1]) ? $nameParts[1] : '';
+                $lastname = $nameParts[1] ?? '';
 
-                // Gửi yêu cầu cập nhật tới API NKS
+                $client = new Client();
                 $response = $client->post('https://account.nks.vn/api/nks/user/updateInfo', [
                     'multipart' => [
-                        [
-                            'name'     => 'access_token',
-                            'contents' => $user->nks_access_token,
-                        ],
-                        [
-                            'name'     => 'firstname',
-                            'contents' => $firstname,
-                        ],
-                        [
-                            'name'     => 'lastname',
-                            'contents' => $lastname,
-                        ],
+                        ['name' => 'access_token', 'contents' => $user->nks_access_token],
+                        ['name' => 'firstname', 'contents' => $firstname],
+                        ['name' => 'lastname', 'contents' => $lastname],
                     ],
                     'timeout' => 10,
                 ]);
@@ -110,21 +89,17 @@ class ProfileController extends Controller
                 $body = $response->getBody()->getContents();
                 $data = json_decode($body, true);
 
-                // Kiểm tra xem API có trả về thành công không
-                // Điều chỉnh logic này nếu API có cấu trúc phản hồi khác
-                if (isset($data['success']) && $data['success'] === true) {
-                    Log::info('NKS API: Cập nhật thông tin người dùng thành công', ['user_id' => $user->id]);
-                } else {
-                    Log::error('NKS API: Lỗi khi cập nhật thông tin', ['response' => $body]);
-                    return Redirect::route('profile.edit')->with('error', 'Không thể cập nhật thông tin trên NKS API. Vui lòng thử lại.');
+                if (!($data['success'] ?? false)) {
+                    Log::error('NKS API lỗi khi cập nhật', ['response' => $body]);
+                    return Redirect::route('profile.view')->with('error', 'Không thể cập nhật thông tin trên hệ thống NKS.');
                 }
             } catch (\Exception $e) {
-                Log::error('Lỗi gọi NKS API: ' . $e->getMessage());
-                return Redirect::route('profile.edit')->with('error', 'Lỗi khi gọi API NKS: ' . $e->getMessage());
+                Log::error('Lỗi gọi API NKS: ' . $e->getMessage());
+                return Redirect::route('profile.view')->with('error', 'Lỗi khi cập nhật qua API NKS.');
             }
         }
 
-        // Cập nhật database local
+        // Update local
         $user->fill($validated);
 
         if ($user->isDirty('email')) {
@@ -133,12 +108,79 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'Cập nhật thông tin thành công!');
+        return Redirect::route('profile.view')->with('status', 'Cập nhật thành công!');
+    }
+
+    /**
+     * Hiển thị form chỉnh sửa mật khẩu
+     */
+    public function editPassword(): View
+    {
+        $user = auth()->user();
+        return view('profile.partials.edit-info.update-password-form', compact('user'));
+    }
+
+    public function updatePassword(Request $request)
+    {
+        // Validate dữ liệu
+        $validated = $request->validate([
+            'old_password' => ['required', 'current_password'],
+            'new_password' => ['required', 'confirmed', 'min:8'],
+        ]);
+
+        $user = $request->user();
+        $accessToken = $user->nks_access_token; // Giả định token được lưu trong cột nks_access_token
+
+        if (!$accessToken) {
+            Log::error('Không tìm thấy access_token cho người dùng: ' . $user->id);
+            return response()->json(['errors' => ['general' => 'Không thể cập nhật mật khẩu. Vui lòng liên hệ hỗ trợ.']], 400);
+        }
+
+        try {
+            $client = new \GuzzleHttp\Client();
+            $response = $client->post('https://account.nks.vn/api/nks/user/updatePass', [
+                'multipart' => [
+                    ['name' => 'access_token', 'contents' => $accessToken],
+                    ['name' => 'old_password', 'contents' => $request->old_password],
+                    ['name' => 'new_password', 'contents' => $request->new_password],
+                ],
+                'timeout' => 10,
+            ]);
+
+            $body = $response->getBody()->getContents();
+            $data = json_decode($body, true);
+
+            if (isset($data['success']) && $data['success']) {
+                // Cập nhật mật khẩu cục bộ (tùy chọn)
+                $user->update([
+                    'password' => Hash::make($request->new_password),
+                ]);
+
+                // Nếu là yêu cầu AJAX, trả về JSON
+                if ($request->ajax()) {
+                    return response()->json(['status' => 'success', 'message' => 'Mật khẩu đã được cập nhật thành công!']);
+                }
+
+                return Redirect::route('profile.view')->with('status', 'Mật khẩu đã được cập nhật thành công!');
+            } else {
+                Log::error('API NKS cập nhật mật khẩu thất bại', ['response' => $body]);
+                if ($request->ajax()) {
+                    return response()->json(['errors' => ['general' => 'Cập nhật mật khẩu thất bại. Vui lòng kiểm tra mật khẩu cũ hoặc liên hệ hỗ trợ.']], 400);
+                }
+                return Redirect::route('profile.view')->with('error', 'Cập nhật mật khẩu thất bại. Vui lòng kiểm tra mật khẩu cũ hoặc liên hệ hỗ trợ.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Lỗi gọi API NKS để cập nhật mật khẩu: ' . $e->getMessage());
+            if ($request->ajax()) {
+                return response()->json(['errors' => ['general' => 'Có lỗi khi cập nhật mật khẩu. Vui lòng thử lại sau.']], 500);
+            }
+            return Redirect::route('profile.view')->with('error', 'Có lỗi khi cập nhật mật khẩu. Vui lòng thử lại sau.');
+        }
     }
 
 
     /**
-     * Delete the user's account.
+     * Xoá tài khoản người dùng
      */
     public function destroy(Request $request): RedirectResponse
     {
@@ -157,4 +199,29 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+
+    // public function updateAvatar(Request $request)
+    // {
+    //     if ($request->hasFile('avatar')) {
+    //         $file = $request->file('avatar');
+    //         $user = auth()->user();
+
+    //         // Crop ảnh về kích thước 240x240 (tùy chỉnh theo cần thiết)
+    //         $image = Image::make($file)->fit(240, 240);
+
+    //         // Lưu ảnh vào storage (ví dụ: public/avatars)
+    //         $path = 'avatars/' . time() . '_' . $user->id . '.jpg';
+    //         Storage::disk('public')->put($path, (string) $image->encode('jpg'));
+
+    //         // Cập nhật URL avatar trong database
+    //         $user->avatar_url = Storage::url($path);
+    //         $user->save();
+
+    //         // Trả về URL ảnh để cập nhật giao diện (có thể dùng redirect hoặc JSON)
+    //         return redirect()->back()->with('success', 'Avatar đã được cập nhật.');
+    //     }
+
+    //     return redirect()->back()->with('error', 'Vui lòng chọn một hình ảnh.');
+    // }
 }
