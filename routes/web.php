@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Mail;
 
 require __DIR__ . '/auth.php';
@@ -23,6 +24,10 @@ Route::view('/checkout', 'checkout')->name('checkout');
 // Trang liên hệ
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
+Route::middleware(['web'])->group(function () {
+    Route::post('/nks-login', [AuthController::class, 'nksLogin'])->name('nksLogin');
+});
 
 // Login
 Route::get('/login', function () {
@@ -72,4 +77,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit-password', [ProfileController::class, 'editPassword'])->name('profile.edit-password');
 
    // Route::post('/avatar/update', [ProfileController::class, 'updateAvatar'])->name('avatar.update');
+
+   Route::post('/profile/upload-cccd', [ProfileController::class, 'uploadCccd'])->name('profile.uploadCccd');
 });
