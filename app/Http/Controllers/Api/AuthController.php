@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -43,23 +44,30 @@ class AuthController extends Controller
             'user_agent' => $request->userAgent()
         ]);
 
+        Log::channel('nks_debug')->info('=== NKS LOGIN START ===', [
+            'timestamp' => now()->toISOString(),
+            'request_method' => $request->method(),
+            'request_url' => $request->fullUrl(),
+            'request_ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'all_headers' => $request->headers->all(),
+            'request_data' => $request->except(['password']),
+            'has_password' => !empty($request->password),
+            'password_length' => $request->password ? strlen($request->password) : 0,
+        ]);
+
         try {
             DB::beginTransaction();
 
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
                 'last_login_ip' => $realIP,
                 'last_device' => $request->device ?? 'Web',
-                'email_verified_at' => null, // Require email verification
+                'email_verified_at' => null,
             ]);
 
             event(new Registered($user));
-
-            // Create token
-            $tokenName = sprintf('reg_%s_%s', $request->device ?? 'web', now()->format('YmdHis'));
-            $token = $user->createToken($tokenName)->plainTextToken;
 
             DB::commit();
 
@@ -70,11 +78,9 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.',
+                'message' => 'Đăng ký thành công. Vui lòng đăng nhập bằng NKS để xác thực.',
                 'data' => [
-                    'user' => $user->makeHidden(['password']),
-                    'access_token' => $token,
-                    'token_type' => 'Bearer',
+                    'user' => $user->makeHidden(['nks_access_token']),
                 ]
             ], 201);
         } catch (\Exception $e) {
@@ -93,489 +99,422 @@ class AuthController extends Controller
     }
 
     /**
-     * Login with Laravel authentication
+     * Login with Laravel authentication - DISABLED
      */
     public function login(Request $request): JsonResponse
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string', 'min:6'],
-            'fbtoken' => ['sometimes', 'string'],
-            'device' => ['sometimes', 'string', 'max:50'],
-            'remember' => ['sometimes', 'boolean'],
-        ]);
-
-        $realIP = IpHelper::getRealClientIP($request);
-        $ipInfo = IpHelper::getDetailedIPInfo($request);
-
-        // Enhanced logging
-        Log::info('Login attempt', [
-            'email' => $request->email,
-            'real_ip' => $realIP,
-            'ip_info' => $ipInfo,
-            'user_agent' => $request->userAgent(),
-            'has_fbtoken' => !empty($request->fbtoken),
-            'fbtoken_length' => strlen($request->fbtoken ?? ''),
-            'device' => $request->device ?? 'Unknown'
-        ]);
-
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            Log::warning('Failed login attempt', [
-                'email' => $request->email,
-                'real_ip' => $realIP,
-                'user_agent' => $request->userAgent()
-            ]);
-
-            throw ValidationException::withMessages([
-                'email' => ['Thông tin đăng nhập không chính xác.'],
-            ]);
-        }
-
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        // Check if user is active
-        if (isset($user->active) && !$user->active) {
-            Auth::logout();
-            Log::warning('Inactive user login attempt', [
-                'user_id' => $user->id,
-                'email' => $user->email
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ.',
-                'error_code' => 'ACCOUNT_DISABLED'
-            ], 403);
-        }
-
-        // Check email verification if required
-        if (!$user->hasVerifiedEmail()) {
-            Log::warning('Unverified email login attempt', [
-                'user_id' => $user->id,
-                'email' => $user->email
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Vui lòng xác thực email trước khi đăng nhập.',
-                'error_code' => 'EMAIL_NOT_VERIFIED'
-            ], 403);
-        }
-
-        // Revoke old tokens if not remember me
-        if (!$request->boolean('remember')) {
-            $user->tokens()->delete();
-        }
-
-        // Create new token with expiration
-        $tokenName = sprintf('auth_%s_%s', $request->device ?? 'web', now()->format('YmdHis'));
-        $expiresAt = $request->boolean('remember') ? now()->addDays(30) : now()->addHours(24);
-
-        $token = $user->createToken($tokenName, ['*'], $expiresAt)->plainTextToken;
-
-        // Update last login info with real IP
-        $user->update([
-            'last_login_at' => now(),
-            'last_login_ip' => $realIP,
-            'last_device' => $request->device ?? 'Web',
-        ]);
-
-        // Store Firebase token if provided
-        if ($request->fbtoken) {
-            $this->storeFbToken($user, $request->fbtoken, $request->device ?? 'Web');
-        }
-
-        Log::info('Successful login', [
-            'user_id' => $user->id,
-            'device' => $request->device ?? 'Web',
-            'real_ip' => $realIP
-        ]);
-
         return response()->json([
-            'success' => true,
-            'message' => 'Đăng nhập thành công',
-            'data' => [
-                'user' => $user->makeHidden(['nks_access_token', 'password']),
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-                'expires_at' => $expiresAt->toISOString(),
-                'permissions' => method_exists($user, 'getAllPermissions') ?
-                    $user->getAllPermissions()->pluck('name') : [],
-            ]
-        ]);
+            'success' => false,
+            'message' => 'Vui lòng sử dụng đăng nhập NKS',
+            'error_code' => 'LOCAL_LOGIN_DISABLED'
+        ], 403);
     }
 
     /**
-     * Login with NKS API and Firebase integration
+     * Login with NKS API only - CHỈ lưu user local + access token
      */
-    public function nksLogin(Request $request): JsonResponse
+    public function nksLogin(Request $request)
     {
+        // Validation chỉ email và password
         $request->validate([
-            'username' => ['required', 'string', 'email'],
+            'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string', 'min:6'],
-            'fbtoken' => ['sometimes', 'string'],
-            'system' => ['sometimes', 'string', 'max:50'],
-            'device' => ['sometimes', 'string', 'max:50'],
-            'ip_address' => ['sometimes', 'ip'],
-            'location' => ['sometimes', 'string', 'max:100'],
+        ], [
+            'email.required' => 'Vui lòng nhập email',
+            'email.email' => 'Email không đúng định dạng',
+            'password.required' => 'Vui lòng nhập mật khẩu',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
         ]);
 
         $realIP = IpHelper::getRealClientIP($request);
-        $ipInfo = IpHelper::getDetailedIPInfo($request);
 
-        // Enhanced logging
         Log::info('NKS Login attempt', [
-            'username' => $request->username,
+            'email' => $request->email,
             'real_ip' => $realIP,
-            'ip_info' => $ipInfo,
-            'device' => $request->device ?? 'Web',
-            'has_fbtoken' => !empty($request->fbtoken),
-            'fbtoken_length' => strlen($request->fbtoken ?? ''),
             'user_agent' => $request->userAgent()
         ]);
 
         try {
-            // Get location from real IP
-            $location = $request->location ?? $this->getLocationFromIP($realIP);
-
-            // Prepare NKS API payload
-            $nksPayload = [
-                'username' => $request->username,
-                'password' => $request->password,
-                'fbtoken' => $request->fbtoken ?? '',
-                'system' => $request->system ?? 'Medik',
-                'device' => $request->device ?? 'Web',
-                'ip_address' => $realIP, // Use real IP
-                'location' => $location,
-            ];
-
+            // Gọi NKS API để xác thực
             $response = Http::timeout(30)
-                ->retry(2, 1000)
                 ->withHeaders([
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
-                    'User-Agent' => 'Medik-Laravel/1.0',
                 ])
-                ->post('https://account.nks.vn/api/nks/user/login', $nksPayload);
+                ->post('https://account.nks.vn/api/nks/user/login', [
+                    'username' => $request->email, // NKS API dùng 'username' cho email
+                    'password' => $request->password,
+                ]);
 
-            Log::info('NKS API Response Details', [
-                'status' => $response->status(),
-                'successful' => $response->successful(),
-                'headers' => $response->headers(),
-                'body_preview' => substr($response->body(), 0, 500)
-            ]);
-
-            if ($response->successful()) {
-                $nksData = $response->json();
-
-                // Validate NKS response structure
-                if (!isset($nksData['success']) || $nksData['success'] !== true) {
-                    Log::error('NKS login failed - API returned success false', [
-                        'response' => $nksData,
-                        'username' => $request->username
-                    ]);
-
-                    return response()->json([
-                        'success' => false,
-                        'message' => $nksData['message'] ?? 'Đăng nhập NKS thất bại',
-                        'error_code' => 'NKS_LOGIN_FAILED'
-                    ], 422);
-                }
-
-                // Extract data from NKS response
-                $responseData = $nksData['data'] ?? [];
-                $nksUser = $responseData['user'] ?? [];
-                $nksAccessToken = $responseData['access_token'] ?? null;
-                $nksExpiresAt = $responseData['expires_at'] ?? null;
-
-                // Validate required fields
-                if (!$nksAccessToken) {
-                    Log::error('NKS response missing access token', [
-                        'response_keys' => array_keys($responseData),
-                        'username' => $request->username
-                    ]);
-
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Phản hồi không hợp lệ từ NKS API - thiếu access token',
-                        'error_code' => 'MISSING_ACCESS_TOKEN'
-                    ], 422);
-                }
-
-                // Database transaction
-                DB::beginTransaction();
-                try {
-                    // Create or update local user
-                    $user = User::updateOrCreate(
-                        ['email' => $request->username],
-                        [
-                            'name' => $nksUser['name'] ?? 'NKS User',
-                            'password' => Hash::make($request->password),
-                            'nks_user_id' => $nksUser['id'] ?? null,
-                            'nks_access_token' => $nksAccessToken,
-                            'email_verified_at' => now(),
-                            'last_login_at' => now(),
-                            'last_login_ip' => $realIP, // Use real IP
-                            'last_device' => $request->device ?? 'Web',
-                            // Sync additional NKS user data
-                            'phone' => $nksUser['phone'] ?? ($user->phone ?? null),
-                            'avatar' => $nksUser['avatar'] ?? ($user->avatar ?? null),
-                        ]
-                    );
-
-                    // Revoke old tokens
-                    $user->tokens()->delete();
-
-                    // Create new Laravel token
-                    $tokenName = sprintf('nks_%s_%s', $request->device ?? 'web', now()->format('YmdHis'));
-                    $laravelToken = $user->createToken($tokenName)->plainTextToken;
-
-                    // Store Firebase token if provided
-                    if ($request->fbtoken) {
-                        $this->storeFbToken($user, $request->fbtoken, $request->device ?? 'Web');
-                    }
-
-                    // Sync user roles/permissions if needed
-                    if (isset($nksUser['role']['name'])) {
-                        $this->syncUserRole($user, $nksUser['role']);
-                    }
-
-                    DB::commit();
-
-                    Log::info('NKS login successful', [
-                        'user_id' => $user->id,
-                        'nks_user_id' => $user->nks_user_id,
-                        'role' => $nksUser['role']['name'] ?? 'unknown',
-                        'real_ip' => $realIP
-                    ]);
-
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Đăng nhập NKS thành công',
-                        'data' => [
-                            'user' => $user->makeHidden(['nks_access_token', 'password']),
-                            'access_token' => $laravelToken,
-                            'token_type' => 'Bearer',
-                            'nks_data' => [
-                                'user' => $nksUser,
-                                'access_token' => $nksAccessToken,
-                                'expires_at' => $nksExpiresAt,
-                                'message' => $nksData['message'] ?? null
-                            ],
-                            'permissions' => method_exists($user, 'getAllPermissions') ?
-                                $user->getAllPermissions()->pluck('name') : [],
-                            'location' => $location,
-                        ]
-                    ]);
-                } catch (\Exception $dbError) {
-                    DB::rollback();
-                    Log::error('Database error during NKS login', [
-                        'error' => $dbError->getMessage(),
-                        'trace' => $dbError->getTraceAsString(),
-                        'username' => $request->username
-                    ]);
-
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Không thể tạo tài khoản người dùng',
-                        'error_code' => 'DATABASE_ERROR'
-                    ], 500);
-                }
-            } else {
-                // Handle specific HTTP error codes
+            // Kiểm tra response từ NKS
+            if (!$response->successful()) {
                 $statusCode = $response->status();
-                $errorBody = $response->json() ?? [];
 
-                Log::warning('NKS API returned error status', [
+                Log::warning('NKS API authentication failed', [
+                    'email' => $request->email,
                     'status' => $statusCode,
-                    'body' => $errorBody,
-                    'username' => $request->username
+                    'response' => $response->body()
                 ]);
 
                 $errorMessage = match ($statusCode) {
-                    401 => 'Tên đăng nhập hoặc mật khẩu không chính xác',
-                    403 => 'Tài khoản đã bị khóa hoặc không có quyền truy cập',
+                    401 => 'Email hoặc mật khẩu không chính xác',
+                    403 => 'Tài khoản đã bị khóa',
+                    404 => 'Tài khoản không tồn tại trong hệ thống NKS',
                     429 => 'Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau',
                     500, 502, 503 => 'Máy chủ NKS đang bảo trì. Vui lòng thử lại sau',
-                    default => 'Đăng nhập NKS thất bại'
+                    default => 'Không thể kết nối đến hệ thống NKS'
                 };
 
-                return response()->json([
-                    'success' => false,
-                    'message' => $errorMessage,
-                    'error_code' => 'NKS_API_ERROR',
-                    'status_code' => $statusCode
-                ], min($statusCode, 422));
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $errorMessage,
+                        'error_code' => 'NKS_AUTH_FAILED',
+                    ], min($statusCode, 422));
+                } else {
+                    return back()->withErrors(['email' => $errorMessage])->withInput();
+                }
+            }
+
+            $nksData = $response->json();
+
+            // Kiểm tra cấu trúc response từ NKS
+            if (!isset($nksData['success']) || $nksData['success'] !== true) {
+                Log::error('NKS API returned invalid response', [
+                    'email' => $request->email,
+                    'response' => $nksData
+                ]);
+
+                $message = 'Phản hồi không hợp lệ từ NKS';
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                        'error_code' => 'NKS_INVALID_RESPONSE'
+                    ], 422);
+                } else {
+                    return back()->withErrors(['email' => $message])->withInput();
+                }
+            }
+
+            // Lấy dữ liệu từ NKS response
+            $responseData = $nksData['data'] ?? [];
+            $nksUser = $responseData['user'] ?? [];
+            $nksAccessToken = $responseData['access_token'] ?? null;
+            $expiresAt = $responseData['expires_at'] ?? null;
+
+            if (!$nksAccessToken || empty($nksUser)) {
+                Log::error('NKS response missing required data', [
+                    'email' => $request->email,
+                    'has_token' => !empty($nksAccessToken),
+                    'has_user' => !empty($nksUser)
+                ]);
+
+                $message = 'Dữ liệu xác thực từ NKS không đầy đủ';
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                        'error_code' => 'NKS_INCOMPLETE_DATA'
+                    ], 422);
+                } else {
+                    return back()->withErrors(['email' => $message])->withInput();
+                }
+            }
+
+            // Kiểm tra trạng thái user trong NKS
+            if (isset($nksUser['active']) && !$nksUser['active']) {
+                Log::warning('NKS user account is not active', [
+                    'email' => $request->email,
+                    'nks_user_id' => $nksUser['id'] ?? null
+                ]);
+
+                $message = 'Tài khoản đã bị vô hiệu hóa trong hệ thống NKS';
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                        'error_code' => 'NKS_ACCOUNT_INACTIVE'
+                    ], 403);
+                } else {
+                    return back()->withErrors(['email' => $message])->withInput();
+                }
+            }
+
+            // Lưu hoặc cập nhật user local với NKS data
+            DB::beginTransaction();
+            try {
+                $user = User::updateOrCreate(
+                    ['email' => $request->email],
+                    [
+                        'name' => $nksUser['name'] ?? 'NKS User',
+                        'nks_user_id' => $nksUser['id'] ?? null,
+                        'nks_access_token' => $nksAccessToken,
+                        'nks_expires_at' => $expiresAt ? Carbon::parse($expiresAt) : null,
+                        'last_login_at' => now(),
+                        'last_login_ip' => $realIP,
+                        'status' => 'active',
+                    ]
+                );
+
+                // ✅ QUAN TRỌNG: Login user vào Laravel authentication system
+                Auth::login($user, true); // true = remember me
+
+                // ✅ Regenerate session để bảo mật
+                $request->session()->regenerate();
+
+                DB::commit();
+
+                Log::info('NKS login successful with Laravel auth', [
+                    'user_id' => $user->id,
+                    'nks_user_id' => $user->nks_user_id,
+                    'email' => $request->email,
+                    'auth_check' => Auth::check(),
+                    'session_id' => session()->getId()
+                ]);
+
+                // Trả về response với NKS access token
+                $responseData = [
+                    'success' => true,
+                    'message' => 'Đăng nhập thành công',
+                    'data' => [
+                        'user' => [
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'email' => $user->email,
+                            'nks_user_id' => $user->nks_user_id,
+                        ],
+                        'access_token' => $nksAccessToken, // NKS access token
+                        'token_type' => 'Bearer',
+                        'expires_at' => $expiresAt,
+                        'nks_user_data' => $nksUser, // Full NKS user data
+                        'redirect_url' => '/', // ✅ Thêm redirect URL cho frontend
+                    ]
+                ];
+
+                if ($request->expectsJson()) {
+                    return response()->json($responseData);
+                } else {
+                    // ✅ Lưu vào session cho web (sau khi đã login)
+                    session([
+                        'nks_access_token' => $nksAccessToken,
+                        'nks_user' => $nksUser,
+                        'local_user_id' => $user->id
+                    ]);
+
+                    // ✅ Redirect về homepage
+                    return redirect('/');
+                }
+            } catch (\Exception $dbError) {
+                DB::rollback();
+
+                Log::error('Database error during NKS login', [
+                    'error' => $dbError->getMessage(),
+                    'trace' => $dbError->getTraceAsString(),
+                    'email' => $request->email
+                ]);
+
+                $message = 'Không thể lưu thông tin đăng nhập: ' . $dbError->getMessage();
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                        'error_code' => 'DATABASE_ERROR'
+                    ], 500);
+                } else {
+                    return back()->withErrors(['email' => $message])->withInput();
+                }
             }
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            Log::error('NKS API connection timeout', [
+            Log::error('NKS API connection failed', [
                 'error' => $e->getMessage(),
-                'username' => $request->username,
-                'timeout' => 30
+                'email' => $request->email
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Không thể kết nối đến máy chủ NKS. Vui lòng kiểm tra kết nối mạng và thử lại.',
-                'error_code' => 'CONNECTION_TIMEOUT'
-            ], 503);
+            $message = 'Không thể kết nối đến hệ thống NKS. Vui lòng kiểm tra kết nối mạng.';
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'error_code' => 'NKS_CONNECTION_ERROR'
+                ], 503);
+            } else {
+                return back()->withErrors(['email' => $message])->withInput();
+            }
         } catch (\Exception $e) {
             Log::error('Unexpected error during NKS login', [
                 'error' => $e->getMessage(),
-                'username' => $request->username,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'email' => $request->email
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.',
-                'error_code' => 'UNEXPECTED_ERROR'
-            ], 500);
+            $message = 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.';
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'error_code' => 'UNEXPECTED_ERROR'
+                ], 500);
+            } else {
+                return back()->withErrors(['email' => $message])->withInput();
+            }
         }
     }
+
 
     /**
      * Get NKS user info
      */
     public function nksUserInfo(Request $request): JsonResponse
     {
-        try {
-            /** @var \App\Models\User $user */
-            $user = $request->user();
+        $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+        ]);
 
-            if (!$user) {
+        try {
+            $user = User::find($request->user_id);
+
+            if (!$user || !$user->hasValidNksToken()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'User not authenticated'
+                    'message' => 'User không tồn tại hoặc token đã hết hạn',
+                    'error_code' => 'INVALID_USER_TOKEN'
                 ], 401);
             }
 
-            $nksToken = $user->nks_access_token;
-
-            if (!$nksToken) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Không tìm thấy NKS token. Vui lòng đăng nhập lại.',
-                    'error_code' => 'NO_NKS_TOKEN'
-                ], 400);
-            }
-
-            // Call NKS API
-            $response = Http::retry(2, 1000)
-                ->timeout(30)
-                ->withHeaders([
-                    'Authorization' => 'Bearer ' . $nksToken,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ])
-                ->post('https://account.nks.vn/api/nks/user', [
-                    'access_token' => $nksToken
-                ]);
+            // Gọi NKS API để lấy thông tin user
+            $response = $user->callNksApi('https://account.nks.vn/api/nks/user');
 
             if ($response->successful()) {
                 $nksData = $response->json();
 
-                // Check NKS response structure
-                if (!isset($nksData['success']) || $nksData['success'] !== true) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'NKS API trả về lỗi',
-                        'error' => $nksData
-                    ], 422);
-                }
-
-                // Extract user data
-                $nksUserData = $nksData['data']['user'] ?? $nksData['data'] ?? null;
-
-                if ($nksUserData) {
-                    // Update local user data if needed
-                    if (isset($nksUserData['name']) && $nksUserData['name'] !== $user->name) {
-                        $user->update(['name' => $nksUserData['name']]);
-                    }
-                }
-
                 return response()->json([
                     'success' => true,
                     'data' => [
-                        'local_user' => $user->makeHidden(['nks_access_token', 'password']),
-                        'nks_user' => $nksUserData,
-                        'nks_expires_at' => $nksData['data']['expires_at'] ?? null
-                    ],
-                    'message' => $nksData['message'] ?? 'Lấy thông tin người dùng thành công'
+                        'local_user' => $user->makeHidden(['nks_access_token']),
+                        'nks_user' => $nksData['data'] ?? $nksData,
+                    ]
                 ]);
             } else {
-                $statusCode = $response->status();
-
-                // Handle token expiry
-                if ($statusCode === 401) {
-                    $user->update(['nks_access_token' => null]);
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'NKS token đã hết hạn. Vui lòng đăng nhập lại.',
-                        'error_code' => 'NKS_TOKEN_EXPIRED'
-                    ], 401);
+                // Token có thể đã hết hạn
+                if ($response->status() === 401) {
+                    $user->update(['nks_access_token' => null, 'nks_expires_at' => null]);
                 }
 
                 return response()->json([
                     'success' => false,
                     'message' => 'Không thể lấy thông tin từ NKS',
-                    'error_code' => 'NKS_API_ERROR',
-                    'status_code' => $statusCode
-                ], min($statusCode, 422));
+                    'error_code' => 'NKS_API_ERROR'
+                ], 422);
             }
         } catch (\Exception $e) {
-            Log::error('NKS User Info Error', [
+            Log::error('Get user info error', [
                 'error' => $e->getMessage(),
-                'user_id' => $request->user()?->id
+                'user_id' => $request->user_id
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Lỗi kết nối NKS API',
-                'error_code' => 'NKS_CONNECTION_ERROR'
+                'message' => 'Lỗi khi lấy thông tin user',
+                'error_code' => 'GET_USER_ERROR'
             ], 500);
         }
     }
 
     /**
-     * Logout user
+     * Logout user - xóa NKS token khỏi local database
      */
     public function logout(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        Log::info('User logout', [
-            'user_id' => $user?->id,
-            'device' => $request->device ?? 'Unknown'
+        $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
         ]);
 
-        $request->user()->currentAccessToken()->delete();
+        try {
+            $user = User::find($request->user_id);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Đăng xuất thành công'
-        ]);
+            if ($user) {
+                $user->update([
+                    'nks_access_token' => null,
+                    'nks_expires_at' => null,
+                ]);
+
+                Log::info('User logged out', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+            }
+
+            // Clear session for web
+            if (!$request->expectsJson()) {
+                session()->forget(['nks_access_token', 'nks_user', 'local_user_id']);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đăng xuất thành công'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Logout error', [
+                'error' => $e->getMessage(),
+                'user_id' => $request->user_id
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi đăng xuất',
+                'error_code' => 'LOGOUT_ERROR'
+            ], 500);
+        }
     }
 
     /**
-     * Logout from all devices
+     * Logout from all devices - xóa tất cả NKS tokens
      */
     public function logoutAll(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        Log::info('User logout all devices', [
-            'user_id' => $user?->id,
-            'tokens_count' => $user?->tokens()->count() ?? 0
+        $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
         ]);
 
-        $request->user()->tokens()->delete();
+        try {
+            $user = User::find($request->user_id);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Đăng xuất khỏi tất cả thiết bị thành công'
-        ]);
+            if ($user) {
+                // Xóa NKS token của user này
+                $user->update([
+                    'nks_access_token' => null,
+                    'nks_expires_at' => null,
+                ]);
+
+                Log::info('User logged out from all devices', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đăng xuất khỏi tất cả thiết bị thành công'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Logout all error', [
+                'error' => $e->getMessage(),
+                'user_id' => $request->user_id
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi đăng xuất',
+                'error_code' => 'LOGOUT_ALL_ERROR'
+            ], 500);
+        }
     }
 
     /**
@@ -583,46 +522,226 @@ class AuthController extends Controller
      */
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'user' => $user->makeHidden(['nks_access_token', 'password']),
-                'permissions' => method_exists($user, 'getAllPermissions') ?
-                    $user->getAllPermissions()->pluck('name') : [],
-            ]
+        $request->validate([
+            'access_token' => ['required', 'string'],
         ]);
+
+        try {
+            $user = User::where('nks_access_token', $request->access_token)->first();
+
+            if (!$user || !$user->hasValidNksToken()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Token không hợp lệ hoặc đã hết hạn',
+                    'error_code' => 'INVALID_TOKEN'
+                ], 401);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'user' => $user->makeHidden(['nks_access_token']),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Get user by token error', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi validate token',
+                'error_code' => 'TOKEN_VALIDATION_ERROR'
+            ], 500);
+        }
     }
 
     /**
-     * Refresh token
+     * Refresh token - Lấy token mới từ NKS
      */
     public function refreshToken(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $currentToken = $request->user()->currentAccessToken();
-
-        // Delete current token
-        $currentToken->delete();
-
-        // Create new token
-        $tokenName = sprintf('refresh_%s_%s', $request->device ?? 'web', now()->format('YmdHis'));
-        $token = $user->createToken($tokenName)->plainTextToken;
-
-        Log::info('Token refreshed', [
-            'user_id' => $user->id,
-            'old_token_name' => $currentToken->name
+        $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
         ]);
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-            ],
-            'message' => 'Token làm mới thành công'
+        try {
+            $user = User::find($request->user_id);
+
+            if (!$user || !$user->hasValidNksToken()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User không tồn tại hoặc token đã hết hạn',
+                    'error_code' => 'INVALID_USER_TOKEN'
+                ], 401);
+            }
+
+            // Gọi NKS API để refresh token
+            $response = $user->callNksApi('https://account.nks.vn/api/nks/auth/refresh', [], 'POST');
+
+            if ($response->successful()) {
+                $nksData = $response->json();
+                $newToken = $nksData['data']['access_token'] ?? null;
+
+                if ($newToken) {
+                    $user->update(['nks_access_token' => $newToken]);
+
+                    return response()->json([
+                        'success' => true,
+                        'data' => [
+                            'access_token' => $newToken,
+                            'token_type' => 'Bearer',
+                        ],
+                        'message' => 'Token làm mới thành công'
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể làm mới token từ NKS',
+                'error_code' => 'REFRESH_TOKEN_FAILED'
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Refresh token error', [
+                'error' => $e->getMessage(),
+                'user_id' => $request->user_id
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi làm mới token',
+                'error_code' => 'REFRESH_TOKEN_ERROR'
+            ], 500);
+        }
+    }
+
+    /**
+     * Change password through NKS
+     */
+    public function changePassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
+
+        try {
+            $user = User::find($request->user_id);
+
+            if (!$user || !$user->hasValidNksToken()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User không tồn tại hoặc token đã hết hạn',
+                    'error_code' => 'INVALID_USER_TOKEN'
+                ], 401);
+            }
+
+            // Gọi NKS API để đổi password
+            $response = $user->callNksApi('https://account.nks.vn/api/nks/user/change-password', [
+                'current_password' => $request->current_password,
+                'new_password' => $request->new_password,
+                'new_password_confirmation' => $request->new_password_confirmation,
+            ], 'POST');
+
+            if ($response->successful()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Đổi mật khẩu thành công'
+                ]);
+            } else {
+                $statusCode = $response->status();
+                $errorMessage = $statusCode === 422 ? 'Mật khẩu hiện tại không đúng' : 'Không thể đổi mật khẩu';
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorMessage,
+                    'error_code' => 'CHANGE_PASSWORD_FAILED'
+                ], min($statusCode, 422));
+            }
+        } catch (\Exception $e) {
+            Log::error('Change password error', [
+                'error' => $e->getMessage(),
+                'user_id' => $request->user_id
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi đổi mật khẩu',
+                'error_code' => 'CHANGE_PASSWORD_ERROR'
+            ], 500);
+        }
+    }
+
+    /**
+     * Update NKS user info
+     */
+    public function nksUpdateUserInfo(Request $request): JsonResponse
+    {
+        $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'name' => ['sometimes', 'string', 'max:255'],
+            'phone' => ['sometimes', 'string', 'max:20'],
+        ]);
+
+        try {
+            $user = User::find($request->user_id);
+
+            if (!$user || !$user->hasValidNksToken()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User không tồn tại hoặc token đã hết hạn',
+                    'error_code' => 'INVALID_USER_TOKEN'
+                ], 401);
+            }
+
+            // Gọi NKS API để cập nhật thông tin
+            $updateData = array_filter([
+                'name' => $request->name,
+                'phone' => $request->phone,
+            ]);
+
+            $response = $user->callNksApi('https://account.nks.vn/api/nks/user/update', $updateData, 'PUT');
+
+            if ($response->successful()) {
+                $nksData = $response->json();
+                $updatedUser = $nksData['data']['user'] ?? [];
+
+                // Cập nhật thông tin local
+                if (!empty($updatedUser)) {
+                    $user->update([
+                        'name' => $updatedUser['name'] ?? $user->name,
+                    ]);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Cập nhật thông tin thành công',
+                    'data' => [
+                        'user' => $user->makeHidden(['nks_access_token']),
+                        'nks_user' => $updatedUser,
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể cập nhật thông tin',
+                    'error_code' => 'UPDATE_USER_FAILED'
+                ], 422);
+            }
+        } catch (\Exception $e) {
+            Log::error('Update user info error', [
+                'error' => $e->getMessage(),
+                'user_id' => $request->user_id
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi cập nhật thông tin',
+                'error_code' => 'UPDATE_USER_ERROR'
+            ], 500);
+        }
     }
 
     /**
