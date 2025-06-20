@@ -25,7 +25,7 @@
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/notifications.css'])
     @stack('styles')
     @yield('head')
 </head>
@@ -36,6 +36,16 @@
     @if (!request()->is('contact') && !request()->is('profile*') && !request()->is('blogs*') && !request()->is('blog-detail*') && !request()->is('about*') && !request()->is('cart*') && !request()->is('checkout*'))
     @include('partials.hero-slider')
     @endif
+
+    <!-- ✅ INCLUDE FLOATING CONTACT COMPONENT -->
+    @include('components.floating-contact', [
+    'messengerLink' => 'https://m.me/medik.fanpage',
+    'messengerText' => 'Chat với Medik qua Messenger',
+    'zaloLink' => 'https://zalo.me/medik.official',
+    'zaloText' => 'Liên hệ Medik qua Zalo',
+    'phoneNumber' => '+84123456789',
+    'phoneText' => 'Hotline: 0123 456 789'
+    ])
 
     <div class="min-h-screen">
         @include('layouts.navigation')
@@ -56,7 +66,14 @@
     @include('partials.product-quick-view-modal')
     @include('partials.footer')
 
+    <!-- ✅ Toast Notifications Container -->
+    @include('components.notifications.toast')
+
+    <!-- ✅ Scripts - Thứ tự quan trọng -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+
+    <!-- ✅ Initialize AOS -->
     <script>
         AOS.init({
             duration: 1000,
@@ -65,6 +82,59 @@
             offset: 300,
         });
     </script>
+
+    <!-- ✅ Flash Messages as Toast - FIXED -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Đợi notification.js load xong
+            setTimeout(() => {
+                @if(session('success'))
+                const successMessage = {
+                    !!json_encode(session('success')) !!
+                };
+                if (typeof showSuccessToast === 'function') {
+                    showSuccessToast('Success', successMessage);
+                } else {
+                    console.warn('showSuccessToast function not available');
+                }
+                @endif
+
+                @if(session('error'))
+                const errorMessage = {
+                    !!json_encode(session('error')) !!
+                };
+                if (typeof showErrorToast === 'function') {
+                    showErrorToast('Error', errorMessage);
+                } else {
+                    console.warn('showErrorToast function not available');
+                }
+                @endif
+
+                @if(session('warning'))
+                const warningMessage = {
+                    !!json_encode(session('warning')) !!
+                };
+                if (typeof showWarningToast === 'function') {
+                    showWarningToast('Warning', warningMessage);
+                } else {
+                    console.warn('showWarningToast function not available');
+                }
+                @endif
+
+                @if(session('info'))
+                const infoMessage = {
+                    !!json_encode(session('info')) !!
+                };
+                if (typeof showInfoToast === 'function') {
+                    showInfoToast('Info', infoMessage);
+                } else {
+                    console.warn('showInfoToast function not available');
+                }
+                @endif
+            }, 200);
+        });
+    </script>
+
     @stack('scripts')
 </body>
 
