@@ -271,13 +271,6 @@
         </div>
     </div>
 
-    <!-- Back to Top Button -->
-    <button id="back-to-top"
-        class="fixed bottom-6 right-6 w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 opacity-0 invisible z-50">
-        <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M5 15l7-7 7 7" />
-        </svg>
-    </button>
 </footer>
 
 <!-- JavaScript cho accordion và back to top -->
