@@ -276,6 +276,8 @@ class AuthController extends Controller
                     'session_id' => session()->getId()
                 ]);
 
+                $redirectUrl = $this->determineRedirectUrl($nksUser);
+
                 // Trả về response với NKS access token
                 $responseData = [
                     'success' => true,
@@ -291,7 +293,7 @@ class AuthController extends Controller
                         'token_type' => 'Bearer',
                         'expires_at' => $expiresAt,
                         'nks_user_data' => $nksUser, // Full NKS user data
-                        'redirect_url' => '/', // ✅ Thêm redirect URL cho frontend
+                        'redirect_url' => $redirectUrl, // ✅ Thêm redirect URL cho frontend
                     ]
                 ];
 
@@ -306,7 +308,7 @@ class AuthController extends Controller
                     ]);
 
                     // ✅ Redirect về homepage
-                    return redirect('/');
+                    return redirect($redirectUrl);
                 }
             } catch (\Exception $dbError) {
                 DB::rollback();
@@ -366,8 +368,38 @@ class AuthController extends Controller
             }
         }
     }
+    /**
+     * Mapping role_id với route tương ứng
+     */
+    private const ROLE_REDIRECTS = [
+        5 => '/',           // Bệnh nhân -> Homepage
+        6 => '/dashboard',      // Bác sĩ -> Admin
+        7 => '/nurse',      // Y tá -> Nurse dashboard
+        8 => '/reception',  // Lễ tân -> Reception
+        // Thêm role khác nếu cần
+    ];
 
+    /**
+     * Xác định URL redirect dựa trên role_id
+     */
+    private function determineRedirectUrl(array $nksUser): string
+    {
+        $roleId = $nksUser['role_id'] ?? null;
 
+        Log::info('Determining redirect URL', [
+            'role_id' => $roleId,
+            'available_routes' => array_keys(self::ROLE_REDIRECTS)
+        ]);
+
+        $redirectUrl = self::ROLE_REDIRECTS[$roleId] ?? '/';
+
+        Log::info('Redirect URL determined', [
+            'role_id' => $roleId,
+            'redirect_url' => $redirectUrl
+        ]);
+
+        return $redirectUrl;
+    }
     /**
      * Get NKS user info
      */
@@ -564,7 +596,6 @@ class AuthController extends Controller
         $request->validate([
             'user_id' => ['required', 'integer', 'exists:users,id'],
         ]);
-
         try {
             $user = User::find($request->user_id);
 
@@ -596,7 +627,6 @@ class AuthController extends Controller
                     ]);
                 }
             }
-
             return response()->json([
                 'success' => false,
                 'message' => 'Không thể làm mới token từ NKS',

@@ -359,6 +359,50 @@ class User extends Authenticatable
                 'nks_expires_at' => null,
             ]);
     }
+    /**
+     * ✅ Relationships với FCM tokens (if UserFcmToken model exists)
+     */
+    public function fcmTokens()
+    {
+        if (class_exists('App\Models\UserFcmToken')) {
+            return $this->hasMany(\App\Models\UserFcmToken::class);
+        }
+        return null;
+    }
 
-  
+    /**
+     * ✅ Get active FCM tokens
+     */
+    public function activeFcmTokens()
+    {
+        $fcmTokens = $this->fcmTokens();
+        if ($fcmTokens && method_exists($fcmTokens, 'active')) {
+            return $fcmTokens->active()->notExpired();
+        }
+        return null;
+    }
+
+    /**
+     * ✅ Get FCM tokens for specific device
+     */
+    public function fcmTokensForDevice(string $device)
+    {
+        $fcmTokens = $this->fcmTokens();
+        if ($fcmTokens && method_exists($fcmTokens, 'device')) {
+            return $fcmTokens->device($device)->active()->notExpired();
+        }
+        return null;
+    }
+
+    /**
+     * ✅ Get all active FCM token strings
+     */
+    public function getActiveFcmTokenStrings(): array
+    {
+        $activeFcmTokens = $this->activeFcmTokens();
+        if ($activeFcmTokens) {
+            return $activeFcmTokens->pluck('fcm_token')->toArray();
+        }
+        return [];
+    }
 }
