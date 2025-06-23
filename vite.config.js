@@ -11,6 +11,8 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/style.css',
                 'resources/js/index.js',
+                'resources/js/notifications.js',
+                'resources/css/notifications.css',
             ],
             refresh: true,
         }),

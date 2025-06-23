@@ -8,8 +8,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/nks-login', [AuthController::class, 'nksLogin']);
 
-// Protected routes
+// Protected routes - Chỉ NKS Authentication
 Route::middleware('auth:sanctum')->group(function () {
+    // Auth routes
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/logout-all', [AuthController::class, 'logoutAll']);
     Route::get('/me', [AuthController::class, 'me']);

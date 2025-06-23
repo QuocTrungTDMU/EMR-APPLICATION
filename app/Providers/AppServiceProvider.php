@@ -7,6 +7,8 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
 use App\Services\NksApiService;
+use App\Services\NksAttendanceService;
+use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(NksApiService::class, function ($app) {
             return new NksApiService();
         });
+
+        $this->app->singleton(NksAttendanceService::class);
     }
 
     /**
@@ -28,5 +32,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+
+        Blade::component('notifications.dropdown', \App\View\Components\Notifications\Dropdown::class);
     }
 }
