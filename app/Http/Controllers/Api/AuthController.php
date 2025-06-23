@@ -368,8 +368,6 @@ class AuthController extends Controller
             }
         }
     }
-
-
     /**
      * Mapping role_id với route tương ứng
      */
@@ -402,9 +400,6 @@ class AuthController extends Controller
 
         return $redirectUrl;
     }
-
-
-
     /**
      * Get NKS user info
      */
@@ -601,7 +596,6 @@ class AuthController extends Controller
         $request->validate([
             'user_id' => ['required', 'integer', 'exists:users,id'],
         ]);
-
         try {
             $user = User::find($request->user_id);
 
@@ -633,7 +627,6 @@ class AuthController extends Controller
                     ]);
                 }
             }
-
             return response()->json([
                 'success' => false,
                 'message' => 'Không thể làm mới token từ NKS',

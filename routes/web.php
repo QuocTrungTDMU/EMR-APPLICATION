@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
@@ -13,13 +12,19 @@ use App\Http\Controllers\AttendanceController;
 
 require __DIR__ . '/auth.php';
 
+// Trang chính
+Route::get('/', [HomeController::class, 'index'])->name('homepage');
 
-Route::get('/', function () {
+Route::get('/homepage', function () {
     return view('homepage');
-});
+})->middleware(['auth', 'verified'])->name('homepage');
 
+// Trang tĩnh
+Route::view('/about', 'about-us')->name('about');
+Route::view('/cart', 'cart')->name('cart');
+Route::view('/checkout', 'checkout')->name('checkout');
 
-
+// Trang liên hệ
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
@@ -39,7 +44,7 @@ Route::middleware(['web'])->group(function () {
     Route::post('/nks-login', [AuthController::class, 'nksLogin'])->name('nksLogin');
 });
 
-
+// Login
 Route::get('/login', function () {
     return view('auth.login');
 })->middleware('guest')->name('login');
@@ -70,35 +75,35 @@ Route::middleware(['auth'])->prefix('dashboard')->name('admin.')->group(function
 });
 
 
+// Blog
 Route::prefix('blogs')->name('blogs.')->group(function () {
     Route::get('/', [App\Http\Controllers\BlogController::class, 'index'])->name('index');
     Route::get('/category/{category}', [App\Http\Controllers\BlogController::class, 'category'])->name('category');
     Route::get('/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('show');
 });
-
 Route::redirect('/blog', '/blogs');
 
-
-
-Route::get('/', [HomeController::class, 'index'])->name('homepage');
-
-// Tạo test route để debug
+// Test email
 Route::get('/test-email', function () {
     try {
         Mail::raw('Test email from Laravel', function ($message) {
-            $message->to('enjoy4624@gmail.com')
-                ->subject('Test Email');
+            $message->to('enjoy4624@gmail.com')->subject('Test Email');
         });
-
         return 'Email sent successfully!';
     } catch (\Exception $e) {
         return 'Error: ' . $e->getMessage();
     }
 });
 
+Route::middleware('auth')->group(function () {
+    // Xem thông tin
+    Route::get('/profile', [ProfileController::class, 'view'])->name('profile.view');
 
+    // Form chỉnh sửa
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
 
-
+    // Xử lý cập nhật
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 // Test route
 Route::post('/test-fcm-backend', function (Request $request) {

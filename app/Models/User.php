@@ -359,7 +359,6 @@ class User extends Authenticatable
                 'nks_expires_at' => null,
             ]);
     }
-
     /**
      * ✅ Relationships với FCM tokens (if UserFcmToken model exists)
      */
