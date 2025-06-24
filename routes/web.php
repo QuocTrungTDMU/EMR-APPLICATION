@@ -8,7 +8,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AttendanceController;
-
+use App\Http\Controllers\PatientManagementController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Mail;
 
 require __DIR__ . '/auth.php';
 
@@ -53,12 +55,31 @@ Route::get('/homepage', function () {
     return view('homepage');
 })->middleware(['auth', 'verified'])->name('homepage');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
+
+Route::middleware('auth')->group(function () {
+    // Xem thông tin
+    Route::get('/profile', [ProfileController::class, 'view'])->name('profile.view');
+
+    // Form chỉnh sửa
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+
+    // Xử lý cập nhật
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Xoá tài khoản
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Cập nhật mật khẩu
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+
+    // Form chỉnh sửa mật khẩu
+    Route::get('/profile/edit-password', [ProfileController::class, 'editPassword'])->name('profile.edit-password');
+
+   // Route::post('/avatar/update', [ProfileController::class, 'updateAvatar'])->name('avatar.update');
+
+   Route::post('/profile/upload-cccd', [ProfileController::class, 'uploadCccd'])->name('profile.uploadCccd');
+});
 
 
 // routes/web.php
@@ -72,6 +93,13 @@ Route::middleware(['auth'])->prefix('dashboard')->name('admin.')->group(function
     Route::post('/attendance/checkin', [AttendanceController::class, 'checkin'])->name('attendance.checkin');
     Route::post('/attendance/checkout', [AttendanceController::class, 'checkout'])->name('attendance.checkout');
     Route::get('/attendance/attendances', [AttendanceController::class, 'attendances'])->name('attendance.attendances');
+
+    Route::get('/patients', [PatientManagementController::class, 'index'])->name('patients.index');
+    Route::get('/patients/{id}/edit', [PatientManagementController::class, 'edit'])->name('patients.edit');
+    Route::post('/patients/{id}', [PatientManagementController::class, 'update'])->name('patients.update');
+    Route::delete('/patients/{id}', [PatientManagementController::class, 'destroy'])->name('patients.destroy');
+    Route::get('/patients/export', [PatientManagementController::class, 'exportExcel'])->name('patients.export');
+
 });
 
 
@@ -105,23 +133,23 @@ Route::middleware('auth')->group(function () {
     // Xử lý cập nhật
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-// Test route
-Route::post('/test-fcm-backend', function (Request $request) {
-    $firebaseService = new \App\Services\FirebaseService();
+        // Test route
+        Route::post('/test-fcm-backend', function (Request $request) {
+            $firebaseService = new \App\Services\FirebaseService();
 
-    $result = $firebaseService->sendToDevice(
-        'Test từ Backend',
-        'Đây là test notification từ Service Account!',
-        $request->fcm_token,
-        ['type' => 'backend_test']
-    );
+            $result = $firebaseService->sendToDevice(
+                'Test từ Backend',
+                'Đây là test notification từ Service Account!',
+                $request->fcm_token,
+                ['type' => 'backend_test']
+            );
 
-    return response()->json([
-        'success' => $result,
-        'message' => $result ? 'Sent successfully!' : 'Failed to send'
-    ]);
-});
-
+            return response()->json([
+                'success' => $result,
+                'message' => $result ? 'Sent successfully!' : 'Failed to send'
+            ]);
+        });
+    });
 
 
 
@@ -152,4 +180,7 @@ Route::middleware(['web'])->prefix('api')->group(function () {
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('api.notifications.destroy');
 });
 
+
 require __DIR__ . '/auth.php';
+
+
