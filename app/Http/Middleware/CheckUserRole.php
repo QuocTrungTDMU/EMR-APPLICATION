@@ -1,3 +1,4 @@
+
 class CheckUserRole
 {
 public function handle(Request $request, Closure $next, $requiredRoleId)

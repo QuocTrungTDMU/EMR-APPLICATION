@@ -123,7 +123,23 @@
                     </li>
                     <li><a href="{{ route('about') }}" class="text-gray-700 hover:text-blue-600 transition-colors py-2">About</a></li>
                     <li><a href="{{ route('blogs.index') }}" class="text-gray-700 hover:text-blue-600 transition-colors py-2">Blog</a></li>
-                    <li><a href="#" class="text-gray-700 hover:text-blue-600 transition-colors py-2">Collection</a></li>
+                    <li class="relative group">
+                        <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors py-2 ">Page+</a>
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg mt-2 space-y-2 py-2 w-64 ">
+                            <li>
+                             <a href="#" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Dashboard</a>
+                                {{-- <ul class="ml-4 hidden group-hover:block">
+                                    <li><a href="#" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Sub-item 1</a></li>
+                                    <li><a href="#" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Sub-item 2</a></li>
+                                </ul> --}}
+                            </li>
+                            <li><a href="{{ route('availability.checker') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Availability Checker</a></li>
+                            <li><a href="{{ route('telemedicine') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Online Consultation & Telemedicine</a></li>
+                            <li><a href="{{ route('faq') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">FAQ</a></li>
+                            <li><a href="{{ route('testimonials') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Testimonials</a></li>
+                            <li><a href="{{ route('patient-account') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Patient Account</a></li>
+                        </ul>
+                    </li>
                     <!-- Shop with submenu -->
                     <li class="relative group">
                         <button class="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors py-2">
@@ -414,7 +430,7 @@
         <a href="{{ route('blogs.index') }}" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Blog</a>
 
         <!-- Collection -->
-        <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Collection</a>
+        <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Page+</a>
 
         <!-- Shop Menu Item với submenu -->
         <div class="border-b border-gray-100">

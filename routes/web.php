@@ -8,8 +8,13 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AvailabilityController;
+use App\Http\Controllers\FaqController;
+use App\Http\Controllers\PatientAccountController;
 use App\Http\Controllers\PatientManagementController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TelemedicineController;
+use App\Http\Controllers\TestimonialsController;
 use Illuminate\Support\Facades\Mail;
 
 require __DIR__ . '/auth.php';
@@ -76,9 +81,28 @@ Route::middleware('auth')->group(function () {
     // Form chỉnh sửa mật khẩu
     Route::get('/profile/edit-password', [ProfileController::class, 'editPassword'])->name('profile.edit-password');
 
-   // Route::post('/avatar/update', [ProfileController::class, 'updateAvatar'])->name('avatar.update');
+    // Route::post('/avatar/update', [ProfileController::class, 'updateAvatar'])->name('avatar.update');
 
-   Route::post('/profile/upload-cccd', [ProfileController::class, 'uploadCccd'])->name('profile.uploadCccd');
+    Route::post('/profile/upload-cccd', [ProfileController::class, 'uploadCccd'])->name('profile.uploadCccd');
+
+
+    // Lịch làm việc bác sĩ
+    Route::get('/availability-checker', [AvailabilityController::class, 'index'])->name('availability.checker');
+    Route::get('/doctor-detail/{doctorId}', [AvailabilityController::class, 'book'])->name('book.doctor-detail');
+
+    //Tư vấn trực tuyến & từ xa
+    Route::get('/online-consultation-telemedicine', [TelemedicineController::class, 'index'])->name('telemedicine');
+
+    //Câu hỏi thường gặp
+    Route::get('/faq', [FaqController::class, 'index'])->name('faq');
+    Route::post('/faq/submit', [FaqController::class, 'submit'])->name('faq.submit');
+
+    //Tạo tài khoản bệnh nhân
+    Route::get('/patient-account', [PatientAccountController::class, 'index'])->name('patient-account');
+    Route::post('/patient-account/submit', [PatientAccountController::class, 'submit'])->name('patient-account.submit');
+
+    //Đánh giá
+    Route::get('/testimonials', [TestimonialsController::class, 'index'])->name('testimonials');
 });
 
 
@@ -99,6 +123,7 @@ Route::middleware(['auth'])->prefix('dashboard')->name('admin.')->group(function
     Route::post('/patients/{id}', [PatientManagementController::class, 'update'])->name('patients.update');
     Route::delete('/patients/{id}', [PatientManagementController::class, 'destroy'])->name('patients.destroy');
     Route::get('/patients/export', [PatientManagementController::class, 'exportExcel'])->name('patients.export');
+
 
 });
 
@@ -124,32 +149,24 @@ Route::get('/test-email', function () {
 });
 
 Route::middleware('auth')->group(function () {
-    // Xem thông tin
-    Route::get('/profile', [ProfileController::class, 'view'])->name('profile.view');
 
-    // Form chỉnh sửa
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Test route
+    Route::post('/test-fcm-backend', function (Request $request) {
+        $firebaseService = new \App\Services\FirebaseService();
 
-    // Xử lý cập nhật
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        $result = $firebaseService->sendToDevice(
+            'Test từ Backend',
+            'Đây là test notification từ Service Account!',
+            $request->fcm_token,
+            ['type' => 'backend_test']
+        );
 
-        // Test route
-        Route::post('/test-fcm-backend', function (Request $request) {
-            $firebaseService = new \App\Services\FirebaseService();
-
-            $result = $firebaseService->sendToDevice(
-                'Test từ Backend',
-                'Đây là test notification từ Service Account!',
-                $request->fcm_token,
-                ['type' => 'backend_test']
-            );
-
-            return response()->json([
-                'success' => $result,
-                'message' => $result ? 'Sent successfully!' : 'Failed to send'
-            ]);
-        });
+        return response()->json([
+            'success' => $result,
+            'message' => $result ? 'Sent successfully!' : 'Failed to send'
+        ]);
     });
+});
 
 
 
@@ -182,5 +199,3 @@ Route::middleware(['web'])->prefix('api')->group(function () {
 
 
 require __DIR__ . '/auth.php';
-
-
