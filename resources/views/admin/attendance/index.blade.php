@@ -747,21 +747,20 @@
             var canCheckin = (currentHour === 8 && currentMinute >= 30) || (currentHour === 9 && currentMinute === 0);
             var canCheckout = (currentHour === 16 && currentMinute <= 30);
 
-            // ✅ ĐÚNG: Không có dấu ngoặc nhọn thừa
-            var hasCheckin = {
-                {
-                    $attendanceStatus['has_checkin'] ? 'true' : 'false'
-                }
-            };
-            var hasCheckout = {
-                {
-                    $attendanceStatus['has_checkout'] ? 'true' : 'false'
-                }
-            };
+            // ✅ SỬA LỖI: Cú pháp đúng cho Blade để truyền giá trị từ PHP sang JavaScript
+            var hasCheckin = @json($attendanceStatus['has_checkin']);
+            var hasCheckout = @json($attendanceStatus['has_checkout']);
 
-            this.updateButtonState(checkinBtn, canCheckin, hasCheckin === 'true', 'CHECK IN NGAY', 'NGOÀI GIỜ CHECK IN');
-            this.updateButtonState(checkoutBtn, canCheckout, hasCheckout === 'true', 'CHECK OUT', 'NGOÀI GIỜ CHECK OUT');
+            // Ép kiểu về boolean nếu cần
+            hasCheckin = Boolean(hasCheckin);
+            hasCheckout = Boolean(hasCheckout);
+
+            this.updateButtonState(checkinBtn, canCheckin, hasCheckin, 'CHECK IN NGAY', 'NGOÀI GIỜ CHECK IN');
+            this.updateButtonState(checkoutBtn, canCheckout, hasCheckout, 'CHECK OUT', 'NGOÀI GIỜ CHECK OUT');
         }
+
+
+
 
 
         initializeCountdownTimer() {

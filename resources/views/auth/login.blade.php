@@ -24,6 +24,29 @@
         .password-toggle:hover {
             color: #3b82f6;
         }
+
+        /* ✅ Smooth transitions cho alerts */
+        .alert-enter {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .alert-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .alert-exit {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .alert-exit-active {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 
@@ -54,16 +77,41 @@
                             </p>
                         </div>
 
-                        <!-- Session Status -->
+                        <!-- ✅ Session Status Messages -->
                         @if (session('status'))
-                        <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-900/20 dark:border-green-800">
-                            <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ session('status') }}</p>
+                        <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-900/20 dark:border-green-800 alert-enter-active">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="w-5 h-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ session('status') }}</p>
+                                </div>
+                            </div>
                         </div>
                         @endif
 
-                        <!-- Error Messages -->
+                        <!-- ✅ Success Messages -->
+                        @if (session('success'))
+                        <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-900/20 dark:border-green-800 alert-enter-active">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="w-5 h-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ session('success') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        <!-- ✅ Error Messages -->
                         @if ($errors->any())
-                        <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
+                        <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800 alert-enter-active">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     <svg class="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -84,10 +132,13 @@
                         </div>
                         @endif
 
+                        <!-- ✅ Dynamic Alert Container cho JavaScript messages -->
+                        <div id="dynamicAlert" class="hidden mb-4"></div>
+
                         <div>
                             <!-- Social Login Buttons -->
                             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
-                                <button type="button" class="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+                                <button type="button" class="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10" onclick="handleSocialLogin('google')">
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M18.7511 10.1944C18.7511 9.47495 18.6915 8.94995 18.5626 8.40552H10.1797V11.6527H15.1003C15.0011 12.4597 14.4654 13.675 13.2749 14.4916L13.2582 14.6003L15.9087 16.6126L16.0924 16.6305C17.7788 15.1041 18.7511 12.8583 18.7511 10.1944Z" fill="#4285F4" />
                                         <path d="M10.1788 18.75C12.5895 18.75 14.6133 17.9722 16.0915 16.6305L13.274 14.4916C12.5201 15.0068 11.5081 15.3666 10.1788 15.3666C7.81773 15.3666 5.81379 13.8402 5.09944 11.7305L4.99473 11.7392L2.23868 13.8295L2.20264 13.9277C3.67087 16.786 6.68674 18.75 10.1788 18.75Z" fill="#34A853" />
@@ -97,7 +148,7 @@
                                     Đăng nhập Google
                                 </button>
 
-                                <button type="button" class="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+                                <button type="button" class="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10" onclick="handleSocialLogin('twitter')">
                                     <svg width="21" class="fill-current" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M15.6705 1.875H18.4272L12.4047 8.75833L19.4897 18.125H13.9422L9.59717 12.4442L4.62554 18.125H1.86721L8.30887 10.7625L1.51221 1.875H7.20054L11.128 7.0675L15.6705 1.875ZM14.703 16.475H16.2305L6.37054 3.43833H4.73137L14.703 16.475Z" />
                                     </svg>
@@ -115,8 +166,8 @@
                                 </div>
                             </div>
 
-                            <!-- ✅ PURE HTML FORM - NO ALPINE.JS -->
-                            <form method="POST" action="{{ route('nksLogin') }}" id="loginForm">
+                            <!-- ✅ ENHANCED NKS LOGIN FORM -->
+                            <form method="POST" action="{{ route('nksLogin') }}" id="loginForm" novalidate>
                                 @csrf
 
                                 <div class="space-y-5">
@@ -132,10 +183,12 @@
                                             placeholder="info@gmail.com"
                                             required
                                             autofocus
+                                            autocomplete="email"
                                             class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-blue-300 focus:outline-none focus:ring-3 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-blue-800 disabled:opacity-50 disabled:cursor-not-allowed @error('email') border-red-500 @enderror" />
                                         @error('email')
                                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                         @enderror
+                                        <p id="emailError" class="mt-1 text-sm text-red-500 hidden"></p>
                                     </div>
 
                                     <!-- Password -->
@@ -149,6 +202,8 @@
                                                 name="password"
                                                 placeholder="Nhập mật khẩu của bạn"
                                                 required
+                                                autocomplete="current-password"
+                                                minlength="6"
                                                 class="h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-blue-300 focus:outline-none focus:ring-3 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-blue-800 disabled:opacity-50 disabled:cursor-not-allowed @error('password') border-red-500 @enderror" />
 
                                             <span id="passwordToggle" class="absolute z-30 text-gray-500 -translate-y-1/2 cursor-pointer right-4 top-1/2 dark:text-gray-400 password-toggle">
@@ -163,6 +218,7 @@
                                         @error('password')
                                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                         @enderror
+                                        <p id="passwordError" class="mt-1 text-sm text-red-500 hidden"></p>
                                     </div>
 
                                     <!-- Checkbox và Forgot Password -->
@@ -172,19 +228,27 @@
                                                 <input type="checkbox"
                                                     id="remember"
                                                     name="remember"
+                                                    {{ old('remember') ? 'checked' : '' }}
                                                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2" />
                                                 Ghi nhớ đăng nhập
                                             </label>
                                         </div>
-                                        <a href="#" class="text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400">Quên mật khẩu?</a>
+                                        <a href="#" class="text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400" onclick="handleForgotPassword(event)">Quên mật khẩu?</a>
                                     </div>
 
                                     <!-- Submit Button -->
                                     <div>
                                         <button type="submit"
                                             id="submitButton"
-                                            class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-blue-500 shadow-sm hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed">
-                                            <span id="submitText">Đăng nhập với NKS</span>
+                                            class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-blue-500 shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
+
+                                            <span id="submitText" class="flex items-center">
+                                                <svg id="submitIcon" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                                                </svg>
+                                                Đăng nhập với NKS
+                                            </span>
+
                                             <span id="loadingText" class="hidden items-center">
                                                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -201,7 +265,7 @@
                             <div class="mt-5">
                                 <p class="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
                                     Chưa có tài khoản?
-                                    <a href="{{ route('register') ?? '#' }}" class="text-blue-500 hover:text-blue-600 dark:text-blue-400">Đăng ký ngay</a>
+                                    <a href="{{ route('register') ?? '#' }}" class="text-blue-500 hover:text-blue-600 dark:text-blue-400 transition-colors">Đăng ký ngay</a>
                                 </p>
                             </div>
                         </div>
@@ -241,7 +305,7 @@
 
             <!-- Dark Mode Toggler -->
             <div class="fixed z-50 hidden bottom-6 right-6 sm:block">
-                <button id="darkModeToggle" class="inline-flex items-center justify-center text-white transition-colors rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 dark-mode-toggle">
+                <button id="darkModeToggle" class="inline-flex items-center justify-center text-white transition-colors rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark-mode-toggle">
                     <svg id="sunIcon" class="hidden fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001Z" fill="" />
                     </svg>
@@ -253,9 +317,118 @@
         </div>
     </div>
 
-    <!-- ✅ PURE VANILLA JAVASCRIPT - NO FRAMEWORKS -->
+
+    <!-- ✅ ENHANCED VANILLA JAVASCRIPT -->
     <script>
-        // Dark mode functionality
+        // ✅ Configuration
+        const CONFIG = {
+            LOGIN_TIMEOUT: 30000, // 30 seconds
+            AUTO_HIDE_ALERTS: 5000, // 5 seconds
+            VALIDATION_DELAY: 500, // 0.5 seconds
+            MAX_LOGIN_ATTEMPTS: 100,
+            STORAGE_KEYS: {
+                DARK_MODE: 'nks_dark_mode',
+                LOGIN_ATTEMPTS: 'nks_login_attempts',
+                LAST_ATTEMPT: 'nks_last_attempt'
+            }
+        };
+
+        // ✅ State management
+        let loginAttempts = 0;
+        let isSubmitting = false;
+        let validationTimeout = null;
+
+        // ✅ Utility functions
+        const Utils = {
+            // Email validation
+            isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            },
+
+            // Show/hide elements with animation
+            toggleElement(element, show, animationClass = 'alert-enter-active') {
+                if (show) {
+                    element.classList.remove('hidden');
+                    element.classList.add(animationClass);
+                } else {
+                    element.classList.add('hidden');
+                    element.classList.remove(animationClass);
+                }
+            },
+
+            // Create alert element
+            createAlert(message, type = 'error') {
+                const alertClass = type === 'success' ? 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-200' : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-200';
+                const iconPath = type === 'success' ?
+                    'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' :
+                    'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z';
+
+                return `
+                    <div class="p-4 border rounded-lg ${alertClass} alert-enter-active">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="w-5 h-5 ${type === 'success' ? 'text-green-400' : 'text-red-400'}" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="${iconPath}" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium">${message}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            // Show dynamic alert
+            showAlert(message, type = 'error', autoHide = true) {
+                const alertContainer = document.getElementById('dynamicAlert');
+                if (alertContainer) {
+                    alertContainer.innerHTML = this.createAlert(message, type);
+                    this.toggleElement(alertContainer, true);
+
+                    if (autoHide) {
+                        setTimeout(() => {
+                            this.toggleElement(alertContainer, false);
+                        }, CONFIG.AUTO_HIDE_ALERTS);
+                    }
+                }
+            },
+
+            // Debounce function
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            },
+
+            // Storage helpers
+            setStorage(key, value) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                } catch (e) {
+                    console.warn('LocalStorage not available:', e);
+                }
+            },
+
+            getStorage(key, defaultValue = null) {
+                try {
+                    const item = localStorage.getItem(key);
+                    return item ? JSON.parse(item) : defaultValue;
+                } catch (e) {
+                    console.warn('LocalStorage not available:', e);
+                    return defaultValue;
+                }
+            }
+        };
+
+        // ✅ Dark mode functionality
         function initDarkMode() {
             const darkModeToggle = document.getElementById('darkModeToggle');
             const body = document.getElementById('body');
@@ -264,7 +437,7 @@
             const moonIcon = document.getElementById('moonIcon');
 
             // Get saved dark mode preference
-            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            const savedDarkMode = Utils.getStorage(CONFIG.STORAGE_KEYS.DARK_MODE, false);
 
             // Apply dark mode if saved
             if (savedDarkMode) {
@@ -275,31 +448,31 @@
             }
 
             // Dark mode toggle
-            darkModeToggle.addEventListener('click', function() {
+            darkModeToggle?.addEventListener('click', function() {
                 const isDark = body.classList.contains('dark');
 
                 if (isDark) {
                     body.classList.remove('dark');
                     sunIcon.classList.add('hidden');
                     moonIcon.classList.remove('hidden');
-                    localStorage.setItem('darkMode', 'false');
+                    Utils.setStorage(CONFIG.STORAGE_KEYS.DARK_MODE, false);
                 } else {
                     body.classList.add('dark');
                     sunIcon.classList.remove('hidden');
                     moonIcon.classList.add('hidden');
-                    localStorage.setItem('darkMode', 'true');
+                    Utils.setStorage(CONFIG.STORAGE_KEYS.DARK_MODE, true);
                 }
             });
         }
 
-        // Password toggle functionality
+        // ✅ Password toggle functionality
         function initPasswordToggle() {
             const passwordToggle = document.getElementById('passwordToggle');
             const passwordInput = document.getElementById('password');
             const eyeOpen = document.getElementById('eyeOpen');
             const eyeClosed = document.getElementById('eyeClosed');
 
-            passwordToggle.addEventListener('click', function() {
+            passwordToggle?.addEventListener('click', function() {
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
                     eyeOpen.classList.add('hidden');
@@ -312,7 +485,46 @@
             });
         }
 
-        // Form submission functionality
+        // ✅ Form validation
+        function initFormValidation() {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+
+            // Real-time email validation
+            const validateEmail = Utils.debounce(function() {
+                const email = emailInput.value.trim();
+
+                if (email && !Utils.isValidEmail(email)) {
+                    emailError.textContent = 'Email không đúng định dạng';
+                    emailError.classList.remove('hidden');
+                    emailInput.classList.add('border-red-500');
+                } else {
+                    emailError.classList.add('hidden');
+                    emailInput.classList.remove('border-red-500');
+                }
+            }, CONFIG.VALIDATION_DELAY);
+
+            // Real-time password validation
+            const validatePassword = Utils.debounce(function() {
+                const password = passwordInput.value;
+
+                if (password && password.length < 6) {
+                    passwordError.textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
+                    passwordError.classList.remove('hidden');
+                    passwordInput.classList.add('border-red-500');
+                } else {
+                    passwordError.classList.add('hidden');
+                    passwordInput.classList.remove('border-red-500');
+                }
+            }, CONFIG.VALIDATION_DELAY);
+
+            emailInput?.addEventListener('input', validateEmail);
+            passwordInput?.addEventListener('input', validatePassword);
+        }
+
+        // ✅ Enhanced form submission
         function initFormSubmission() {
             const loginForm = document.getElementById('loginForm');
             const submitButton = document.getElementById('submitButton');
@@ -321,32 +533,154 @@
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
 
-            loginForm.addEventListener('submit', function(event) {
-                // Basic validation
-                if (!emailInput.value.trim() || !passwordInput.value.trim()) {
+            // Check rate limiting
+            function checkRateLimit() {
+                const attempts = Utils.getStorage(CONFIG.STORAGE_KEYS.LOGIN_ATTEMPTS, 0);
+                const lastAttempt = Utils.getStorage(CONFIG.STORAGE_KEYS.LAST_ATTEMPT, 0);
+                const now = Date.now();
+
+                // Reset attempts after 1 hour
+                if (now - lastAttempt > 3600000) {
+                    Utils.setStorage(CONFIG.STORAGE_KEYS.LOGIN_ATTEMPTS, 0);
+                    return true;
+                }
+
+                return attempts < CONFIG.MAX_LOGIN_ATTEMPTS;
+            }
+
+            // Set loading state
+            function setLoadingState(loading) {
+                isSubmitting = loading;
+                submitButton.disabled = loading;
+
+                if (loading) {
+                    submitText.classList.add('hidden');
+                    loadingText.classList.remove('hidden');
+                    loadingText.classList.add('flex');
+                    submitButton.classList.add('loading');
+                } else {
+                    submitText.classList.remove('hidden');
+                    loadingText.classList.add('hidden');
+                    loadingText.classList.remove('flex');
+                    submitButton.classList.remove('loading');
+                }
+            }
+
+            // Form validation
+            function validateForm() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                let isValid = true;
+                let errors = [];
+
+                // Email validation
+                if (!email) {
+                    errors.push('Vui lòng nhập email');
+                    isValid = false;
+                } else if (!Utils.isValidEmail(email)) {
+                    errors.push('Email không đúng định dạng');
+                    isValid = false;
+                }
+
+                // Password validation
+                if (!password) {
+                    errors.push('Vui lòng nhập mật khẩu');
+                    isValid = false;
+                } else if (password.length < 6) {
+                    errors.push('Mật khẩu phải có ít nhất 6 ký tự');
+                    isValid = false;
+                }
+
+                // Show errors
+                if (!isValid) {
+                    Utils.showAlert(errors.join('<br>'), 'error');
+                }
+
+                return isValid;
+            }
+
+            // Form submit handler
+            loginForm?.addEventListener('submit', function(event) {
+                // Prevent double submission
+                if (isSubmitting) {
                     event.preventDefault();
-                    alert('Vui lòng nhập đầy đủ email và mật khẩu');
                     return false;
                 }
 
-                // Show loading state
-                submitButton.disabled = true;
-                submitText.classList.add('hidden');
-                loadingText.classList.remove('hidden');
-                loadingText.classList.add('flex');
+                // Check rate limiting
+                if (!checkRateLimit()) {
+                    event.preventDefault();
+                    Utils.showAlert('Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau 1 giờ.', 'error');
+                    return false;
+                }
+
+                // Validate form
+                if (!validateForm()) {
+                    event.preventDefault();
+                    return false;
+                }
+
+                // Set loading state
+                setLoadingState(true);
+
+                // Update login attempts
+                const attempts = Utils.getStorage(CONFIG.STORAGE_KEYS.LOGIN_ATTEMPTS, 0);
+                Utils.setStorage(CONFIG.STORAGE_KEYS.LOGIN_ATTEMPTS, attempts + 1);
+                Utils.setStorage(CONFIG.STORAGE_KEYS.LAST_ATTEMPT, Date.now());
+
+                // Set timeout for form submission
+                setTimeout(() => {
+                    if (isSubmitting) {
+                        setLoadingState(false);
+                        Utils.showAlert('Yêu cầu đăng nhập quá lâu. Vui lòng thử lại.', 'error');
+                    }
+                }, CONFIG.LOGIN_TIMEOUT);
 
                 console.log('NKS Login form submitted:', {
                     email: emailInput.value,
-                    password: '***hidden***'
+                    timestamp: new Date().toISOString(),
+                    attempts: attempts + 1
                 });
 
-                // Form will submit naturally to Laravel
+                // Allow form to submit normally to Laravel
                 return true;
+            });
+
+            // Reset loading state if page loads again (after redirect back due to error)
+            window.addEventListener('pageshow', function() {
+                setLoadingState(false);
             });
         }
 
-        // Block userscript errors
+        // ✅ Social login handlers
+        function handleSocialLogin(provider) {
+            Utils.showAlert(`Đăng nhập ${provider} đang được phát triển`, 'info');
+            console.log(`Social login with ${provider} clicked`);
+        }
+
+        // ✅ Forgot password handler
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            Utils.showAlert('Tính năng quên mật khẩu đang được phát triển', 'info');
+            console.log('Forgot password clicked');
+        }
+
+        // ✅ Auto-hide alerts
+        function initAutoHideAlerts() {
+            const alerts = document.querySelectorAll('.alert-enter-active');
+            alerts.forEach(alert => {
+                if (!alert.dataset.persistent) {
+                    setTimeout(() => {
+                        Utils.toggleElement(alert.parentElement, false);
+                    }, CONFIG.AUTO_HIDE_ALERTS);
+                }
+            });
+        }
+
+        // ✅ Error handling
         function initErrorHandling() {
+            // Handle userscript errors
             window.addEventListener('error', function(e) {
                 if (e.filename && (e.filename.includes('userscript') || e.filename.includes('tampermonkey'))) {
                     e.preventDefault();
@@ -355,17 +689,52 @@
                     return false;
                 }
             }, true);
+
+            // Handle uncaught promise rejections
+            window.addEventListener('unhandledrejection', function(e) {
+                console.warn('Unhandled promise rejection:', e.reason);
+                e.preventDefault();
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Escape key to clear alerts
+                if (e.key === 'Escape') {
+                    const dynamicAlert = document.getElementById('dynamicAlert');
+                    if (dynamicAlert && !dynamicAlert.classList.contains('hidden')) {
+                        Utils.toggleElement(dynamicAlert, false);
+                    }
+                }
+
+                // Enter key in email field moves to password
+                if (e.key === 'Enter' && e.target.id === 'email') {
+                    e.preventDefault();
+                    document.getElementById('password')?.focus();
+                }
+            });
         }
 
-        // Initialize all functionality when DOM is loaded
+        // ✅ Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            initDarkMode();
-            initPasswordToggle();
-            initFormSubmission();
-            initErrorHandling();
+            try {
+                initDarkMode();
+                initPasswordToggle();
+                initFormValidation();
+                initFormSubmission();
+                initAutoHideAlerts();
+                initErrorHandling();
 
-            console.log('NKS Login form initialized - AlpineJS free version');
+                console.log('🚀 NKS Login form initialized successfully');
+                console.log('📊 Configuration:', CONFIG);
+            } catch (error) {
+                console.error('❌ Error initializing login form:', error);
+                Utils.showAlert('Có lỗi xảy ra khi khởi tạo form. Vui lòng tải lại trang.', 'error');
+            }
         });
+
+        // ✅ Make functions globally available
+        window.handleSocialLogin = handleSocialLogin;
+        window.handleForgotPassword = handleForgotPassword;
     </script>
 </body>
 

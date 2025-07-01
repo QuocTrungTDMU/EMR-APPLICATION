@@ -168,6 +168,82 @@ module.exports = {
                     },
                 },
             },
+
+
+            animation: {
+                'heart-beat': 'heartBeat 2s ease-in-out infinite',
+                'float': 'float 3s ease-in-out infinite',
+                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'bounce-slow': 'bounce 2s infinite',
+                'fade-in-up': 'fadeInUp 1s ease-out',
+                'fade-in-left': 'fadeInLeft 1s ease-out 0.2s both',
+                'fade-in-right': 'fadeInRight 1s ease-out 0.4s both',
+                'scale-in': 'scaleIn 0.8s ease-out 0.6s both',
+            },
+            keyframes: {
+                heartBeat: {
+                    '0%, 100%': { transform: 'scale(1)' },
+                    '50%': { transform: 'scale(1.1)' },
+                },
+                float: {
+                    '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                    '33%': { transform: 'translateY(-10px) rotate(2deg)' },
+                    '66%': { transform: 'translateY(-5px) rotate(-1deg)' },
+                },
+                fadeInUp: {
+                    '0%': {
+                        opacity: '0',
+                        transform: 'translateY(50px)'
+                    },
+                    '100%': {
+                        opacity: '1',
+                        transform: 'translateY(0)'
+                    },
+                },
+                fadeInLeft: {
+                    '0%': {
+                        opacity: '0',
+                        transform: 'translateX(-50px)'
+                    },
+                    '100%': {
+                        opacity: '1',
+                        transform: 'translateX(0)'
+                    },
+                },
+                fadeInRight: {
+                    '0%': {
+                        opacity: '0',
+                        transform: 'translateX(50px)'
+                    },
+                    '100%': {
+                        opacity: '1',
+                        transform: 'translateX(0)'
+                    },
+                },
+                scaleIn: {
+                    '0%': {
+                        opacity: '0',
+                        transform: 'scale(0.8)'
+                    },
+                    '100%': {
+                        opacity: '1',
+                        transform: 'scale(1)'
+                    },
+                },
+            },
+            backgroundImage: {
+                'hero-pattern': "url('https://html.tf.dreamitsolution.net/mediic1/assets/images/slider/hero-bg.png')",
+            },
+            colors: {
+                'primary': '#002570',
+                'secondary': '#007eff',
+                'body-text': '#97a9bf',
+            }
+
+
+
+
+
         },
     },
     plugins: [],

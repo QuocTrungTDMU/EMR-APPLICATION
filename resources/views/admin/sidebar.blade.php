@@ -238,7 +238,7 @@
               <span
                 class="menu-item-text"
                 :class="sidebarToggle ? 'lg:hidden' : ''">
-                User Profile
+                Trang cá nhân
               </span>
             </a>
           </li>
