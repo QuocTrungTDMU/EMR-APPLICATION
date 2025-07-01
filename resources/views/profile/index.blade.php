@@ -51,14 +51,13 @@
                         </a>
                         <a href="#notifications" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-xl">
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
-                                <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                             </svg>
                             Thông báo
                         </a>
-                        <a href="#danger-zone" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-xl">
+                        <a href="#danger" class="nav-link flex items-center px-4 py-3 text-sm font-medium rounded-xl">
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                             Vùng nguy hiểm
                         </a>
@@ -66,14 +65,17 @@
                 </div>
             </div>
 
-            <!-- Main Content Area -->
-            <div class="lg:col-span-3 space-y-8">
-                <!-- Profile Information Section -->
-                @include('profile.partials.view-info.view-profile-information-form')
-                <!-- Password Section -->
-                @include('profile.partials.view-info.view-password-form')
-                <!-- Danger Zone -->
-                @include('profile.partials.view-info.delete-user-form')
+            <!-- Main Content -->
+            <div class="lg:col-span-3 space-y-10">
+                <section id="profile-info">
+                    @include('profile.partials.view-info.view-profile-information-form')
+                </section>
+                <section id="password">
+                    @include('profile.partials.view-info.view-password-form')
+                </section>
+                <section id="danger">
+                    @include('profile.partials.view-info.delete-user-form')
+                </section>
             </div>
         </div>
     </div>

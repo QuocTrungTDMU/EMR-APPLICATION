@@ -100,6 +100,53 @@
                             <span x-text="errors.password"></span>
                         </p>
                     </template>
+                    <button type="button" @click="showGenerator = !showGenerator" class="mt-4 bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-purple-700 transition">
+                        <span x-show="!showGenerator">Tạo mật khẩu mạnh</span>
+                        <span x-show="showGenerator">Ẩn chức năng tạo mật khẩu</span>
+                    </button>
+                    <div x-show="showGenerator" x-transition class="mt-4">
+                        <label class="block font-semibold text-gray-700 w-full">Tùy chọn tạo mật khẩu:</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" x-model="useLowercase" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <span>Chữ thường (a-z)</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" x-model="useUppercase" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <span>Chữ hoa (A-Z)</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" x-model="useNumbers" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <span>Số (0-9)</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" x-model="useSymbols" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <span>Ký tự đặc biệt (!@#$...)</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-1">Độ dài mật khẩu: <span x-text="length"></span></label>
+                            <input type="range" min="8" max="30" x-model="length" @input="generate()" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600">
+                        </div>
+                        <template x-if="generatedPassword">
+                            <div class="mt-2 p-3 bg-green-50 rounded-lg flex justify-between items-center">
+                                <span class="text-green-600 font-mono break-all">Mật khẩu: <span x-text="generatedPassword"></span></span>
+                                <button @click="copyToClipboard()" type="button" class="ml-2 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 focus:outline-none">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h8a2 2 0 002-2M8 5a2 2 0 012-2h8a2 2 0 012 2m-6 9h4" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </template>
+                        <template x-if="errors.generator">
+                            <p class="mt-2 text-sm text-red-600 flex items-center animate-fade-in">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span x-text="errors.generator"></span>
+                            </p>
+                        </template>
+                    </div>
                 </div>
 
                 <div class="bg-gray-50 p-4 rounded-xl">
@@ -135,52 +182,6 @@
                         </p>
                     </template>
                 </div>
-            </div>
-
-            <div class="bg-gray-50 p-4 rounded-xl space-y-4">
-                <label class="block font-semibold text-gray-700">Tùy chọn tạo mật khẩu:</label>
-                <div class="grid grid-cols-2 gap-4">
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" x-model="useLowercase" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-                        <span>Chữ thường (a-z)</span>
-                    </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" x-model="useUppercase" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-                        <span>Chữ hoa (A-Z)</span>
-                    </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" x-model="useNumbers" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-                        <span>Số (0-9)</span>
-                    </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" x-model="useSymbols" @change="generate()" checked class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-                        <span>Ký tự đặc biệt (!@#$...)</span>
-                    </label>
-                </div>
-
-                <div>
-                    <label class="block font-semibold text-gray-700 mb-1">Độ dài mật khẩu: <span x-text="length"></span></label>
-                    <input type="range" min="8" max="30" x-model="length" @input="generate()" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600">
-                </div>
-
-                <template x-if="generatedPassword">
-                    <div class="mt-2 p-3 bg-green-50 rounded-lg flex justify-between items-center">
-                        <span class="text-green-600 font-mono break-all">Mật khẩu: <span x-text="generatedPassword"></span></span>
-                        <button @click="copyToClipboard()" type="button" class="ml-2 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 focus:outline-none">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h8a2 2 0 002-2M8 5a2 2 0 012-2h8a2 2 0 012 2m-6 9h4" />
-                            </svg>
-                        </button>
-                    </div>
-                </template>
-                <template x-if="errors.generator">
-                    <p class="mt-2 text-sm text-red-600 flex items-center animate-fade-in">
-                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span x-text="errors.generator"></span>
-                    </p>
-                </template>
             </div>
 
             <div class="bg-gray-50 p-4 rounded-xl">
@@ -253,6 +254,7 @@
             password_confirmation: '',
             currentPassword: '',
             confirmSave: false,
+            showGenerator: false,
 
             init() {
                 this.generate();
@@ -329,13 +331,6 @@
                 };
                 this.generalMessage = '';
 
-                console.log('Current state:', {
-                    old_password: this.currentPassword,
-                    password: this.password,
-                    password_confirmation: this.password_confirmation,
-                    confirmSave: this.confirmSave
-                });
-
                 // Validation client-side
                 if (!this.currentPassword) {
                     this.errors.old_password = 'Vui lòng nhập mật khẩu hiện tại.';
@@ -358,45 +353,24 @@
                 }
 
                 const data = {
-                    _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    _method: 'PUT',
                     old_password: this.currentPassword,
                     password: this.password,
                     password_confirmation: this.password_confirmation
                 };
 
-                console.log('Data to send:', data);
-
-                fetch(this.$refs.form.action, {
+                fetch('{{ route("password.store") }}', {
                     method: 'POST',
-                    body: new URLSearchParams(data),
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                }).then(response => {
-                    console.log('Response status:', response.status);
-                    if (!response.ok) {
-                        return response.text().then(text => {
-                            console.log('Response text:', text.substring(0, 200));
-                            throw new Error(`HTTP ${response.status}: ${text.substring(0, 200)}`);
-                        });
-                    }
-                    return response.json();
+                    },
+                    body: JSON.stringify(data)
                 })
+                .then(response => response.json())
                 .then(data => {
-                    console.log('API response:', data);
                     if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công!',
-                            text: 'Mật khẩu đã được cập nhật thành công.',
-                            confirmButtonText: 'OK',
-                            confirmButtonColor: '#8B5CF6'
-                        }).then(() => {
-                            window.location.href = '{{ route('profile.view') }}';
-                        });
+                        // Chuyển hướng đến trang xác nhận
+                        window.location.href = data.redirect;
                     } else {
                         // Xử lý lỗi từ server
                         if (data.errors) {
@@ -422,13 +396,14 @@
                             });
                         }
                     }
-                }).catch(error => {
-                    console.error('Lỗi:', error);
-                    this.generalMessage = 'Lỗi kết nối: ' + error.message;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.generalMessage = 'Có lỗi xảy ra khi gửi yêu cầu.';
                     this.generalMessageType = 'error';
                     Swal.fire({
                         icon: 'error',
-                        title: 'Lỗi kết nối',
+                        title: 'Lỗi',
                         text: this.generalMessage,
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#8B5CF6'

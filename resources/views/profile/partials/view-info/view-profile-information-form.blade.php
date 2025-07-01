@@ -100,8 +100,11 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         Họ và tên
                                     </label>
+                                    @php
+                                        $fullName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
+                                    @endphp
                                     <div class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-700">
-                                        {{ $user->name }}
+                                        {{ $fullName !== '' ? $fullName : ($user->name ?? '') }}
                                     </div>
                                 </div>
 

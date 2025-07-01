@@ -559,36 +559,38 @@ class AuthController extends Controller
      */
     public function me(Request $request): JsonResponse
     {
-        $request->validate([
-            'access_token' => ['required', 'string'],
-        ]);
-
         try {
-            $user = User::where('nks_access_token', $request->access_token)->first();
-
-            if (!$user || !$user->hasValidNksToken()) {
+            $user = $request->user();
+            if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Token không hợp lệ hoặc đã hết hạn',
-                    'error_code' => 'INVALID_TOKEN'
+                    'message' => 'Chưa đăng nhập',
+                    'error_code' => 'UNAUTHENTICATED'
                 ], 401);
             }
-
+            // Ưu tiên lấy từ các trường mapping đúng chuẩn
+            $firstName = $user->first_name ?? $user->firstname ?? null;
+            $lastName = $user->last_name ?? $user->lastname ?? null;
+            // Nếu không có, tách từ name
+            if (!$firstName && !$lastName && !empty($user->name)) {
+                $parts = explode(' ', trim($user->name));
+                $firstName = array_pop($parts);
+                $lastName = implode(' ', $parts);
+            }
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'user' => $user->makeHidden(['nks_access_token']),
-                ]
+                'avatar' => $user->avatar ?? null,
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'email' => $user->email ?? null,
+                'id' => $user->id,
             ]);
         } catch (\Exception $e) {
-            Log::error('Get user by token error', [
-                'error' => $e->getMessage(),
-            ]);
-
+            \Log::error('Get /api/me error', [ 'error' => $e->getMessage() ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Lỗi khi validate token',
-                'error_code' => 'TOKEN_VALIDATION_ERROR'
+                'message' => 'Lỗi khi lấy thông tin user',
+                'error_code' => 'GET_ME_ERROR'
             ], 500);
         }
     }

@@ -127,11 +127,7 @@
                         <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors py-2 ">Page+</a>
                         <ul class="absolute hidden group-hover:block bg-white shadow-lg mt-2 space-y-2 py-2 w-64 ">
                             <li>
-                             <a href="#" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Dashboard</a>
-                                {{-- <ul class="ml-4 hidden group-hover:block">
-                                    <li><a href="#" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Sub-item 1</a></li>
-                                    <li><a href="#" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Sub-item 2</a></li>
-                                </ul> --}}
+                             <a href="/dashboard" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Dashboard</a>
                             </li>
                             <li><a href="{{ route('availability.checker') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Availability Checker</a></li>
                             <li><a href="{{ route('telemedicine') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Online Consultation & Telemedicine</a></li>
@@ -174,18 +170,39 @@
                 @endauth
                 <!-- Biểu tượng Tài khoản với Dropdown -->
                 <div class="group relative">
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
-                        </svg>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center" title="Account">
+                        @php
+                            if (!isset($user) || !$user) {
+                                $user = auth()->user();
+                            }
+                            $avatar = null;
+                            if (isset($user) && !empty($user->avatar)) {
+                                $avatar = $user->avatar;
+                            } elseif (isset($user) && !empty($user->avatar_url)) {
+                                $avatar = $user->avatar_url;
+                            }
+                        @endphp
+                        @if($avatar)
+                            <img src="{{ $avatar }}" alt="Avatar" class="header-avatar w-8 h-8 rounded-full border-2 border-blue-200 object-cover shadow-sm">
+                        @else
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                            </svg>
+                        @endif
                     </a>
                     <!-- Menu Dropdown -->
                     <div class="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out">
                         @auth
                         <div class="px-4 py-2 border-b border-gray-100">
                             <div class="text-sm font-medium text-gray-500">Đăng nhập với tên</div>
-                            <div class="font-semibold text-gray-900 truncate">{{ auth()->user()->name }}</div>
+                            <div class="font-semibold text-gray-900 truncate header-username">
+                                @if( isset($user->first_name)|| isset($user->last_name))
+                                    {{ ($user->first_name ?? '') . ' ' . ($user->last_name ?? '') }}
+                                @else
+                                    {{ $user->name ?? '' }}
+                                @endif
+                            </div>
                         </div>
                         <div class="px-4 py-2">
                             <a href="{{ route('profile.update') }}" class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
@@ -307,10 +324,25 @@
 
                     @auth
                     <a href="{{ route('profile.edit') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
-                        </svg>
+                        @php
+                            if (!isset($user) || !$user) {
+                                $user = auth()->user();
+                            }
+                            $avatar = null;
+                            if (isset($user) && !empty($user->avatar)) {
+                                $avatar = $user->avatar;
+                            } elseif (isset($user) && !empty($user->avatar_url)) {
+                                $avatar = $user->avatar_url;
+                            }
+                        @endphp
+                        @if($avatar)
+                            <img src="{{ $avatar }}" alt="Avatar" class="header-avatar w-8 h-8 rounded-full border-2 border-blue-200 object-cover shadow-sm">
+                        @else
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                            </svg>
+                        @endif
                     </a>
                     @else
                     <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
@@ -366,10 +398,25 @@
                     <!-- Account Icon -->
                     @auth
                     <a href="{{ route('profile.edit') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Tài khoản của tôi">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
-                        </svg>
+                        @php
+                            if (!isset($user) || !$user) {
+                                $user = auth()->user();
+                            }
+                            $avatar = null;
+                            if (isset($user) && !empty($user->avatar)) {
+                                $avatar = $user->avatar;
+                            } elseif (isset($user) && !empty($user->avatar_url)) {
+                                $avatar = $user->avatar_url;
+                            }
+                        @endphp
+                        @if($avatar)
+                            <img src="{{ $avatar }}" alt="Avatar" class="header-avatar w-8 h-8 rounded-full border-2 border-blue-200 object-cover shadow-sm">
+                        @else
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                            </svg>
+                        @endif
                     </a>
                     @else
                     <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Đăng nhập">

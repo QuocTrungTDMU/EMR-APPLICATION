@@ -23,44 +23,34 @@ class ProfileController extends Controller
      */
     public function view(): View
     {
-
         $user = auth()->user();
         $rawJson = null;
-        $accessToken = $user->nks_access_token ?? ''; // Lấy token từ user
+        $accessToken = $user->nks_access_token ?? '';
 
         if ($accessToken) {
             try {
-                $nameParts = explode(' ', $validated['name'], 2);
-                $firstname = $nameParts[0];
-                $lastname = $nameParts[1] ?? '';
-
                 $client = new Client();
                 $response = $client->post('https://account.nks.vn/api/nks/user', [
                     'multipart' => [
-                        ['name' => 'access_token', 'contents' => $user->nks_access_token],
-                        ['name' => 'firstname', 'contents' => $firstname],
-                        ['name' => 'lastname', 'contents' => $lastname],
+                        ['name' => 'access_token', 'contents' => $accessToken],
                     ],
                     'timeout' => 10,
                 ]);
-
                 $body = $response->getBody()->getContents();
                 $rawJson = $body;
                 $data = json_decode($body, true);
-
-                if (isset($data['data']['firstname']) && isset($data['data']['lastname'])) {
-                    $data['data']['name'] = trim($data['data']['firstname'] . ' ' . $data['data']['lastname']);
-                }
-
-                if (isset($data['data']['name'])) {
-                    $user = (object) $data['data'];
+                if (isset($data['data'])) {
+                    $userData = $data['data'];
+                    
+                    $userData['first_name'] = $userData['firstname'] ?? '';
+                    $userData['last_name'] = $userData['lastname'] ?? '';
+                    $user = (object) $userData;
                 }
             } catch (\Exception $e) {
                 Log::error('Lỗi lấy dữ liệu từ API NKS: ' . $e->getMessage());
             }
         }
-
-        return view('profile.index', compact('user', 'rawJson', 'accessToken')); // Truyền accessToken
+        return view('profile.index', compact('user', 'rawJson', 'accessToken'));
     }
     /**
      * Hiển thị form chỉnh sửa thông tin cá nhân
@@ -68,7 +58,30 @@ class ProfileController extends Controller
     public function edit(): View
     {
         $user = auth()->user();
-        return view('profile.partials.edit-info.update-profile-information-form', compact('user'));
+        $accessToken = $user->nks_access_token ?? '';
+
+        if ($accessToken) {
+            try {
+                $client = new \GuzzleHttp\Client();
+                $response = $client->post('https://account.nks.vn/api/nks/user', [
+                    'multipart' => [
+                        ['name' => 'access_token', 'contents' => $accessToken],
+                    ],
+                    'timeout' => 10,
+                ]);
+                $body = $response->getBody()->getContents();
+                $data = json_decode($body, true);
+                if (isset($data['data'])) {
+                    $userData = $data['data'];
+                    $userData['first_name'] = $userData['firstname'] ?? '';
+                    $userData['last_name'] = $userData['lastname'] ?? '';
+                    $user = (object) $userData;
+                }
+            } catch (\Exception $e) {
+                \Log::error('Lỗi lấy dữ liệu từ API NKS: ' . $e->getMessage());
+            }
+        }
+        return view('profile.partials.edit-info.update-profile-information-form', compact('user', 'accessToken'));
     }
 
 
@@ -218,7 +231,7 @@ class ProfileController extends Controller
             // Họ tên
             if (preg_match('/Họ và tên\s*:\s*(.+)/iu', $text, $matches)) {
                 $data['name'] = trim($matches[1]);
-            } elseif (preg_match('/[A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ][A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢ� ỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ\s]+/iu', $text, $matches)) {
+            } elseif (preg_match('/[A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ][A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ\s]+/iu', $text, $matches)) {
                 $data['name'] = trim($matches[0]);
             }
 
@@ -243,47 +256,99 @@ class ProfileController extends Controller
      * Cập nhật thông tin cá nhân (ưu tiên qua NKS API nếu có token)
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
-{
-    $user = $request->user();
-    $validated = $request->validated();
+    {
+        $user = $request->user();
+        $validated = $request->validated();
 
-    // Ghép họ và tên để gửi qua API
-    $validated['name'] = trim($validated['first_name'] . ' ' . $validated['last_name']);
-
-    // Kiểm tra nks_access_token
-    if (!$user->nks_access_token) {
-        Log::warning('Không có nks_access_token cho user', ['user_id' => $user->id]);
-        return Redirect::route('profile.view')->with('error', 'Không thể cập nhật vì thiếu thông tin xác thực.');
-    }
-
-    // Cập nhật qua API NKS
-    try {
-        $client = new Client();
-        $response = $client->post('https://account.nks.vn/api/nks/user/updateInfo', [
-            'multipart' => [
-                ['name' => 'access_token', 'contents' => $user->nks_access_token],
-                ['name' => 'firstname', 'contents' => $validated['last_name']],  // Tên
-                ['name' => 'lastname', 'contents' => $validated['first_name']],  // Họ
-            ],
-            'timeout' => 10,
+        // Log request data
+        Log::info('Request data từ form:', [
+            'all_data' => $request->all(),
+            'validated_data' => $validated
         ]);
 
-        $body = $response->getBody()->getContents();
-        $data = json_decode($body, true);
+        // Ghép họ và tên để gửi qua API và đồng bộ vào DB
+        $validated['name'] = trim(($validated['first_name'] ?? '') . ' ' . ($validated['last_name'] ?? ''));
 
-        Log::info('NKS API response', ['response' => $body]);
+        // Cập nhật DB local
+        $user->update([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
 
-        if (!($data['success'] ?? false)) {
-            Log::error('NKS API lỗi khi cập nhật', ['response' => $body]);
-            return Redirect::route('profile.view')->with('error', 'Không thể cập nhật thông tin trên hệ thống NKS.');
+        // Kiểm tra nks_access_token
+        if (!$user->nks_access_token) {
+            Log::warning('Không có nks_access_token cho user', ['user_id' => $user->id]);
+            return Redirect::route('profile.view')->with('error', 'Không thể cập nhật vì thiếu thông tin xác thực.');
         }
-    } catch (\Exception $e) {
-        Log::error('Lỗi gọi API NKS: ' . $e->getMessage(), ['exception' => $e]);
-        return Redirect::route('profile.view')->with('error', 'Lỗi khi cập nhật qua API NKS: ' . $e->getMessage());
-    }
 
-    return Redirect::route('profile.view')->with('status', 'Cập nhật thành công!');
-}
+        try {
+            $client = new Client();
+
+            // Chỉ lấy các trường API NKS yêu cầu (bỏ các trường căn cước công dân)
+            $apiFields = [
+                'firstname', 'lastname', 'intro', 'phone', 'gender', 'website', 'dob', 'pob',
+                // 'id_number', 'id_date', 'id_place',
+                'province'
+            ];
+            $apiData = [
+                'access_token' => $user->nks_access_token,
+                'firstname' => $validated['first_name'] ?? '',
+                'lastname' => $validated['last_name'] ?? '',
+            ];
+            foreach ($apiFields as $field) {
+                if (isset($validated[$field])) {
+                    $value = $validated[$field];
+                    // Xử lý gender về 0|1
+                    if ($field === 'gender') {
+                        if ($value === 'male') $value = 0;
+                        elseif ($value === 'female') $value = 1;
+                        else $value = '';
+                    }
+                    // Đảm bảo ngày đúng định dạng yyyy-mm-dd
+                    if (in_array($field, ['dob']) && $value) {
+                        $value = date('Y-m-d', strtotime($value));
+                    }
+                    $apiData[$field] = $value;
+                }
+            }
+
+            Log::info('Dữ liệu gửi lên API NKS:', $apiData);
+
+            // Gửi 1 lần duy nhất toàn bộ dữ liệu hợp lệ lên API NKS
+            $response = $client->post('https://account.nks.vn/api/nks/user/updateInfo', [
+                'form_params' => $apiData,
+                'timeout' => 10,
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                ]
+            ]);
+
+            $body = $response->getBody()->getContents();
+            $data = json_decode($body, true);
+
+            Log::info('NKS API updateInfo response', ['status_code' => $response->getStatusCode(), 'response' => $data]);
+
+            if (!($data['success'] ?? false)) {
+                return Redirect::route('profile.view')->with('error', $data['message'] ?? 'Không thể cập nhật thông tin trên NKS.');
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Exception khi gọi API NKS:', [
+                'message' => $e->getMessage(),
+                'class' => get_class($e),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return Redirect::route('profile.view')
+                ->with('error', 'Lỗi khi cập nhật qua API NKS: ' . $e->getMessage());
+        }
+
+        // Luôn redirect về trang profile sau khi cập nhật thành công
+        return Redirect::route('profile.view')->with('status', 'Cập nhật thành công!');
+    }
     /**
      * Hiển thị form chỉnh sửa mật khẩu
      */
@@ -382,27 +447,5 @@ class ProfileController extends Controller
     }
 
 
-    // public function updateAvatar(Request $request)
-    // {
-    //     if ($request->hasFile('avatar')) {
-    //         $file = $request->file('avatar');
-    //         $user = auth()->user();
-
-    //         // Crop ảnh về kích thước 240x240 (tùy chỉnh theo cần thiết)
-    //         $image = Image::make($file)->fit(240, 240);
-
-    //         // Lưu ảnh vào storage (ví dụ: public/avatars)
-    //         $path = 'avatars/' . time() . '_' . $user->id . '.jpg';
-    //         Storage::disk('public')->put($path, (string) $image->encode('jpg'));
-
-    //         // Cập nhật URL avatar trong database
-    //         $user->avatar_url = Storage::url($path);
-    //         $user->save();
-
-    //         // Trả về URL ảnh để cập nhật giao diện (có thể dùng redirect hoặc JSON)
-    //         return redirect()->back()->with('success', 'Avatar đã được cập nhật.');
-    //     }
-
-    //     return redirect()->back()->with('error', 'Vui lòng chọn một hình ảnh.');
-    // }
+  
 }

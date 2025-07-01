@@ -34,7 +34,7 @@
         <div class="overflow-x-auto">
             <div class="grid grid-cols-8 gap-0.5 bg-gray-200 rounded-lg overflow-hidden shadow-xl min-w-[900px]">
                 <!-- Headers -->
-                <div class="bg-blue-700 text-white p-4 font-semibold text-center">Time</div>
+                <div class="bg-blue-700 text-white p-4 font-semibold text-center flex items-center justify-center min-h-[60px]">Time</div>
                 <div class="bg-blue-700 text-white p-4 font-semibold text-center">Sunday</div>
                 <div class="bg-blue-700 text-white p-4 font-semibold text-center">Monday</div>
                 <div class="bg-blue-700 text-white p-4 font-semibold text-center">Tuesday</div>
@@ -45,7 +45,7 @@
 
                 <!-- Time slots -->
                 @foreach ($timetable as $time => $days)
-                    <div class="bg-gray-100 p-4 font-medium text-gray-700">{{ $time }}</div>
+                    <div class="bg-gray-100 p-4 font-medium text-gray-700 flex items-center justify-center min-h-[120px] text-center">{{ $time }}</div>
                     @foreach ($days as $day => $data)
                         <div class="bg-white p-4 min-h-[120px] relative group hover:scale-[1.02] hover:shadow-lg hover:z-10 transition-all duration-300 time-row-{{ Str::slug($time) }} {{ empty($data['name']) ? 'bg-gray-50' : '' }} {{ (!empty($data['name']) && $data['name'] !== 'Book Appointment') ? 'doctor-cell' : '' }}"
                              data-day="{{ $day }}" data-time="{{ $time }}" @if(!empty($data['name']) && $data['name'] !== 'Book Appointment') data-specialty="{{ $data['specialty'] }}" @endif>
@@ -54,7 +54,7 @@
                                     <span class="font-semibold text-gray-800">{{ $data['name'] }}</span>
                                     <span class="text-sm text-gray-600 mt-1">{{ $data['specialty'] }}</span>
                                     <a href="{{ route('book.doctor-detail', ['doctorId' => str_replace(' ', '-', $day . '-' . $time)]) }}"
-                                       class="opacity-0 group-hover:opacity-100 absolute bottom-2 left-2 right-2 bg-green-500 hover:bg-green-600 text-white py-10 px-4 rounded-lg text-sm font-medium transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
+                                       class="opacity-0 group-hover:opacity-100 absolute bottom-2 left-2 right-2 bg-green-500 hover:bg-green-600 text-white py-8 px-4 rounded-lg text-sm font-medium transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
                                         Book Appointment
                                     </a>
                                 </div>
