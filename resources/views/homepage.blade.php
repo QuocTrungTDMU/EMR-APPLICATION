@@ -3,33 +3,35 @@
 @section('title', 'Trang chủ')
 
 @section('content')
-<div id="main" class="flex justify-center items-center min-h-screen">
-    <div class="w-full">
-        <section id="primary" class="content-full-width">
-            <div class="post-id" class="post-21394 page type-page status-publish hentry">
-                <section class="wpb-content-wrapper">
-                    <div data-delay="0" class="vc_row wpb_row vc_row-fluid">
-                        <div class="wpb_column vc_column_container vc_col-sm-12 flex flex-col items-center" data-delay="0">
-                            <div class="vc_column-inner w-full">
-                                <div class="wpb_wrapper text-center">
-                                    <div id="1589457460476-59a0fbd9-36e3" class="dt-sc-empty-space"></div>
-                                </div>
-                            </div>
-                            <div class="w-full">
-                                @include('partials.promo-cards')
-                                @include('partials.products-section')
-                                @include('partials.countdown-promo')
-                                @include('partials.our-product')
-                                @include('partials.clientsays')
-                                @include('partials.latest-new', ['latestNews' => $latestNews ?? []])
-                                @include('partials.subscribe-newsletter')
-                                @include('partials.partners-carousel')
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </section>
+<div id="main" class="flex justify-center items-center">
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+
+            @include('partials.hero-section')
+
+            @include('partials.counter-section')
+
+            @include('partials.feature-section')
+
+            @include('partials.about-section')
+
+            @include('partials.marquee-section')
+
+            @include('partials.service-section')
+
+            @include('partials.appoiment-section')
+
+            @include('partials.best-doctor-section')
+
+            @include('partials.testimonial-section')
+
+            @include('partials.brand-section')
+
+            @include('partials.blog-section')
+
+            @include('partials.subscribe-section')
+
+        </div>
     </div>
 </div>
 

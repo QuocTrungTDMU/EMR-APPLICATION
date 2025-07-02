@@ -199,7 +199,7 @@ class AuthController extends Controller
                     return response()->json([
                         'success' => false,
                         'message' => $message,
-                        'error_code' => 'NKS_INVALID_RESPONSE',
+                        'error_code' => 'NKS_INVALID_RESPONSE'
                     ], 422);
                 } else {
                     return back()
@@ -208,30 +208,210 @@ class AuthController extends Controller
                 }
             }
 
-            // Lấy access_token từ NKS API
-            $accessToken = $nksData['data']['access_token'] ?? null;
-            if ($accessToken) {
-                // Set access_token vào cookie (7 ngày, HttpOnly, path '/')
-                if ($request->expectsJson()) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Đăng nhập thành công',
-                        'user' => $nksData['data']['user'] ?? null,
-                        'access_token' => $accessToken,
-                    ])->cookie('nks_access_token', $accessToken, 60 * 24 * 7, '/', null, false, true);
-                } else {
-                    return redirect('/')->with('status', 'Đăng nhập thành công!')
-                        ->withCookie(cookie('nks_access_token', $accessToken, 60 * 24 * 7, '/', null, false, true));
-                }
-            } else {
-                $message = 'Không nhận được access_token từ NKS.';
-                Log::error($message, ['response' => $nksData]);
+            // ✅ Extract data from NKS response
+            $responseData = $nksData['data'] ?? [];
+            $nksUser = $responseData['user'] ?? [];
+            $nksAccessToken = $responseData['access_token'] ?? null;
+            $expiresAt = $responseData['expires_at'] ?? null;
+
+            if (!$nksAccessToken || empty($nksUser)) {
+                Log::error('❌ NKS response missing required data', [
+                    'email' => $request->email,
+                    'has_token' => !empty($nksAccessToken),
+                    'has_user' => !empty($nksUser),
+                    'response_data' => $responseData
+                ]);
+
+                $message = 'Dữ liệu xác thực từ NKS không đầy đủ';
+
                 if ($request->expectsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => $message,
-                        'error_code' => 'NKS_NO_TOKEN',
-                    ], 422);
+                        'error_code' => 'NKS_INCOMPLETE_DATA'
+
+            if (isset($nksUser['active']) && !$nksUser['active']) {
+                Log::warning('⚠️ NKS user account is not active', [
+                    'email' => $request->email,
+                    'nks_user_id' => $nksUser['id'] ?? null,
+                    'user_status' => $nksUser['active'] ?? 'unknown'
+                ]);
+
+                $message = 'Tài khoản đã bị vô hiệu hóa trong hệ thống NKS';
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                        'error_code' => 'NKS_ACCOUNT_INACTIVE'
+                    ], 403);
+                } else {
+                    return back()
+                        ->withErrors(['email' => $message])
+                        ->withInput($request->except('password'));
+                }
+            }
+
+            try {
+                // ✅ CRITICAL: NO SESSION REGENERATION - Key fix for F5 issue
+                $originalSessionId = $request->session()->getId();
+
+                Log::info('🔄 Starting session setup', [
+                    'session_id' => $originalSessionId,
+                    'email' => $request->email,
+                    'nks_user_id' => $nksUser['id'] ?? null
+                ]);
+
+                // ✅ Clear only auth data, preserve other session data  
+                $authKeysToForget = [
+                    'user_id',
+                    'user_name',
+                    'user_email',
+                    'nks_user_id',
+                    'nks_access_token',
+                    'nks_expires_at',
+                    'nks_user_data',
+                    'user_last_login_at',
+                    'user_last_login_ip',
+                    'user_status',
+                    'is_authenticated',
+                    'session_created_at',
+                    'session_persistent',
+                    'login_timestamp',
+                    'session_expires_at'
+                ];
+
+                foreach ($authKeysToForget as $key) {
+                    $request->session()->forget($key);
+                }
+
+                $sessionUserId = 'nks_' . ($nksUser['id'] ?? uniqid()) . '_' . time();
+                $userName = $nksUser['name'] ?? 'NKS User';
+                $userRole = $nksUser['role']['name'] ?? 'User';
+
+                // ✅ ATOMIC SESSION DATA WRITE - All data at once
+                $sessionData = [
+                    'user_id' => $sessionUserId,
+                    'user_name' => $userName, // ✅ Ensure NOT null
+                    'user_email' => $request->email,
+                    'nks_user_id' => $nksUser['id'] ?? null,
+                    'nks_access_token' => $nksAccessToken,
+                    'nks_expires_at' => $expiresAt,
+                    'nks_user_data' => $nksUser,
+                    'user_last_login_at' => now()->toISOString(),
+                    'user_last_login_ip' => $realIP,
+                    'user_status' => 'active',
+                    'is_authenticated' => true,
+                    'session_created_at' => now()->toISOString(),
+                    'session_persistent' => true,
+                    'login_timestamp' => now()->timestamp,
+                    'session_expires_at' => now()->addMinutes(2880)->toISOString(), // 48 hours
+                    'login_method' => 'nks_api',
+                    'user_role' => $userRole
+                ];
+
+                // ✅ ENHANCED LOGGING BEFORE WRITE
+                Log::info('📝 Writing session data', [
+                    'session_id' => $originalSessionId,
+                    'user_name' => $userName,
+                    'user_name_type' => gettype($userName),
+                    'data_keys' => array_keys($sessionData),
+                    'data_count' => count($sessionData)
+                ]);
+
+                // ✅ WRITE ALL DATA ATOMICALLY
+                $request->session()->put($sessionData);
+
+                // ✅ FORCE IMMEDIATE SAVE - Critical for persistence
+                $request->session()->save();
+
+                // ✅ MANUAL PERSISTENT COOKIE SETUP
+                $cookieName = config('session.cookie');
+                cookie()->queue(
+                    $cookieName,
+                    $originalSessionId,
+                    2880, // 48 hours in minutes
+                    config('session.path', '/'),
+                    config('session.domain'),
+                    config('session.secure', false),
+                    config('session.http_only', true),
+                    false, // raw cookie
+                    config('session.same_site', 'lax')
+                );
+
+                // ✅ IMMEDIATE VERIFICATION
+                $verifyAuth = $request->session()->get('is_authenticated');
+                $verifyName = $request->session()->get('user_name');
+                $verifySessionId = $request->session()->getId();
+
+                if (!$verifyAuth || !$verifyName || $verifySessionId !== $originalSessionId) {
+                    throw new \Exception('Session verification failed: auth=' . var_export($verifyAuth, true) . ', name=' . var_export($verifyName, true) . ', id_changed=' . ($verifySessionId !== $originalSessionId ? 'yes' : 'no'));
+                }
+
+                // ✅ ENHANCED SUCCESS LOGGING
+                Log::info('✅ NKS login successful with persistent session', [
+                    'session_user_id' => $sessionUserId,
+                    'session_id' => $verifySessionId,
+                    'user_name' => $verifyName,
+                    'user_email' => $request->email,
+                    'user_role' => $userRole,
+                    'verified_auth' => $verifyAuth,
+                    'session_persistent' => true,
+                    'session_file_exists' => file_exists(storage_path('framework/sessions/' . $verifySessionId)),
+                    'login_success_timestamp' => now()->toISOString()
+                ]);
+
+                $successMessage = "Chào mừng {$userName} ({$userRole}) đến với hệ thống NKS!";
+
+                // ✅ Response based on request type
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => $successMessage,
+                        'data' => [
+                            'user' => [
+                                'id' => $sessionUserId,
+                                'name' => $userName,
+                                'email' => $request->email,
+                                'role' => $userRole,
+                                'nks_user_id' => $nksUser['id'] ?? null,
+                            ],
+                            'redirect_url' => '/',
+                            'session_stored' => true,
+                            'session_id' => $verifySessionId,
+                            'persistent' => true,
+                            'expires_at' => now()->addMinutes(2880)->toISOString()
+                        ]
+                    ]);
+                } else {
+                    // ✅ WEB: Redirect to homepage với success message
+                    return redirect('/')
+                        ->with('login_success', $successMessage)
+                        ->with('user_name', $userName)
+                        ->with('user_role', $userRole)
+                        ->with('login_timestamp', now()->toISOString());
+                }
+            } catch (\Exception $sessionError) {
+                Log::error('💥 Session error during NKS login', [
+                    'error' => $sessionError->getMessage(),
+                    'email' => $request->email,
+                    'session_id' => $request->session()->getId(),
+                    'trace' => $sessionError->getTraceAsString(),
+                    'session_data_before_error' => $request->session()->all()
+                ]);
+
+                $message = 'Không thể lưu thông tin đăng nhập: ' . $sessionError->getMessage();
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                        'error_code' => 'SESSION_ERROR',
+                        'debug_info' => [
+                            'session_id' => $request->session()->getId(),
+                            'error_details' => $sessionError->getMessage()
+                        ]
+                    ], 500);
                 } else {
                     return back()
                         ->withErrors(['email' => $message])
@@ -353,7 +533,6 @@ class AuthController extends Controller
             $request->session()->flush();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-
             Log::info('API logout successful');
 
             return response()->json([
