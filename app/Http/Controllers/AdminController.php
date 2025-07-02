@@ -11,17 +11,15 @@ class AdminController extends Controller
     /**
      * Dashboard cho bác sĩ
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Lấy thông tin user từ Auth và session
-        $userData = $this->getUserData();
-
-        Log::info('Admin dashboard accessed', [
+        $user = $request->attributes->get('nks_user');
+        $userData = $this->getUserData($user);
+        \Log::info('Admin dashboard accessed', [
             'user_id' => $userData['id'],
             'role_id' => $userData['role_id'],
             'email' => $userData['email']
         ]);
-
         return view('admin.dashboard', compact('userData'));
     }
 
@@ -48,36 +46,30 @@ class AdminController extends Controller
     /**
      * Lấy thông tin user kết hợp từ Auth và NKS API
      */
-    private function getUserData()
+    private function getUserData($user = null)
     {
-        // Kiểm tra user đã đăng nhập
-        if (!Auth::check()) {
-            abort(401, 'Chưa đăng nhập');
+        // Lấy user từ middleware nếu chưa truyền vào
+        if (!$user) {
+            $user = request()->attributes->get('nks_user');
         }
-
-        $localUser = Auth::user();
         $nksUser = session('nks_user', []);
-
         // Kiểm tra quyền truy cập admin (role_id = 6)
         if (($nksUser['role_id'] ?? null) !== 6) {
             abort(403, 'Không có quyền truy cập admin');
         }
-
         // Kết hợp dữ liệu
         $userData = [
-            'id' => $localUser->id,
+            'id' => $user['id'] ?? null,
             'nks_user_id' => $nksUser['id'] ?? null,
-            'name' => $nksUser['name'] ?? $localUser->name,
-            'email' => $nksUser['email'] ?? $localUser->email,
+            'name' => $nksUser['name'] ?? $user['name'] ?? '',
+            'email' => $nksUser['email'] ?? $user['email'] ?? '',
             'avatar' => $nksUser['avatar'] ?? null,
             'role_id' => $nksUser['role_id'] ?? null,
             'role_name' => $this->getRoleName($nksUser['role_id'] ?? null),
             'phone' => $nksUser['phone'] ?? null,
             'department' => $nksUser['department'] ?? null,
             'specialization' => $nksUser['specialization'] ?? null,
-            // Thêm các trường khác từ NKS API nếu cần
         ];
-
         return $userData;
     }
 

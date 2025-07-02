@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -21,11 +20,11 @@ class ProfileController extends Controller
     /**
      * Hiển thị thông tin cá nhân (có thể lấy từ API nếu có token)
      */
-    public function view(): View
+    public function view(Request $request): View
     {
-        $user = auth()->user();
+        $user = $request->attributes->get('nks_user');
         $rawJson = null;
-        $accessToken = $user->nks_access_token ?? '';
+        $accessToken = $user['access_token'] ?? '';
 
         if ($accessToken) {
             try {
@@ -41,7 +40,6 @@ class ProfileController extends Controller
                 $data = json_decode($body, true);
                 if (isset($data['data'])) {
                     $userData = $data['data'];
-                    
                     $userData['first_name'] = $userData['firstname'] ?? '';
                     $userData['last_name'] = $userData['lastname'] ?? '';
                     $user = (object) $userData;
@@ -55,10 +53,10 @@ class ProfileController extends Controller
     /**
      * Hiển thị form chỉnh sửa thông tin cá nhân
      */
-    public function edit(): View
+    public function edit(Request $request): View
     {
-        $user = auth()->user();
-        $accessToken = $user->nks_access_token ?? '';
+        $user = $request->attributes->get('nks_user');
+        $accessToken = $user['access_token'] ?? '';
 
         if ($accessToken) {
             try {
@@ -100,7 +98,7 @@ class ProfileController extends Controller
                 ], 422);
             }
 
-            $user = auth()->user();
+            $user = $request->attributes->get('nks_user');
             $imagePath = $request->file('cccd_image')->store('cccd', 'public');
             $fullImagePath = storage_path('app/public/' . $imagePath);
 
@@ -257,7 +255,7 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $user = $request->user();
+        $user = $request->attributes->get('nks_user');
         $validated = $request->validated();
 
         // Log request data
@@ -278,8 +276,8 @@ class ProfileController extends Controller
         ]);
 
         // Kiểm tra nks_access_token
-        if (!$user->nks_access_token) {
-            Log::warning('Không có nks_access_token cho user', ['user_id' => $user->id]);
+        if (!isset($user['access_token']) || !$user['access_token']) {
+            Log::warning('Không có nks_access_token cho user', ['user_id' => $user['id'] ?? null]);
             return Redirect::route('profile.view')->with('error', 'Không thể cập nhật vì thiếu thông tin xác thực.');
         }
 
@@ -293,7 +291,7 @@ class ProfileController extends Controller
                 'province'
             ];
             $apiData = [
-                'access_token' => $user->nks_access_token,
+                'access_token' => $user['access_token'],
                 'firstname' => $validated['first_name'] ?? '',
                 'lastname' => $validated['last_name'] ?? '',
             ];
@@ -352,25 +350,24 @@ class ProfileController extends Controller
     /**
      * Hiển thị form chỉnh sửa mật khẩu
      */
-    public function editPassword(): View
+    public function editPassword(Request $request): View
     {
-        $user = auth()->user();
+        $user = $request->attributes->get('nks_user');
         return view('profile.partials.edit-info.update-password-form', compact('user'));
     }
 
     public function updatePassword(Request $request)
     {
-        // Log toàn bộ dữ liệu nhận được
         Log::info('Request data', [
             'all' => $request->all(),
             'input' => $request->input(),
             'post' => $request->post(),
-            'user' => Auth::check() ? Auth::user()->id : 'Guest',
+            'user' => $request->attributes->get('nks_user')['id'] ?? 'Guest',
             'is_ajax' => $request->ajax()
         ]);
 
-        // Kiểm tra xác thực
-        if (!Auth::check()) {
+        $user = $request->attributes->get('nks_user');
+        if (!$user) {
             Log::warning('Yêu cầu không được xác thực');
             return response()->json(['success' => false, 'errors' => ['general' => 'Vui lòng đăng nhập để tiếp tục.']], 401);
         }
@@ -386,11 +383,9 @@ class ProfileController extends Controller
             return response()->json(['success' => false, 'errors' => $e->errors()], 422);
         }
 
-        $user = $request->user();
-        $accessToken = $user->nks_access_token;
-
+        $accessToken = $user['access_token'] ?? null;
         if (!$accessToken) {
-            Log::error('Không tìm thấy access_token cho người dùng', ['user_id' => $user->id]);
+            Log::error('Không tìm thấy access_token cho người dùng', ['user_id' => $user['id'] ?? null]);
             return response()->json(['success' => false, 'errors' => ['general' => 'Không thể cập nhật mật khẩu. Vui lòng liên hệ hỗ trợ.']]
             , 400, [], JSON_UNESCAPED_UNICODE);
         }
@@ -430,18 +425,12 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = $request->attributes->get('nks_user');
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = $request->user();
-
-        Auth::logout();
-
         $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
 
         return Redirect::to('/');
     }

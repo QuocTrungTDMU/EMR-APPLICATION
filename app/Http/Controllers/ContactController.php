@@ -13,18 +13,18 @@ use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->attributes->get('nks_user');
         $userData = null;
 
-        if ($user && $user->nks_access_token) {
+        if ($user && isset($user['access_token'])) {
             $userData = $this->getUserDataFromNKS($user);
         } elseif ($user) {
             $userData = [
-                'name' => $user->name ?? '',
-                'email' => $user->email ?? '',
-                'phone' => $user->phone ?? '',
+                'name' => $user['name'] ?? '',
+                'email' => $user['email'] ?? '',
+                'phone' => $user['phone'] ?? '',
             ];
         }
 
@@ -33,12 +33,12 @@ class ContactController extends Controller
 
     public function submit(Request $request)
     {
-        Log::info('=== CONTACT FORM SUBMIT START ===');
+        \Log::info('=== CONTACT FORM SUBMIT START ===');
 
-        $user = Auth::user();
+        $user = $request->attributes->get('nks_user');
         $nksUserData = null;
 
-        if ($user && $user->nks_access_token) {
+        if ($user && isset($user['access_token'])) {
             $nksUserData = $this->getUserDataFromNKS($user);
         }
 
@@ -78,19 +78,19 @@ class ContactController extends Controller
             if ($user && $nksUserData) {
                 $emailData['is_authenticated'] = true;
                 $emailData['has_nks_data'] = true;
-                $emailData['name'] = $nksUserData['name'] ?? $user->name ?? 'User';
-                $emailData['email'] = $nksUserData['email'] ?? $user->email ?? '';
+                $emailData['name'] = $nksUserData['name'] ?? $user['name'] ?? 'User';
+                $emailData['email'] = $nksUserData['email'] ?? $user['email'] ?? '';
                 $emailData['nks_id'] = $nksUserData['nks_id'] ?? null;
-                $emailData['user_id'] = $user->id ?? null;
+                $emailData['user_id'] = $user['id'] ?? null;
 
                 if (!empty($nksUserData['phone'])) {
                     $emailData['phone'] = $nksUserData['phone'];
                 }
             } elseif ($user) {
                 $emailData['is_authenticated'] = true;
-                $emailData['name'] = $user->name ?? 'User';
-                $emailData['email'] = $user->email ?? '';
-                $emailData['user_id'] = $user->id ?? null;
+                $emailData['name'] = $user['name'] ?? 'User';
+                $emailData['email'] = $user['email'] ?? '';
+                $emailData['user_id'] = $user['id'] ?? null;
             } else {
                 $emailData['name'] = $validatedData['name'] ?? 'Guest';
                 $emailData['email'] = $validatedData['email'] ?? '';
@@ -102,7 +102,7 @@ class ContactController extends Controller
             try {
                 Mail::to($adminEmail)->send(new ContactMail($emailData));
 
-                Log::info('✅ Contact email sent successfully', [
+                \Log::info('✅ Contact email sent successfully', [
                     'to' => $adminEmail,
                     'from' => $emailData['email'],
                     'subject' => $emailData['subject'],
@@ -111,21 +111,21 @@ class ContactController extends Controller
                 ]);
             } catch (\Symfony\Component\Mailer\Exception\TransportException $e) {
                 // ✅ SMTP Transport errors
-                Log::error('SMTP transport error', [
+                \Log::error('SMTP transport error', [
                     'error' => $e->getMessage(),
                     'email' => $emailData['email']
                 ]);
                 throw new \Exception('Email delivery failed: SMTP connection error. Please try again later.');
             } catch (\Symfony\Component\Mime\Exception\InvalidArgumentException $e) {
                 // ✅ Invalid email format errors
-                Log::error('Invalid email format', [
+                \Log::error('Invalid email format', [
                     'error' => $e->getMessage(),
                     'email' => $emailData['email']
                 ]);
                 throw new \Exception('Invalid email format. Please check your email address.');
             } catch (\Exception $e) {
                 // ✅ General email sending errors
-                Log::error('Email sending failed', [
+                \Log::error('Email sending failed', [
                     'error' => $e->getMessage(),
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
@@ -141,10 +141,10 @@ class ContactController extends Controller
 
             return back()->with('success', $successMessage);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed', ['errors' => $e->errors()]);
+            \Log::error('Validation failed', ['errors' => $e->errors()]);
             return back()->withErrors($e)->withInput();
         } catch (\Exception $e) {
-            Log::error('Contact form error', [
+            \Log::error('Contact form error', [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine()
@@ -158,14 +158,14 @@ class ContactController extends Controller
 
     private function getUserDataFromNKS($user)
     {
-        $cacheKey = 'nks_user_' . $user->id;
+        $cacheKey = 'nks_user_' . $user['id'];
 
         $cachedData = Cache::get($cacheKey);
         if ($cachedData) {
             return $cachedData;
         }
 
-        $nksToken = $user->nks_access_token ?? null;
+        $nksToken = $user['access_token'] ?? null;
         if (!$nksToken) {
             return null;
         }
@@ -196,8 +196,8 @@ class ContactController extends Controller
             $apiData = $data['data'];
 
             $userData = [
-                'name' => $apiData['name'] ?? $user->name ?? 'User',
-                'email' => $apiData['email'] ?? $user->email ?? '',
+                'name' => $apiData['name'] ?? $user['name'] ?? 'User',
+                'email' => $apiData['email'] ?? $user['email'] ?? '',
                 'phone' => $apiData['phone'] ?? null,
                 'nks_id' => $apiData['id'] ?? null,
             ];
@@ -208,16 +208,16 @@ class ContactController extends Controller
 
             Cache::put($cacheKey, $userData, 900);
 
-            Log::info('NKS data retrieved successfully', [
-                'user_id' => $user->id,
+            \Log::info('NKS data retrieved successfully', [
+                'user_id' => $user['id'],
                 'name' => $userData['name'],
                 'email' => $userData['email']
             ]);
 
             return $userData;
         } catch (\Exception $e) {
-            Log::error('NKS API failed', [
-                'user_id' => $user->id,
+            \Log::error('NKS API failed', [
+                'user_id' => $user['id'],
                 'error' => $e->getMessage()
             ]);
             return null;

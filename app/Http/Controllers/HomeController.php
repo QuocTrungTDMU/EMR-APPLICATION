@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\NksApiService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -18,9 +17,9 @@ class HomeController extends Controller
 
     public function index(Request $request)
     {
-        // ✅ Optional: Lấy thông tin user nếu đã đăng nhập (không bắt buộc)
-        $user = Auth::user();
-        $isAuthenticated = Auth::check();
+        // Lấy thông tin user từ middleware
+        $user = $request->attributes->get('nks_user');
+        $isAuthenticated = $user ? true : false;
 
         try {
             // ✅ Giữ nguyên logic getInsights() - public cho tất cả users
@@ -39,7 +38,7 @@ class HomeController extends Controller
             ]);
         } catch (\Exception $e) {
             \Log::error('Latest news fetch error: ' . $e->getMessage(), [
-                'user_id' => $user?->id ?? 'guest',
+                'user_id' => $user['id'] ?? 'guest',
                 'ip' => $request->ip(),
                 'error' => $e->getMessage()
             ]);

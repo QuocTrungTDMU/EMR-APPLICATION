@@ -18,15 +18,18 @@ use App\Http\Controllers\TestimonialsController;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Auth\PasswordController;
 use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\MapController;
+use App\Http\Middleware\CheckNksToken;
 
 require __DIR__ . '/auth.php';
 
-// Trang chính
-Route::get('/', [HomeController::class, 'index'])->name('homepage');
+// Trang chính dùng middleware CheckNksToken để nhận diện user
+Route::get('/', [HomeController::class, 'index'])->middleware([CheckNksToken::class])->name('homepage');
 
+// Route homepage không dùng middleware auth local
 Route::get('/homepage', function () {
     return view('homepage');
-})->middleware(['auth', 'verified'])->name('homepage');
+})->name('homepage');
 
 // Trang tĩnh
 Route::view('/about', 'about-us')->name('about');
@@ -50,43 +53,30 @@ Route::get('/checkout', function () {
 })->name('checkout');
 
 Route::middleware(['web'])->group(function () {
+    // Login page - với proper session check
+    Route::get('/login', function () {
+        // Kiểm tra session đúng cách
+        if (session('is_authenticated') === true) {
+            return redirect('/')->with('info', 'Bạn đã đăng nhập rồi');
+        }
+        return view('auth.login');
+    })->name('login');
+
+    // NKS Login endpoint
     Route::post('/nks-login', [AuthController::class, 'nksLogin'])->name('nksLogin');
+
+    // Logout endpoint
+    Route::post('/logout', [AuthController::class, 'webLogout'])->name('logout');
 });
 
-// Login
-Route::get('/login', function () {
-    return view('auth.login');
-})->middleware('guest')->name('login');
-
-Route::get('/homepage', function () {
-    return view('homepage');
-})->middleware(['auth', 'verified'])->name('homepage');
-
-
-
-Route::middleware('auth')->group(function () {
-    // Xem thông tin
+Route::middleware([CheckNksToken::class])->group(function () {
     Route::get('/profile', [ProfileController::class, 'view'])->name('profile.view');
-
-    // Form chỉnh sửa
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-
-    // Xử lý cập nhật
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-    // Xoá tài khoản
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // Cập nhật mật khẩu
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('password.update');
-
-    // Form chỉnh sửa mật khẩu
     Route::get('/profile/edit-password', [ProfileController::class, 'editPassword'])->name('profile.edit-password');
-
-    // Route::post('/avatar/update', [ProfileController::class, 'updateAvatar'])->name('avatar.update');
-
     Route::post('/profile/upload-cccd', [ProfileController::class, 'uploadCccd'])->name('profile.uploadCccd');
-
 
     // Lịch làm việc bác sĩ
     Route::get('/availability-checker', [AvailabilityController::class, 'index'])->name('availability.checker');
@@ -113,25 +103,18 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// routes/web.php
-
-// Dashboard routes (giữ nguyên route hiện tại của bạn)
-Route::middleware(['auth'])->prefix('dashboard')->name('admin.')->group(function () {
+// Dashboard routes KHÔNG dùng middleware auth local
+Route::prefix('dashboard')->middleware([CheckNksToken::class])->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
-
-    // ✅ Thêm attendance routes vào cùng group
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/checkin', [AttendanceController::class, 'checkin'])->name('attendance.checkin');
     Route::post('/attendance/checkout', [AttendanceController::class, 'checkout'])->name('attendance.checkout');
     Route::get('/attendance/attendances', [AttendanceController::class, 'attendances'])->name('attendance.attendances');
-
     Route::get('/patients', [PatientManagementController::class, 'index'])->name('patients.index');
     Route::get('/patients/{id}/edit', [PatientManagementController::class, 'edit'])->name('patients.edit');
     Route::post('/patients/{id}', [PatientManagementController::class, 'update'])->name('patients.update');
     Route::delete('/patients/{id}', [PatientManagementController::class, 'destroy'])->name('patients.destroy');
     Route::get('/patients/export', [PatientManagementController::class, 'exportExcel'])->name('patients.export');
-
-
 });
 
 
@@ -209,7 +192,7 @@ Route::post('/api/provinces-proxy', function () {
         $response = Http::asForm()->post('https://online.nks.vn/api/nks/provinces', [
             'slcBox' => 1
         ]);
-        
+
         return response($response->body(), $response->status())
             ->header('Content-Type', $response->header('Content-Type'));
     } catch (\Exception $e) {
@@ -218,5 +201,7 @@ Route::post('/api/provinces-proxy', function () {
         ], 500);
     }
 });
+
+Route::get('/map', [\App\Http\Controllers\MapController::class, 'index'])->name('map.index');
 
 require __DIR__ . '/auth.php';
