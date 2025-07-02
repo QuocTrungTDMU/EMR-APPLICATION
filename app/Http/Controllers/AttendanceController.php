@@ -20,12 +20,12 @@ class AttendanceController extends Controller
     /**
      * Hiển thị trang điểm danh
      */
-    public function index()
+    public function index(Request $request)
     {
-        $userData = $this->getUserData();
-        $attendanceStatus = $this->getAttendanceStatus();
-        $todayAttendances = $this->getTodayAttendances();
-
+        $user = $request->attributes->get('nks_user');
+        $userData = $this->getUserData($user);
+        $attendanceStatus = $this->getAttendanceStatus($user);
+        $todayAttendances = $this->getTodayAttendances($user);
         return view('admin.attendance.index', compact(
             'userData',
             'attendanceStatus',
@@ -39,6 +39,7 @@ class AttendanceController extends Controller
     public function checkin(Request $request)
     {
         try {
+            $user = $request->attributes->get('nks_user');
             // Validate dữ liệu
             $request->validate([
                 'checkin_img' => 'required|string', // Base64 image
@@ -46,7 +47,7 @@ class AttendanceController extends Controller
                 'longitude' => 'required|numeric',
             ]);
 
-            $userData = $this->getUserData();
+            $userData = $this->getUserData($user);
             $currentTime = Carbon::now('Asia/Ho_Chi_Minh');
 
             // Kiểm tra thời gian cho phép check in (8:30 - 9:00)
@@ -98,7 +99,7 @@ class AttendanceController extends Controller
         } catch (\Exception $e) {
             Log::error('Checkin error', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => $user['id'] ?? null
             ]);
 
             return response()->json([
@@ -114,13 +115,14 @@ class AttendanceController extends Controller
     public function checkout(Request $request)
     {
         try {
+            $user = $request->attributes->get('nks_user');
             $request->validate([
                 'checkout_img' => 'required|string',
                 'latitude' => 'required|numeric',
                 'longitude' => 'required|numeric',
             ]);
 
-            $userData = $this->getUserData();
+            $userData = $this->getUserData($user);
             $currentTime = Carbon::now('Asia/Ho_Chi_Minh');
 
             // Kiểm tra thời gian cho phép check out (16:00 - 16:30)
@@ -168,7 +170,7 @@ class AttendanceController extends Controller
         } catch (\Exception $e) {
             Log::error('Checkout error', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => $user['id'] ?? null
             ]);
 
             return response()->json([
@@ -181,10 +183,10 @@ class AttendanceController extends Controller
     /**
      * Lấy lịch sử điểm danh
      */
-    public function attendances()
+    public function attendances(Request $request)
     {
-        $userData = $this->getUserData();
-
+        $user = $request->attributes->get('nks_user');
+        $userData = $this->getUserData($user);
         $response = $this->nksAttendanceService->getAttendances([
             'user_id' => $userData['nks_user_id']
         ]);
@@ -229,25 +231,26 @@ class AttendanceController extends Controller
     /**
      * Lấy thông tin user
      */
-    private function getUserData()
+    private function getUserData($user = null)
     {
-        $localUser = Auth::user();
-        $nksUser = session('nks_user', []);
-
+        // Lấy user từ middleware nếu chưa truyền vào
+        if (!$user) {
+            $user = request()->attributes->get('nks_user');
+        }
         return [
-            'id' => $localUser->id,
-            'nks_user_id' => $nksUser['id'] ?? null,
-            'name' => $nksUser['name'] ?? $localUser->name,
-            'email' => $nksUser['email'] ?? $localUser->email,
+            'nks_user_id' => $user['id'] ?? null,
+            'name' => $user['name'] ?? '',
+            'email' => $user['email'] ?? '',
+            'role_id' => $user['role_id'] ?? null,
         ];
     }
 
     /**
      * Lấy trạng thái điểm danh hôm nay
      */
-    private function getAttendanceStatus()
+    private function getAttendanceStatus($user = null)
     {
-        $userData = $this->getUserData();
+        $userData = $this->getUserData($user);
         $response = $this->nksAttendanceService->getAttendances([
             'user_id' => $userData['nks_user_id']
         ]);
@@ -293,9 +296,9 @@ class AttendanceController extends Controller
     /**
      * Lấy danh sách điểm danh hôm nay
      */
-    private function getTodayAttendances()
+    private function getTodayAttendances($user = null)
     {
-        $userData = $this->getUserData();
+        $userData = $this->getUserData($user);
         $response = $this->nksAttendanceService->getAttendances([
             'user_id' => $userData['nks_user_id']
         ]);

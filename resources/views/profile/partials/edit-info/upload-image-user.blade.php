@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="access-token" content="{{ auth()->user()->nks_access_token ?? '' }}"> <!-- Truyền token từ backend -->
     <title>Avatar Upload với Crop Modal</title>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -15,26 +16,18 @@
         <div class="text-center mb-6">
             <div class="relative inline-block" x-data="avatarHandler()" x-ref="avatarContainer">
                 <div class="w-24 h-24 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden relative">
-                    <template x-if="!previewImage">
+                    <template x-if="!hasImage">
                         <span class="text-white font-bold text-2xl" x-text="initial"></span>
                     </template>
-                    <img x-show="previewImage" x-ref="avatarImage" :src="previewImage" alt="Avatar Preview" class="w-full h-full object-cover" :style="`transform: scale(${scale}); transition: transform 0.2s;`">
-                    <div x-show="previewImage" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity">
-                        <button @click="zoomIn" class="text-white text-xl font-bold mx-2">+</button>
-                        <button @click="zoomOut" class="text-white text-xl font-bold mx-2">−</button>
-                    </div>
+                    <img x-show="hasImage" x-ref="avatarImage" :src="previewImage" alt="Avatar" class="w-full h-full object-cover">
                     <label class="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg border-2 border-gray-100 hover:border-blue-300 transition-colors cursor-pointer">
                         <input type="file" accept="image/*" @change="handleImageUpload" class="hidden" x-ref="fileInput">
                         <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-join="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
                     </label>
                 </div>
-
-                <template x-if="previewImage">
-                    <button @click="openCropModal" class="text-sm text-blue-500 underline mb-2">Chỉnh sửa ảnh</button>
-                </template>
 
                 <!-- Modal Crop -->
                 <div x-show="showCropModal"
@@ -58,7 +51,13 @@
                 </div>
 
                 <!-- Thông tin user -->
-                <h3 class="text-lg font-semibold text-gray-900 mt-2">{{ auth()->user()->name }}</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mt-2">
+                    @if(isset($user->last_name) || isset($user->first_name))
+                        {{ ($user->first_name ?? '') . ' ' . ($user->last_name ?? '') }}
+                    @else
+                        {{ $user->name ?? '' }}
+                    @endif
+                </h3>
                 <p class="text-sm text-gray-500">Thành viên từ {{ auth()->user()->created_at->format('M Y') }}</p>
             </div>
         </div>
@@ -66,9 +65,14 @@
 
     <script>
         function avatarHandler() {
+            const defaultAvatar = '{{ asset('images/default-avatar.png') }}';
+            const initialAvatar = `{{ $user->avatar ?? $user->avatar_url ?? asset('images/default-avatar.png') }}`;
             return {
                 initial: '{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}',
-                previewImage: null,
+                previewImage: initialAvatar,
+                get hasImage() {
+                    return this.previewImage && this.previewImage !== '' && this.previewImage !== defaultAvatar;
+                },
                 scale: 1,
                 maxScale: 2,
                 minScale: 0.5,
@@ -77,13 +81,22 @@
 
                 handleImageUpload(event) {
                     const file = event.target.files[0];
-                    if (!file || !file.type.startsWith('image/')) return;
+                    if (!file || !file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+                        alert('Vui lòng chọn ảnh nhỏ hơn 5MB và định dạng hợp lệ (JPG, PNG, etc.).');
+                        return;
+                    }
 
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        if (this.previewImage === e.target.result) return; // Tránh reload cùng ảnh
-                        this.previewImage = e.target.result;
-                        this.scale = 1;
+                        const base64String = e.target.result;
+                        console.log('Base64 sau khi đọc file:', base64String.substring(0, 50) + '...'); // Log một phần
+                        console.log('Kiểm tra tiền tố:', base64String.startsWith('data:image/')); // Xác nhận định dạng
+                        if (!base64String.startsWith('data:image/')) {
+                            alert('Lỗi: Định dạng ảnh không hợp lệ.');
+                            return;
+                        }
+                        this.previewImage = base64String;
+                        this.openCropModal();
                     };
                     reader.readAsDataURL(file);
                 },
@@ -109,8 +122,46 @@
                         width: 240,
                         height: 240,
                     });
-                    this.previewImage = canvas.toDataURL('image/png'); // chuyển đổi ra base64 theo anh Nhựt kêu, nhưng nên coi lại đúng chuẩn base64 chưa
-                    // console.log('Base64 của ảnh đã crop:', base64Image); // (không lên)
+                    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+                    if (!base64Image.startsWith('data:image/')) {
+                        alert('Lỗi: Định dạng ảnh sau crop không hợp lệ.');
+                        return;
+                    }
+
+                    const accessTokenMeta = document.querySelector('meta[name="access-token"]');
+                    const accessToken = accessTokenMeta ? accessTokenMeta.content : null;
+                    if (!accessToken || accessToken === '') {
+                        alert('Lỗi: Không thể xác thực. Vui lòng đăng nhập lại hoặc liên hệ hỗ trợ.');
+                        this.closeCropModal();
+                        return;
+                    }
+
+                    // Sử dụng FormData để gửi đúng chuẩn form-data
+                    const formData = new FormData();
+                    formData.append('avatar', base64Image);
+                    formData.append('access_token', accessToken);
+
+                    fetch('https://account.nks.vn/api/nks/user/updateAvatar', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.previewImage = base64Image;
+                            // Dispatch event toàn cục để header cập nhật avatar
+                            window.dispatchEvent(new CustomEvent('avatarUpdated', { detail: { avatar: base64Image } }));
+                            this.$refs.avatarContainer.dispatchEvent(new CustomEvent('avatarUpdated'));
+                        } else {
+                            alert('Lỗi: ' + (data.message || 'Cập nhật avatar thất bại'));
+                        }
+                    })
+                    .catch(error => {
+                        alert('Có lỗi xảy ra khi cập nhật avatar. Vui lòng thử lại sau.');
+                        console.error('Lỗi API:', error);
+                    });
+
+                    this.previewImage = base64Image;
                     this.cropper.destroy();
                     this.cropper = null;
                     this.scale = 1;
@@ -123,6 +174,7 @@
                         this.cropper = null;
                     }
                     this.showCropModal = false;
+                    this.previewImage = initialAvatar;
                 },
 
                 zoomIn() {

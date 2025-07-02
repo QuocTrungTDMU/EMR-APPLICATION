@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContactController;
@@ -93,7 +92,6 @@ Route::get('/monitor-session', function (Request $request) {
         'timestamp' => now()->toISOString()
     ]);
 });
-
 // ✅ FORCE REPAIR SESSION
 Route::get('/repair-session', function (Request $request) {
     if ($request->session()->get('is_authenticated') && !$request->session()->get('user_name')) {
@@ -145,7 +143,6 @@ Route::get('/trace-session-changes', function (Request $request) {
     return response()->json(['error' => 'Session file not found']);
 });
 
-
 // ✅ REAL-TIME SESSION FILE MONITOR
 Route::get('/monitor-session-file', function (Request $request) {
     $sessionId = $request->session()->getId();
@@ -173,7 +170,48 @@ Route::get('/doctor-detail', function () {
 Route::get('/hospitals-search', function () {
     return view('hospitals-search');
 })->name('hospitals-search');
+Route::middleware(['web'])->group(function () {
+    // Login page - với proper session check
+    Route::get('/login', function () {
+        // Kiểm tra session đúng cách
+        if (session('is_authenticated') === true) {
+            return redirect('/')->with('info', 'Bạn đã đăng nhập rồi');
+        }
+        return view('auth.login');
+    })->name('login');
 
+    // NKS Login endpoint
+    Route::post('/nks-login', [AuthController::class, 'nksLogin'])->name('nksLogin');
+
+    // Logout endpoint
+    Route::post('/logout', [AuthController::class, 'webLogout'])->name('logout');
+});
+
+Route::middleware([CheckNksToken::class])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'view'])->name('profile.view');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+    Route::get('/profile/edit-password', [ProfileController::class, 'editPassword'])->name('profile.edit-password');
+    Route::post('/profile/upload-cccd', [ProfileController::class, 'uploadCccd'])->name('profile.uploadCccd');
+
+    // Lịch làm việc bác sĩ
+    Route::get('/availability-checker', [AvailabilityController::class, 'index'])->name('availability.checker');
+    Route::get('/doctor-detail/{doctorId}', [AvailabilityController::class, 'book'])->name('book.doctor-detail');
+
+    //Tư vấn trực tuyến & từ xa
+    Route::get('/online-consultation-telemedicine', [TelemedicineController::class, 'index'])->name('telemedicine');
+
+    //Câu hỏi thường gặp
+    Route::get('/faq', [FaqController::class, 'index'])->name('faq');
+    Route::post('/faq/submit', [FaqController::class, 'submit'])->name('faq.submit');
+
+    //Tạo tài khoản bệnh nhân
+    Route::get('/patient-account', [PatientAccountController::class, 'index'])->name('patient-account');
+    Route::post('/patient-account/submit', [PatientAccountController::class, 'submit'])->name('patient-account.submit');
+    //Đánh giá
+    Route::get('/testimonials', [TestimonialsController::class, 'index'])->name('testimonials');
 
 Route::get('/hospital-details', function () {
     return view('hospital-details');
@@ -232,6 +270,67 @@ Route::prefix('blogs')->name('blogs.')->group(function () {
     Route::get('/', [App\Http\Controllers\BlogController::class, 'index'])->name('index');
     Route::get('/category/{category}', [App\Http\Controllers\BlogController::class, 'category'])->name('category');
     Route::get('/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('show');
+
+    // Password update routes
+    Route::post('/password/store', [PasswordController::class, 'store'])->name('password.store');
+    Route::get('/password/confirm', [PasswordController::class, 'showConfirmation'])->name('password.confirm-view');
+    Route::post('/password/update', [PasswordController::class, 'update'])->name('password.update');
+});
+
+
+// Dashboard routes KHÔNG dùng middleware auth local
+Route::prefix('dashboard')->middleware([CheckNksToken::class])->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('dashboard');
+    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/checkin', [AttendanceController::class, 'checkin'])->name('attendance.checkin');
+    Route::post('/attendance/checkout', [AttendanceController::class, 'checkout'])->name('attendance.checkout');
+    Route::get('/attendance/attendances', [AttendanceController::class, 'attendances'])->name('attendance.attendances');
+    Route::get('/patients', [PatientManagementController::class, 'index'])->name('patients.index');
+    Route::get('/patients/{id}/edit', [PatientManagementController::class, 'edit'])->name('patients.edit');
+    Route::post('/patients/{id}', [PatientManagementController::class, 'update'])->name('patients.update');
+    Route::delete('/patients/{id}', [PatientManagementController::class, 'destroy'])->name('patients.destroy');
+    Route::get('/patients/export', [PatientManagementController::class, 'exportExcel'])->name('patients.export');
+});
+
+
+// Blog
+Route::prefix('blogs')->name('blogs.')->group(function () {
+    Route::get('/', [App\Http\Controllers\BlogController::class, 'index'])->name('index');
+    Route::get('/category/{category}', [App\Http\Controllers\BlogController::class, 'category'])->name('category');
+    Route::get('/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('show');
+});
+Route::redirect('/blog', '/blogs');
+
+// Test email
+Route::get('/test-email', function () {
+    try {
+        Mail::raw('Test email from Laravel', function ($message) {
+            $message->to('enjoy4624@gmail.com')->subject('Test Email');
+        });
+        return 'Email sent successfully!';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::middleware('auth')->group(function () {
+
+    // Test route
+    Route::post('/test-fcm-backend', function (Request $request) {
+        $firebaseService = new \App\Services\FirebaseService();
+
+        $result = $firebaseService->sendToDevice(
+            'Test từ Backend',
+            'Đây là test notification từ Service Account!',
+            $request->fcm_token,
+            ['type' => 'backend_test']
+        );
+
+        return response()->json([
+            'success' => $result,
+            'message' => $result ? 'Sent successfully!' : 'Failed to send'
+        ]);
+    });
 });
 
 Route::redirect('/blog', '/blogs');
@@ -260,7 +359,6 @@ Route::middleware(['web'])->group(function () {
         return app(ProfileController::class)->destroy($request);
     })->name('profile.destroy');
 });
-
 // ✅ ADMIN DASHBOARD - FIXED SESSION CHECK
 Route::middleware(['web'])->prefix('dashboard')->name('admin.')->group(function () {
     Route::get('/', function (Request $request) {
@@ -596,4 +694,20 @@ if (!app()->isProduction()) {
 }
 
 // ✅ Include auth.php - kept for Laravel's built-in features if needed
+Route::post('/api/provinces-proxy', function () {
+    try {
+        $response = Http::asForm()->post('https://online.nks.vn/api/nks/provinces', [
+            'slcBox' => 1
+        ]);
+
+        return response($response->body(), $response->status())
+            ->header('Content-Type', $response->header('Content-Type'));
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
+
+Route::get('/map', [\App\Http\Controllers\MapController::class, 'index'])->name('map.index');
 require __DIR__ . '/auth.php';

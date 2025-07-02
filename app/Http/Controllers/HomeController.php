@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\NksApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-
 class HomeController extends Controller
 {
     protected $nksApiService;

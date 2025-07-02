@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -19,8 +18,7 @@ class NotificationController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $user = Auth::user();
-
+            $user = $request->attributes->get('nks_user');
             if (!$user) {
                 return response()->json([
                     'success' => false,
@@ -28,18 +26,16 @@ class NotificationController extends Controller
                     'error_code' => 'UNAUTHENTICATED'
                 ], 401);
             }
-
             $limit = $request->get('limit', 10);
-
             Log::info('=== DEBUGGING NOTIFICATION API ===', [
-                'user_id' => $user->id,
-                'nks_user_id' => $user->nks_user_id ?? null,
+                'user_id' => $user['id'],
+                'nks_user_id' => $user['nks_user_id'] ?? null,
                 'limit' => $limit
             ]);
 
             // ✅ Gọi NKS API và log chi tiết
             $response = Http::timeout(30)->post($this->nksApiUrl . '/notifications', [
-                'user_id' => $user->nks_user_id ?? $user->id
+                'user_id' => $user['nks_user_id'] ?? $user['id']
             ]);
 
             // ✅ LOG RAW RESPONSE từ NKS
@@ -113,8 +109,8 @@ class NotificationController extends Controller
                         'debug' => [
                             'nks_original_ids' => collect($data['data'])->pluck('id')->toArray(),
                             'processed_ids' => $notifications->pluck('id')->toArray(),
-                            'user_id' => $user->id,
-                            'nks_user_id' => $user->nks_user_id ?? null,
+                            'user_id' => $user['id'],
+                            'nks_user_id' => $user['nks_user_id'] ?? null,
                             'limit_applied' => $limit
                         ]
                     ]);
@@ -123,7 +119,7 @@ class NotificationController extends Controller
 
             // ✅ NKS API failed
             Log::error('=== NKS API FAILED ===', [
-                'user_id' => $user->id,
+                'user_id' => $user['id'],
                 'status' => $response->status(),
                 'response_body' => $response->body(),
                 'response_headers' => $response->headers()
@@ -138,14 +134,14 @@ class NotificationController extends Controller
                 'debug' => [
                     'nks_api_failed' => true,
                     'status' => $response->status(),
-                    'user_id' => $user->id
+                    'user_id' => $user['id']
                 ]
             ]);
         } catch (\Exception $e) {
             Log::error('=== EXCEPTION IN NOTIFICATION API ===', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
-                'user_id' => Auth::id()
+                'user_id' => $user['id'] ?? null
             ]);
 
             return response()->json([
@@ -162,11 +158,10 @@ class NotificationController extends Controller
     /**
      * Xem chi tiết thông báo - CHỈ từ NKS API
      */
-    public function show($id): JsonResponse
+    public function show($id, Request $request): JsonResponse
     {
         try {
-            $user = Auth::user();
-
+            $user = $request->attributes->get('nks_user');
             if (!$user) {
                 return response()->json([
                     'success' => false,
@@ -176,13 +171,13 @@ class NotificationController extends Controller
             }
 
             Log::info('Loading notification detail from NKS API', [
-                'user_id' => $user->id,
+                'user_id' => $user['id'],
                 'notification_id' => $id,
-                'nks_user_id' => $user->nks_user_id ?? null
+                'nks_user_id' => $user['nks_user_id'] ?? null
             ]);
 
             // ✅ Fix: Gọi NKS API theo đúng format như Postman
-            $nksUserId = $user->nks_user_id ?? $user->id;
+            $nksUserId = $user['nks_user_id'] ?? $user['id'];
 
             // ✅ Method 1: GET with query params (như Postman)
             $response = Http::timeout(30)->get($this->nksApiUrl . '/notification', [
@@ -206,7 +201,7 @@ class NotificationController extends Controller
                 'headers' => $response->headers(),
                 'body' => $response->body(),
                 'notification_id' => $id,
-                'user_id' => $user->id
+                'user_id' => $user['id']
             ]);
 
             if ($response->successful()) {
@@ -248,7 +243,7 @@ class NotificationController extends Controller
                 ];
 
                 Log::info('Notification detail loaded successfully from NKS', [
-                    'user_id' => $user->id,
+                    'user_id' => $user['id'],
                     'notification_id' => $id,
                     'is_read' => $enhancedNotification['is_read']
                 ]);
@@ -315,7 +310,7 @@ class NotificationController extends Controller
 
             // ✅ Both methods failed
             Log::error('Both GET and POST methods failed for NKS notification detail', [
-                'user_id' => $user->id,
+                'user_id' => $user['id'],
                 'notification_id' => $id,
                 'get_status' => $response->status(),
                 'post_status' => $postResponse->status(),
@@ -336,11 +331,9 @@ class NotificationController extends Controller
                 ]
             ], 404);
         } catch (\Exception $e) {
-            Log::error('Exception in notification detail', [
+            Log::error('NKS API notification show error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'user_id' => Auth::id(),
-                'notification_id' => $id
+                'user_id' => $user['id'] ?? null
             ]);
 
             return response()->json([
@@ -357,7 +350,7 @@ class NotificationController extends Controller
     public function markAsRead($id): JsonResponse
     {
         try {
-            $user = Auth::user();
+            $user = $request->attributes->get('nks_user');
 
             if (!$user) {
                 return response()->json([
@@ -368,12 +361,12 @@ class NotificationController extends Controller
             }
 
             Log::info('Marking notification as read via NKS API', [
-                'user_id' => $user->id,
+                'user_id' => $user['id'],
                 'notification_id' => $id
             ]);
 
             $response = Http::timeout(30)->post($this->nksApiUrl . '/notification/read', [
-                'user_id' => $user->nks_user_id ?? $user->id,
+                'user_id' => $user['nks_user_id'] ?? $user['id'],
                 'id' => $id
             ]);
 
@@ -381,7 +374,7 @@ class NotificationController extends Controller
                 $data = $response->json();
 
                 Log::info('Notification marked as read successfully via NKS', [
-                    'user_id' => $user->id,
+                    'user_id' => $user['id'],
                     'notification_id' => $id
                 ]);
 
@@ -396,7 +389,7 @@ class NotificationController extends Controller
             }
 
             Log::warning('Failed to mark notification as read via NKS API', [
-                'user_id' => $user->id,
+                'user_id' => $user['id'],
                 'notification_id' => $id,
                 'status' => $response->status(),
                 'response_body' => $response->body()
@@ -410,7 +403,7 @@ class NotificationController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to mark notification as read', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id(),
+                'user_id' => $user['id'] ?? null,
                 'notification_id' => $id
             ]);
 
@@ -428,7 +421,7 @@ class NotificationController extends Controller
     public function destroy($id): JsonResponse
     {
         try {
-            $user = Auth::user();
+            $user = $request->attributes->get('nks_user');
 
             if (!$user) {
                 return response()->json([
@@ -439,12 +432,12 @@ class NotificationController extends Controller
             }
 
             Log::info('Deleting notification via NKS API', [
-                'user_id' => $user->id,
+                'user_id' => $user['id'],
                 'notification_id' => $id
             ]);
 
             $response = Http::timeout(30)->post($this->nksApiUrl . '/notification/delete', [
-                'user_id' => $user->nks_user_id ?? $user->id,
+                'user_id' => $user['nks_user_id'] ?? $user['id'],
                 'id' => $id
             ]);
 
@@ -452,7 +445,7 @@ class NotificationController extends Controller
                 $data = $response->json();
 
                 Log::info('Notification deleted successfully via NKS', [
-                    'user_id' => $user->id,
+                    'user_id' => $user['id'],
                     'notification_id' => $id
                 ]);
 
@@ -463,7 +456,7 @@ class NotificationController extends Controller
             }
 
             Log::warning('Failed to delete notification via NKS API', [
-                'user_id' => $user->id,
+                'user_id' => $user['id'],
                 'notification_id' => $id,
                 'status' => $response->status(),
                 'response_body' => $response->body()
@@ -477,7 +470,7 @@ class NotificationController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to delete notification', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id(),
+                'user_id' => $user['id'] ?? null,
                 'notification_id' => $id
             ]);
 
@@ -495,7 +488,7 @@ class NotificationController extends Controller
     public function markAllAsRead(): JsonResponse
     {
         try {
-            $user = Auth::user();
+            $user = $request->attributes->get('nks_user');
 
             if (!$user) {
                 return response()->json([
@@ -506,11 +499,11 @@ class NotificationController extends Controller
             }
 
             Log::info('Marking all notifications as read via NKS API', [
-                'user_id' => $user->id
+                'user_id' => $user['id']
             ]);
 
             $response = Http::timeout(30)->post($this->nksApiUrl . '/notifications/read-all', [
-                'user_id' => $user->nks_user_id ?? $user->id
+                'user_id' => $user['nks_user_id'] ?? $user['id']
             ]);
 
             if ($response->successful()) {
@@ -518,7 +511,7 @@ class NotificationController extends Controller
                 $updatedCount = $data['updated_count'] ?? 0;
 
                 Log::info('All notifications marked as read successfully via NKS', [
-                    'user_id' => $user->id,
+                    'user_id' => $user['id'],
                     'updated_count' => $updatedCount
                 ]);
 
@@ -539,7 +532,7 @@ class NotificationController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to mark all notifications as read', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => $user['id'] ?? null
             ]);
 
             return response()->json([

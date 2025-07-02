@@ -143,9 +143,22 @@
                             <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Medik Shop</a>
                         </div>
                     </li>
-                    <li><a href="{{ route('about') ?? '#' }}" class="text-gray-700 hover:text-blue-600 transition-colors py-2">About</a></li>
-                    <li><a href="{{ route('blogs.index') ?? '#' }}" class="text-gray-700 hover:text-blue-600 transition-colors py-2">Blog</a></li>
-                    <li><a href="#" class="text-gray-700 hover:text-blue-600 transition-colors py-2">Collection</a></li>
+                    <li><a href="{{ route('about') }}" class="text-gray-700 hover:text-blue-600 transition-colors py-2">About</a></li>
+                    <li><a href="{{ route('blogs.index') }}" class="text-gray-700 hover:text-blue-600 transition-colors py-2">Blog</a></li>
+                    <li class="relative group">
+                        <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors py-2 ">Page+</a>
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg mt-2 space-y-2 py-2 w-64 ">
+                            <li>
+                             <a href="/dashboard" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Dashboard</a>
+                            </li>
+                            <li><a href="{{ route('availability.checker') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Availability Checker</a></li>
+                            <li><a href="{{ route('telemedicine') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Online Consultation & Telemedicine</a></li>
+                            <li><a href="{{ route('faq') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">FAQ</a></li>
+                            <li><a href="{{ route('testimonials') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Testimonials</a></li>
+                            <li><a href="{{ route('patient-account') }}" class="text-gray-700 hover:text-blue-600 block px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-colors">Patient Account</a></li>
+                        </ul>
+                    </li>
+                    <!-- Shop with submenu -->
                     <li class="relative group">
                         <button class="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors py-2">
                             <span>Shop</span>
@@ -172,39 +185,55 @@
                 <!-- ✅ GIỮ LẠI Notification Component - Chỉ khi authenticated -->
                 @if(session('is_authenticated') === true)
                 @include('components.notifications.dropdown')
-                @endif
-
-                <!-- ✅ Account Icon with Dropdown -->
+                @else
+                <!-- Debug: Hiển thị khi chưa login -->
+                <div style="color: red; font-size: 12px;">Not logged in</div>
+                @endauth
+                <!-- Biểu tượng Tài khoản với Dropdown -->
                 <div class="group relative">
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
-                        </svg>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center" title="Account">
+                        @php
+                            if (!isset($user) || !$user) {
+                                $user = auth()->user();
+                            }
+                            $avatar = null;
+                            if (isset($user) && !empty($user->avatar)) {
+                                $avatar = $user->avatar;
+                            } elseif (isset($user) && !empty($user->avatar_url)) {
+                                $avatar = $user->avatar_url;
+                            }
+                        @endphp
+                        @if($avatar)
+                            <img src="{{ $avatar }}" alt="Avatar" class="header-avatar w-8 h-8 rounded-full border-2 border-blue-200 object-cover shadow-sm">
+                        @else
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                            </svg>
+                        @endif
                     </a>
-
-                    <!-- ✅ Account Dropdown -->
+                    <!-- Menu Dropdown -->
                     <div class="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out">
                         @if(session('is_authenticated') === true && session('user_name'))
                         <!-- User Info -->
                         <div class="px-4 py-2 border-b border-gray-100">
-                            <div class="text-sm font-medium text-gray-500">Signed in as</div>
-                            <div class="font-semibold text-gray-900 truncate">{{ session('user_name') }}</div>
-                            <div class="text-xs text-gray-500 truncate">{{ session('user_email') }}</div>
-                            @if(session('nks_user_data.role.name'))
-                            <div class="text-xs text-blue-600 font-medium mt-1 capitalize">
-                                {{ session('nks_user_data.role.name') }}
+                            <div class="text-sm font-medium text-gray-500">Đăng nhập với tên</div>
+                            <div class="font-semibold text-gray-900 truncate header-username">
+                                @if( isset($user->first_name)|| isset($user->last_name))
+                                    {{ ($user->first_name ?? '') . ' ' . ($user->last_name ?? '') }}
+                                @else
+                                    {{ $user->name ?? '' }}
+                                @endif
                             </div>
-                            @endif
                         </div>
 
                         <!-- Menu Items -->
                         <div class="px-4 py-2">
-                            <a href="{{ route('profile.edit') ?? '#' }}" class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+                            <a href="{{ route('profile.update') }}" class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <span>My Account</span>
+                                <span>Tài khoản của tôi</span>
                             </a>
 
                             <a href="{{ route('homepage') ?? '/' }}" class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
@@ -225,7 +254,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                     </svg>
-                                    <span>Logout</span>
+                                    <span>Đăng xuất</span>
                                 </button>
                             </form>
                         </div>
@@ -238,7 +267,6 @@
                                 </svg>
                                 <span>Đăng nhập</span>
                             </a>
-
                             <a href="{{ route('register') ?? '#' }}" class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-lg transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -250,7 +278,7 @@
                     </div>
                 </div>
 
-                <!-- Cart Icon -->
+                <!-- Biểu tượng Giỏ hàng -->
                 <a href="#" class="relative text-gray-600 hover:text-blue-600 transition-colors" title="Cart">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <circle cx="9" cy="21" r="1" />
@@ -259,7 +287,48 @@
                     </svg>
                     <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">1</span>
                 </a>
+
+                <!-- Nút Chuyển đổi Chế độ Sáng/Tối -->
+                <button id="theme-toggle" class="relative text-gray-600 hover:text-blue-600 transition-colors" title="Chuyển chế độ Sáng/Tối">
+                    <svg id="theme-toggle-dark-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <svg id="theme-toggle-light-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
             </div>
+
+            <script>
+                // Lấy nút chuyển đổi và các biểu tượng
+                const themeToggleBtn = document.getElementById('theme-toggle');
+                const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+                const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+                // Kiểm tra chế độ đã lưu trong localStorage
+                if (localStorage.getItem('theme') === 'dark' || 
+                    (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                    themeToggleLightIcon.classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    themeToggleDarkIcon.classList.remove('hidden');
+                }
+
+                // Chuyển đổi chế độ khi nhấn nút
+                themeToggleBtn.addEventListener('click', () => {
+                    document.documentElement.classList.toggle('dark');
+                    if (document.documentElement.classList.contains('dark')) {
+                        localStorage.setItem('theme', 'dark');
+                        themeToggleLightIcon.classList.remove('hidden');
+                        themeToggleDarkIcon.classList.add('hidden');
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        themeToggleDarkIcon.classList.remove('hidden');
+                        themeToggleLightIcon.classList.add('hidden');
+                    }
+                });
+            </script>
         </div>
 
         <!-- Mobile Header -->
@@ -301,13 +370,27 @@
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1.01 4.5 2.09C13.09 4.01 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                         </svg>
                     </a>
-
-                    @if(session('is_authenticated') === true)
-                    <a href="{{ route('profile.edit') ?? '#' }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
-                        </svg>
+                    @auth
+                    <a href="{{ route('profile.edit') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Account">
+                        @php
+                            if (!isset($user) || !$user) {
+                                $user = auth()->user();
+                            }
+                            $avatar = null;
+                            if (isset($user) && !empty($user->avatar)) {
+                                $avatar = $user->avatar;
+                            } elseif (isset($user) && !empty($user->avatar_url)) {
+                                $avatar = $user->avatar_url;
+                            }
+                        @endphp
+                        @if($avatar)
+                            <img src="{{ $avatar }}" alt="Avatar" class="header-avatar w-8 h-8 rounded-full border-2 border-blue-200 object-cover shadow-sm">
+                        @else
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                            </svg>
+                        @endif
                     </a>
                     @else
                     <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Login">
@@ -376,13 +459,28 @@
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 1.01 4.5 2.09C13.09 4.01 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                         </svg>
                     </a>
-
-                    @if(session('is_authenticated') === true)
-                    <a href="{{ route('profile.edit') ?? '#' }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Tài khoản">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
-                        </svg>
+                    <!-- Account Icon -->
+                    @auth
+                    <a href="{{ route('profile.edit') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Tài khoản của tôi">
+                        @php
+                            if (!isset($user) || !$user) {
+                                $user = auth()->user();
+                            }
+                            $avatar = null;
+                            if (isset($user) && !empty($user->avatar)) {
+                                $avatar = $user->avatar;
+                            } elseif (isset($user) && !empty($user->avatar_url)) {
+                                $avatar = $user->avatar_url;
+                            }
+                        @endphp
+                        @if($avatar)
+                            <img src="{{ $avatar }}" alt="Avatar" class="header-avatar w-8 h-8 rounded-full border-2 border-blue-200 object-cover shadow-sm">
+                        @else
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M16 16c0-2.21-3.58-4-8-4s-8 1.79-8 4" />
+                            </svg>
+                        @endif
                     </a>
                     @else
                     <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 transition-colors" title="Đăng nhập">
@@ -491,10 +589,14 @@
                 </svg>
             </button>
         </div>
+        <!-- About -->
+        <a href="{{ route('about') }}" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">About</a>
 
-        <a href="{{ route('about') ?? '#' }}" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">About</a>
-        <a href="{{ route('blogs.index') ?? '#' }}" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Blog</a>
-        <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Collection</a>
+        <!-- Blog -->
+        <a href="{{ route('blogs.index') }}" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Blog</a>
+
+        <!-- Collection -->
+        <a href="#" class="block p-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors border-b border-gray-100">Page+</a>
 
         <div class="border-b border-gray-100">
             <button class="w-full flex items-center justify-between p-4 text-left text-gray-700 hover:bg-blue-50 font-medium mobile-menu-item" data-submenu="shop">
@@ -802,4 +904,4 @@
 
         console.log('✅ Header with notification support loaded successfully');
     })();
-</script>
+

@@ -229,13 +229,6 @@ class AuthController extends Controller
                         'success' => false,
                         'message' => $message,
                         'error_code' => 'NKS_INCOMPLETE_DATA'
-                    ], 422);
-                } else {
-                    return back()
-                        ->withErrors(['email' => $message])
-                        ->withInput($request->except('password'));
-                }
-            }
 
             if (isset($nksUser['active']) && !$nksUser['active']) {
                 Log::warning('⚠️ NKS user account is not active', [
@@ -540,7 +533,6 @@ class AuthController extends Controller
             $request->session()->flush();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-
             Log::info('API logout successful');
 
             return response()->json([
